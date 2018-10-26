@@ -7,11 +7,10 @@ const POST_HOOK = Symbol('post');
  * Surrogate is a ProxyHandler aimed at providing simple pre and post hooks for object methods.
  *
  * @export
- * @class Surrogate
+ * @class SurrogateProxy
  * @implements {ProxyHandler<T>}
  * @template T
  */
-
 export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   private __targets: Target = new WeakMap();
   private static instance: SurrogateProxy<any>;
@@ -31,11 +30,12 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   /**
    * Trap for property getters
    *
+   * @template K
    * @param {T} target
-   * @param {K} event
-   * @param {Proxy<T>} receiver
-   * @returns {T[K]}
-   * @memberof Surrogate
+   * @param {(K | SurrogateEvents)} event
+   * @param {T} receiver
+   * @returns {(T[K] | T)}
+   * @memberof SurrogateProxy
    */
   get<K extends keyof T>(
     target: T,
@@ -62,8 +62,9 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
    * @static
    * @template T
    * @param {T} object
-   * @returns {(T & Hooks<T>)}
-   * @memberof Surrogate
+   * @param {SurrogateOptions} [options]
+   * @returns {Surrogate<T>}
+   * @memberof SurrogateProxy
    */
   static wrap<T extends object>(
     object: T,
@@ -82,9 +83,10 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
    *
    * @private
    * @param {T} target
-   * @param {K} event
-   * @returns {() => T}
-   * @memberof Surrogate
+   * @param {T} receiver
+   * @param {SurrogateEvents} event
+   * @returns {(void | SurrogateHandler<T>)}
+   * @memberof SurrogateProxy
    */
   private __targetSelf(
     target: T,
@@ -119,11 +121,11 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
    *
    * @private
    * @param {T} target
-   * @param {T[K]} original
-   * @param {K} event
+   * @param {Function} original
+   * @param {string} event
    * @param {...any[]} args
    * @returns {*}
-   * @memberof Surrogate
+   * @memberof SurrogateProxy
    */
   private __handle(
     target: T,
@@ -133,7 +135,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   ): any {
     const progress = this.__pre(target, event, args);
 
-    if (!progress) {
+    if (progress === false) {
       return progress;
     }
 
@@ -149,9 +151,9 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
    *
    * @private
    * @param {T} target
-   * @param {K} event
-   * @returns {Surrogate<TProxy>}
-   * @memberof Surrogate
+   * @param {string} event
+   * @returns {SurrogateProxy<T>}
+   * @memberof SurrogateProxy
    */
   private __setTargetEvent(target: T, event: string): SurrogateProxy<T> {
     if (this.__targets.has(target)) {
@@ -175,10 +177,10 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
    *
    * @private
    * @param {T} target
-   * @param {K} event
+   * @param {string} event
    * @param {any[]} args
    * @returns
-   * @memberof Surrogate
+   * @memberof SurrogateProxy
    */
   private __pre(target: T, event: string, args: any[]) {
     return this.__handleEvents(
@@ -193,10 +195,10 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
    *
    * @private
    * @param {T} target
-   * @param {K} event
+   * @param {string} event
    * @param {any[]} args
    * @returns
-   * @memberof Surrogate
+   * @memberof SurrogateProxy
    */
   private __post(target: T, event: string, args: any[]) {
     return this.__handleEvents(
@@ -213,12 +215,16 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
    *
    * @private
    * @param {T} target
-   * @param {Function[]} events
+   * @param {SurrogateCallback<T>[]} events
    * @param {any[]} args
-   * @returns {(boolean | void)}
-   * @memberof Surrogate
+   * @returns {boolean}
+   * @memberof SurrogateProxy
    */
-  private __handleEvents(target: T, events: Function[], args: any[]): boolean {
+  private __handleEvents(
+    target: T,
+    events: SurrogateCallback<T>[],
+    args: any[]
+  ): boolean {
     for (const handler of events) {
       const result = handler.call(target, target, ...args);
 
@@ -235,17 +241,17 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
    *
    * @private
    * @param {T} target
-   * @param {K} event
+   * @param {string} event
    * @param {symbol} which
-   * @returns {Function[]}
-   * @memberof Surrogate
+   * @returns {SurrogateCallback<T>[]}
+   * @memberof SurrogateProxy
    */
   private __getEventHandlers(
     target: T,
     event: string,
     which: symbol
-  ): Function[] {
-    let result: Function[] = [];
+  ): SurrogateCallback<T>[] {
+    let result: SurrogateCallback<T>[] = [];
 
     if (this.__targets.has(target)) {
       const events: IEvent = this.__targets.get(target) as IEvent;
@@ -262,16 +268,17 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
    *
    * @private
    * @param {T} target
+   * @param {string} event
    * @param {symbol} type
-   * @param {Function[]} handlers
+   * @param {SurrogateCallback<T>[]} handlers
    * @returns {T}
-   * @memberof Surrogate
+   * @memberof SurrogateProxy
    */
   private __setEventHandlers(
     target: T,
     event: string,
     type: symbol,
-    handlers: Function[]
+    handlers: SurrogateCallback<T>[]
   ): T {
     this.__setTargetEvent(target, event);
     const eventHandlers = this.__getEventHandlers(target, event, type);
@@ -292,15 +299,17 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
    *
    *  wrappedClass.registerPreHook('someMethod', () => {});
    *
-   *
-   * @private
    * @param {T} target
    * @param {string} event
-   * @param {(Function | Function[])} handler
+   * @param {(SurrogateCallback<T> | SurrogateCallback<T>[])} handler
    * @returns {T}
-   * @memberof Surrogate
+   * @memberof SurrogateProxy
    */
-  registerPreHook(target: T, event: string, handler: Function | Function[]): T {
+  registerPreHook(
+    target: T,
+    event: string,
+    handler: SurrogateCallback<T> | SurrogateCallback<T>[]
+  ): T {
     return this.__setEventHandlers(target, event, PRE_HOOK, asArray(handler));
   }
 
@@ -313,17 +322,16 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
    *
    *  wrappedClass.registerPostHook('someMethod', () => {});
    *
-   * @private
    * @param {T} target
    * @param {string} event
-   * @param {(Function | Function[])} handler
+   * @param {(SurrogateCallback<T> | SurrogateCallback<T>[])} handler
    * @returns {T}
-   * @memberof Surrogate
+   * @memberof SurrogateProxy
    */
   registerPostHook(
     target: T,
     event: string,
-    handler: Function | Function[]
+    handler: SurrogateCallback<T> | SurrogateCallback<T>[]
   ): T {
     return this.__setEventHandlers(target, event, POST_HOOK, asArray(handler));
   }
@@ -336,7 +344,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
  */
 interface IEvent {
   [event: string]: {
-    [which: string]: Function[];
+    [which: string]: SurrogateCallback[];
   };
 }
 
@@ -350,18 +358,25 @@ type Target = WeakMap<any, IEvent>;
 /**
  * Interface containing Surrogate hooks
  *
+ * @export
  * @interface Hooks
  * @template T
  */
 export interface Hooks<T> {
-  registerPreHook(event: string, handler: Function): Surrogate<T>;
-  registerPostHook(event: string, handler: Function): Surrogate<T>;
+  registerPreHook(event: string, handler: SurrogateCallback<T>): Surrogate<T>;
+  registerPostHook(event: string, handler: SurrogateCallback<T>): Surrogate<T>;
 
-  deregisterPreHook(event: string, handler: Function): Surrogate<T>;
-  deregisterPostHook(event: string, handler: Function): Surrogate<T>;
+  deregisterPreHook(event: string, handler: SurrogateCallback<T>): Surrogate<T>;
+  deregisterPostHook(
+    event: string,
+    handler: SurrogateCallback<T>
+  ): Surrogate<T>;
   deregisterHooksFor(event: string): Surrogate<T>;
 }
 
+/**
+ * List of Surrogate Events
+ */
 export type SurrogateEvents =
   | 'registerPreHook'
   | 'registerPostHook'
@@ -369,18 +384,48 @@ export type SurrogateEvents =
   | 'deregisterPostHook'
   | 'deRegisterHookFor';
 
+/**
+ * Type returned from wrapper or SurrogateProxy.wrap
+ */
 export type Surrogate<T> = Hooks<T> & T;
 
-export type SurrogateCallback<T = any> = (self: T) => any;
+/**
+ *
+ */
+export type SurrogateCallback<T = any> = (self: T) => boolean;
 
+/**
+ * Internal Surrogate Handler
+ *
+ * @interface SurrogateHandler
+ * @template T
+ */
 interface SurrogateHandler<T> {
   (method: string, ...args: any[]): T;
 }
 
+/**
+ * Surrogate Options
+ *
+ * @export
+ * @interface SurrogateOptions
+ */
 export interface SurrogateOptions {
-  useSingleton: boolean;
+  useSingleton?: boolean;
 }
 
-export function wrapper<T extends object>(object: T): Surrogate<T> {
-  return SurrogateProxy.wrap(object);
+/**
+ * Simple function to create a Surrogate wrapped object
+ *
+ * @export
+ * @template T
+ * @param {T} object
+ * @param {SurrogateOptions} [options={}]
+ * @returns {Surrogate<T>}
+ */
+export function wrapper<T extends object>(
+  object: T,
+  options: SurrogateOptions = {}
+): Surrogate<T> {
+  return SurrogateProxy.wrap(object, options);
 }
