@@ -6,9 +6,7 @@
 .DS_Store
 *.d.ts
 
-!spec/**/*
 !examples/**/*
-!typings/**/*
 dist/
 
 node_modules/

@@ -1,17 +1,26 @@
 {
   "name": "@jfrazx/surrogate",
   "version": "1.0.0",
-  "description": "",
+  "description": "Method hooking using ES2015 Proxy",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "sloc": "./node_modules/.bin/sloc index.ts",
+    "test": "mocha -r ts-node/register spec/*.spec.ts",
+    "create:lockfile": "npm i --package-lock-only"
   },
   "author": "jfrazx",
   "license": "MIT",
+  "dependencies": {
+    "@jfrazx/asarray": "^1.0.0"
+  },
   "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.5",
     "chai": "^4.1.2",
-    "mocha": "^4.0.1",
-    "tslint": "^5.7.0",
-    "typescript": "^2.5.3"
+    "mocha": "^5.2.0",
+    "sloc": "^0.2.0",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.1"
   }
 }
