@@ -9,9 +9,9 @@ Currently unpublished..
 ## Usage (eventually...)
 
 ```typescript
-import { wrapper, Surrogate } from 'some-future-published-package';
+import { surrogateWrap, Surrogate } from 'some-future-published-package';
 
-const instance: Surrogate<MyClass> = wrapper(new MyClass(), options);
+const instance: Surrogate<MyClass> = surrogateWrap(new MyClass(), options);
 
 instance.registerPreHook('instanceMethod', () => {
   // do stuff before or after your instance method,
@@ -33,6 +33,7 @@ deregisterHooksFor(event: string): Surrogate\<T\>
 ## Options
 
 useSingleton: boolean # informs Surrogate to operate as a Singleton -- default: `true`
+suppressWarnings: boolean # suppress certain messages Surrogate may produce -- default: `false`
 
 ### Information
 

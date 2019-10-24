@@ -8,11 +8,22 @@ tslint.json
 .eslintrc
 .editorconfig
 .travis.yml
+.prettierrc
+.releaserc
+.nycrc.json
+*.lcov
+yarn.lock
+mocha.opts
 
-!index.d.ts
+.env.*
+
+.nyc_output/
+
+!*.d.ts
 
 typings/
 node_modules/
+spec/
 test/
 .vscode/
 coverage/

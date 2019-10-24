@@ -1,0 +1,15 @@
+{
+  "extends": "@istanbuljs/nyc-config-typescript",
+  "check-coverage": true,
+  "per-file": true,
+  "lines": 0,
+  "produce-source-map": true,
+  "statements": 0,
+  "functions": 0,
+  "branches": 0,
+  "reporter": ["lcov", "text-summary", "html"],
+  "all": true,
+  "cache": true,
+  "report-dir": "./coverage",
+  "tmp-directory": ".nyc_output"
+}

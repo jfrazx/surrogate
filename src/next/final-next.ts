@@ -1,0 +1,16 @@
+import { INext, NextOptions } from '../interfaces';
+import { BaseNext } from './base-next';
+
+export class FinalNext<T extends object> extends BaseNext<T> implements INext {
+  skipWith(_times?: number, ...args: any[]): void {
+    return this.next({ using: args });
+  }
+
+  next({ error, using }: NextOptions = { using: [] }): void {
+    if (error) {
+      this.iterator.throw(error);
+    }
+
+    console.log(using);
+  }
+}

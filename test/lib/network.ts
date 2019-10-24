@@ -2,17 +2,17 @@ export class Network {
   private enabled: boolean = true;
   private connected: boolean = false;
 
-  host: string = 'localhost';
+  readonly host: string = 'localhost';
 
-  isEnabled(): boolean {
+  get isEnabled(): boolean {
     return this.enabled;
   }
 
-  isDisabled(): boolean {
-    return !this.isEnabled();
+  get isDisabled(): boolean {
+    return !this.isEnabled;
   }
 
-  isConnected(): boolean {
+  get isConnected(): boolean {
     return this.connected;
   }
 
