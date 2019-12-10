@@ -26,7 +26,7 @@ export class Next<T extends object> extends BaseNext<T> implements INext {
 
   next({ error, using }: NextOptions = { error: null, using: [] }) {
     if (error) {
-      this.iterator.throw(error);
+      return this.nextError(error, ...using);
     }
 
     const { callback } = this.container;

@@ -123,7 +123,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     original: Function,
     receiver: Surrogate<T>,
   ) {
-    return new Context(target, event as Property, original, receiver);
+    return new Context(target, event, original, receiver);
   }
 
   /**
@@ -149,7 +149,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     } catch (e) {
       if (!this.suppressWarnings) {
         console.warn(
-          `warn: SurrogateError: An error occurred when targeting self: ${e.message}`,
+          `SurrogateError: An error occurred when targeting self: ${e.message}`,
         );
       }
 
@@ -258,12 +258,12 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
       [POST_HOOK as any]: post,
     } = this.__getEventHandlers(target, event);
 
-    const postChain = Next.for(
+    const postChain = Next.for(this, context, this.__containerGenerator(post));
+    const preChain = Next.for(
       this,
       context,
-      this.__containerGenerator(post, original),
+      this.__containerGenerator(pre, original),
     );
-    const preChain = Next.for(this, context, this.__containerGenerator(pre));
 
     return new NextChain(preChain, postChain, original, args);
   }

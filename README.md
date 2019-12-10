@@ -25,14 +25,14 @@ instance.registerPreHook('instanceMethod', () => {
 registerPreHook(method: string, handler: Function): Surrogate\<T\>  
 registerPostHook(method: string, handler: Function): Surrogate\<T\>
 
-Work in progres...  
+Work in progress...  
 deregisterPreHook(method: string, handler: Function): Surrogate\<T\>  
 deregisterPostHook(method: string, handler: Function): Surrogate\<T\>  
 deregisterHooksFor(event: string): Surrogate\<T\>
 
 ## Options
 
-useSingleton: boolean # informs Surrogate to operate as a Singleton -- default: `true`
+useSingleton: boolean # informs Surrogate to operate as a Singleton -- default: `true`  
 suppressWarnings: boolean # suppress certain messages Surrogate may produce -- default: `false`
 
 ### Information

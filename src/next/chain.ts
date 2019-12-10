@@ -10,6 +10,7 @@ export class NextChain {
 
   start() {
     const { context } = this.pre;
+
     this.runNext(this.pre);
 
     const result = this.original.call(context.target, ...this.args);
