@@ -1,5 +1,5 @@
 import { SurrogateOptions } from './interfaces';
-import { SurrogateProxy } from './surrogate';
+import { SurrogateProxy } from './lib';
 import { Surrogate } from './types';
 
 /**
@@ -18,5 +18,5 @@ export function surrogateWrap<T extends object>(
   return SurrogateProxy.wrap(object, options);
 }
 
-export * from './surrogate';
+export * from './lib';
 export { Surrogate, SurrogateEvents } from './types';

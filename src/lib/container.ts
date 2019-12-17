@@ -1,5 +1,5 @@
-import { SurrogateMethodOptions } from './interfaces';
-import { SurrogateCallback } from './types';
+import { SurrogateMethodOptions } from '../interfaces';
+import { SurrogateCallback } from '../types';
 
 export class Container {
   constructor(

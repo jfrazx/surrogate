@@ -1,5 +1,4 @@
-import { SurrogateEvent, SurrogateCallback, Surrogate } from '../types';
-import { SurrogateMethodOptions } from './method-options.interface';
+import { SurrogateEventManager } from '../lib/surrogate-event-manager';
 
 /**
  * Interface containing Surrogate hooks
@@ -9,23 +8,5 @@ import { SurrogateMethodOptions } from './method-options.interface';
  * @template T
  */
 export interface Hooks<T> {
-  registerPreHook(
-    event: SurrogateEvent,
-    handler: SurrogateCallback | SurrogateCallback[],
-    options?: SurrogateMethodOptions,
-  ): Surrogate<T>;
-  registerPostHook(
-    event: SurrogateEvent,
-    handler: SurrogateCallback | SurrogateCallback[],
-    options?: SurrogateMethodOptions,
-  ): Surrogate<T>;
-  deregisterPreHook(
-    event: SurrogateEvent,
-    handler: SurrogateCallback | SurrogateCallback[],
-  ): Surrogate<T>;
-  deregisterPostHook(
-    event: SurrogateEvent,
-    handler: SurrogateCallback | SurrogateCallback[],
-  ): Surrogate<T>;
-  deregisterHooksFor(event: SurrogateEvent): Surrogate<T>;
+  getSurrogate(): SurrogateEventManager<T>;
 }

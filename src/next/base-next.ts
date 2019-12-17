@@ -1,7 +1,5 @@
 import { INext, NextOptions, ContainerGenerator } from '../interfaces';
-import { SurrogateProxy } from '../surrogate';
-import { Container } from '../container';
-import { Context } from '../context';
+import { SurrogateProxy, Container, Context } from '../lib';
 
 export abstract class BaseNext<T extends object> implements INext {
   _next: INext = null;
