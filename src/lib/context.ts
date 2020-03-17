@@ -1,15 +1,10 @@
-import { Surrogate, Property, BoundContext } from './types';
+import { Property, BoundContext } from '../types';
 
 export class Context<T extends object> {
-  constructor(
-    public target: T,
-    public event: Property,
-    public original: Function,
-    public receiver: Surrogate<T>,
-  ) {}
+  constructor(public target: T, public event: Property, public original: Function) {}
 
   static isAlreadyContextBound(original: Function): original is BoundContext<any> {
-    return /^bound\s\S+$/.test(original.name);
+    return /^bound\sretrieveContext$/.test(original.name);
   }
 
   createRetrievableContext() {

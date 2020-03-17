@@ -6,5 +6,4 @@
  */
 export interface SurrogateOptions {
   useSingleton?: boolean;
-  suppressWarnings?: boolean;
 }

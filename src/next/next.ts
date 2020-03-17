@@ -1,8 +1,6 @@
 import { NextOptions, INext, ContainerGenerator } from '../interfaces';
-import { SurrogateProxy } from '../surrogate';
-import { Container } from '../container';
+import { SurrogateProxy, Container, Context } from '../lib';
 import { BaseNext } from './base-next';
-import { Context } from '../context';
 
 export class Next<T extends object> extends BaseNext<T> implements INext {
   constructor(
@@ -26,7 +24,7 @@ export class Next<T extends object> extends BaseNext<T> implements INext {
 
   next({ error, using }: NextOptions = { error: null, using: [] }) {
     if (error) {
-      this.iterator.throw(error);
+      return this.nextError(error, ...using);
     }
 
     const { callback } = this.container;

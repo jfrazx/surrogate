@@ -1,4 +1,4 @@
-import { Container } from '../container';
+import { Container } from '../lib';
 
 export interface ContainerGenerator {
   value: Container;

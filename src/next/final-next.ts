@@ -8,9 +8,7 @@ export class FinalNext<T extends object> extends BaseNext<T> implements INext {
 
   next({ error, using }: NextOptions = { using: [] }): void {
     if (error) {
-      this.iterator.throw(error);
+      return this.nextError(error, ...using);
     }
-
-    console.log(using);
   }
 }

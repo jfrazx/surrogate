@@ -8,6 +8,7 @@
     "commit": "git-cz",
     "test": "mocha  --require ts-node/register test/*.spec.ts",
     "tsc": "tsc",
+    "lint": "tslint -p . --exclude **/*.d.ts",
     "compile": "tsc -d",
     "coverage:check": "nyc check-coverage",
     "coverage:report": "nyc report --reporter=text-lcov > coverage.lcov",
