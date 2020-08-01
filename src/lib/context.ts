@@ -3,7 +3,9 @@ import { Property, BoundContext } from '../types';
 export class Context<T extends object> {
   constructor(public target: T, public event: Property, public original: Function) {}
 
-  static isAlreadyContextBound(original: Function): original is BoundContext<any> {
+  static isAlreadyContextBound<T extends object>(
+    original: Function,
+  ): original is BoundContext<T> {
     return /^bound\sretrieveContext$/.test(original.name);
   }
 

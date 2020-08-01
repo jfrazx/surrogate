@@ -4,10 +4,13 @@
   "description": "Method hooking using ES2015 Proxy",
   "main": "index.js",
   "scripts": {
-    "sloc": "sloc index.ts",
+    "sloc": "sloc ./src ",
     "commit": "git-cz",
-    "test": "mocha  --require ts-node/register test/*.spec.ts",
+    "test": "mocha",
+    "test:watch": "mocha --watch",
     "tsc": "tsc",
+    "prebuild": "rimraf dist",
+    "build": "tsc",
     "lint": "tslint -p . --exclude **/*.d.ts",
     "compile": "tsc -d",
     "coverage:check": "nyc check-coverage",
@@ -39,6 +42,7 @@
     "husky": "^3.0.9",
     "mocha": "^6.2.2",
     "nyc": "^14.1.1",
+    "rimraf": "^3.0.2",
     "semantic-release": "^15.13.27",
     "semantic-release-cli": "^5.2.1",
     "sinon": "^7.5.0",
@@ -53,5 +57,14 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
+  },
+  "mocha": {
+    "recursive": true,
+    "spec": "test/*.ts",
+    "reporter": "spec",
+    "require": [
+      "ts-node/register/transpile-only",
+      "source-map-support/register"
+    ]
   }
 }

@@ -1,5 +1,5 @@
-import * as sinon from 'sinon';
 import { expect } from 'chai';
+import sinon from 'sinon';
 
 import { SurrogateEventManager } from '../src/lib/surrogate-event-manager';
 import { surrogateWrap, Surrogate, PRE_HOOK, POST_HOOK } from '../src';
@@ -19,6 +19,7 @@ describe('Surrogate Event Manager', () => {
   afterEach(() => {
     sinon.restore();
   });
+
   it('should retrieve an instance of SurrogateEventManager', () => {
     const surrogate = network.getSurrogate();
 
@@ -75,7 +76,7 @@ describe('Surrogate Event Manager', () => {
 
   describe('Register', () => {
     it('should register a single pre hook', () => {
-      const func = sinon.spy(function() {});
+      const func = sinon.spy(function () {});
 
       network.getSurrogate().registerPreHook(network.connect.name, func);
       network.connect();
@@ -131,10 +132,10 @@ describe('Surrogate Event Manager', () => {
       const name = network.connect.name;
       const func1 = sinon.spy((next: INext) => next.next());
       const func2 = sinon.spy((next: INext) => next.next());
-      const func3 = sinon.spy(function(next: INext) {
+      const func3 = sinon.spy(function (next: INext) {
         next.next();
       });
-      const func4 = sinon.spy(function() {});
+      const func4 = sinon.spy(function () {});
 
       network
         .getSurrogate()

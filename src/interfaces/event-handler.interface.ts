@@ -6,6 +6,6 @@ import { Surrogate } from '../types';
  * @interface SurrogateEventHandler
  * @template T
  */
-export interface SurrogateEventHandler<T> {
+export interface SurrogateEventHandler<T extends object> {
   (method: string, ...args: any[]): Surrogate<T>;
 }
