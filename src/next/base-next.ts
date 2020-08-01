@@ -48,6 +48,10 @@ export abstract class BaseNext<T extends object> implements INext {
     this.iterator.throw(error);
   }
 
+  get instance(): T {
+    return this.context.target;
+  }
+
   abstract skipWith(times?: number, ...args: any[]): void;
   abstract next(options?: NextOptions): void;
 }

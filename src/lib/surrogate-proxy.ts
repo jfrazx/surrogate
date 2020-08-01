@@ -19,8 +19,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   private targets: Target<T> = new WeakMap();
   private static instance: SurrogateProxy<any>;
 
-  constructor(target: T, options: SurrogateOptions = {}) {
-    const { useSingleton = true } = options;
+  constructor(target: T, { useSingleton = true }: SurrogateOptions = {}) {
     const instance = this.useInstance(useSingleton);
 
     return instance.setTarget(target);
@@ -49,9 +48,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
       return original;
     }
 
-    this.bindHandler(event, target);
-
-    return Reflect.get(target, event);
+    return this.bindHandler(event, target);
   }
 
   /**
@@ -76,12 +73,14 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     const original = Reflect.get(target, event);
 
     if (!this.isHandlerBound(original)) {
-      const context = Context.isAlreadyContextBound(original)
+      const context = Context.isAlreadyContextBound<T>(original)
         ? original()
         : new Context(target, event, original);
 
       Reflect.set(target, event, this.surrogateHandler.bind(this, context));
     }
+
+    return Reflect.get(target, event);
   }
 
   isBound(func: Function) {
@@ -118,9 +117,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   }
 
   private retrieveEventManager(target: T) {
-    const manager = this.targets.get(target);
-
-    return () => manager;
+    return () => this.targets.get(target);
   }
 
   private shouldProcess(

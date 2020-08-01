@@ -7,6 +7,6 @@ import { SurrogateEventManager } from '../lib/surrogate-event-manager';
  * @interface Hooks
  * @template T
  */
-export interface Hooks<T> {
+export interface Hooks<T extends object> {
   getSurrogate(): SurrogateEventManager<T>;
 }
