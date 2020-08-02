@@ -4,7 +4,7 @@ import { BaseNext } from './base-next';
 
 const nextOptionDefaults: NextOptions = { error: null, using: [], bail: false };
 
-export class Next<T extends object> extends BaseNext<T> implements INext {
+export class Next<T extends object> extends BaseNext<T> implements INext<T> {
   constructor(
     proxy: SurrogateProxy<T>,
     context: Context<T>,

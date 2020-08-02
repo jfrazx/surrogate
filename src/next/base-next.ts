@@ -1,21 +1,32 @@
-import { INext, NextOptions, ContainerGenerator } from '../interfaces';
 import { SurrogateProxy, Container, Context } from '../lib';
+import {
+  INext,
+  NextOptions,
+  ContainerGenerator,
+  SurrogateMethodOptions,
+} from '../interfaces';
 
-export abstract class BaseNext<T extends object> implements INext {
-  _next: INext = null;
+const defaultErrorOptions: SurrogateMethodOptions = {
+  passErrors: false,
+  ignoreErrors: false,
+  passInstance: false,
+};
+
+export abstract class BaseNext<T extends object> implements INext<T> {
+  protected _next: INext<T> = null;
 
   constructor(
     protected proxy: SurrogateProxy<T>,
     public context: Context<T>,
-    protected iterator: Generator<Container, Container, ContainerGenerator>,
-    protected container: Container,
+    protected iterator: Generator<Container<T>, Container<T>, ContainerGenerator>,
+    protected container: Container<T>,
   ) {}
 
   static for(
     proxy: SurrogateProxy<any>,
     context: Context<any>,
     iterator: Generator<Container, Container, ContainerGenerator>,
-  ): INext {
+  ): INext<any> {
     const { value, done } = iterator.next();
 
     return done
@@ -28,24 +39,30 @@ export abstract class BaseNext<T extends object> implements INext {
   }
 
   nextError(error: Error, ...args: any[]) {
-    const {
-      options: { ignoreErrors = false, passErrors = false, passInstance = false },
-    } = this.container;
+    const { options } = this.container;
+    const useOptions = { ...defaultErrorOptions, ...options };
+    const useArgs = this.determineErrorArgs(useOptions, error, args);
 
+    if (useOptions.ignoreErrors) {
+      return this.next({ error: null, using: useArgs });
+    }
+
+    this.iterator.throw(error);
+  }
+
+  protected determineErrorArgs(
+    { passErrors, passInstance }: SurrogateMethodOptions,
+    error: Error,
+    args: any[],
+  ) {
     if (passErrors) {
       if (passInstance) {
-        const { target } = this.context;
-
-        args.unshift(target);
+        args.unshift(this.instance);
       }
       args.unshift(error);
     }
 
-    if (ignoreErrors) {
-      return this.next({ error: null, using: args });
-    }
-
-    this.iterator.throw(error);
+    return args;
   }
 
   get instance(): T {

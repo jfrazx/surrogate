@@ -6,4 +6,4 @@ export type SurrogateEvents =
   | 'registerPostHook'
   | 'deregisterPreHook'
   | 'deregisterPostHook'
-  | 'deRegisterHooksFor';
+  | 'deregisterHooksFor';

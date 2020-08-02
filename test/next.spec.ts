@@ -21,12 +21,12 @@ describe('Next', () => {
   });
 
   it('should pass Next objects to the callbacks', () => {
-    const func1 = sinon.spy(function(next: INext) {
+    const func1 = sinon.spy(function (next: INext<Network>) {
       expect(next).to.be.instanceOf(Next);
       next.next();
     });
 
-    const func2 = sinon.spy((next: INext) => {
+    const func2 = sinon.spy((next: INext<Network>) => {
       expect(next).to.be.instanceOf(FinalNext);
 
       next.next();
@@ -43,7 +43,7 @@ describe('Next', () => {
   it('should call handlers with the proxied (unwrapped) object as context', () => {
     network
       .getSurrogate()
-      .registerPreHook('connect', function(this: Network, next: INext) {
+      .registerPreHook('connect', function (this: Network, next: INext<Network>) {
         expect(this).to.be.instanceOf(Network);
         expect(this).to.not.equal(network);
         next.next();
@@ -54,8 +54,8 @@ describe('Next', () => {
 
   it('should pass arguments from one handler to the next', () => {
     network.getSurrogate().registerPreHook('connect', [
-      next => next.next({ using: [1, 2, 3] }),
-      (next, arg1: number, arg2: number, arg3: number) => {
+      (next: INext<Network>) => next.next({ using: [1, 2, 3] }),
+      (next: INext<Network>, arg1: number, arg2: number, arg3: number) => {
         expect(arg1).to.be.a('number');
         expect(arg2).to.be.a('number');
         expect(arg3).to.be.a('number');
@@ -71,9 +71,9 @@ describe('Next', () => {
 
   describe('Skip', () => {
     it('should skip a single handler', () => {
-      const func1 = sinon.spy((next: INext) => next.skip());
-      const func2 = sinon.spy((next: INext) => next.next());
-      const func3 = sinon.spy((next: INext) => next.next());
+      const func1 = sinon.spy((next: INext<Network>) => next.skip());
+      const func2 = sinon.spy((next: INext<Network>) => next.next());
+      const func3 = sinon.spy((next: INext<Network>) => next.next());
 
       network.getSurrogate().registerPreHook('connect', [func1, func2, func3]);
       network.connect();
@@ -85,10 +85,10 @@ describe('Next', () => {
     });
 
     it('should skip multiple handlers', () => {
-      const func1 = sinon.spy((next: INext) => next.skip(2));
-      const func2 = sinon.spy((next: INext) => next.next());
-      const func3 = sinon.spy((next: INext) => next.next());
-      const func4 = sinon.spy((next: INext) => next.next());
+      const func1 = sinon.spy((next: INext<Network>) => next.skip(2));
+      const func2 = sinon.spy((next: INext<Network>) => next.next());
+      const func3 = sinon.spy((next: INext<Network>) => next.next());
+      const func4 = sinon.spy((next: INext<Network>) => next.next());
 
       network
         .getSurrogate()
@@ -103,11 +103,11 @@ describe('Next', () => {
     });
 
     it('should skip and the resume the next chain', () => {
-      const func1 = sinon.spy((next: INext) => next.next());
-      const func2 = sinon.spy((next: INext) => next.skip(2));
-      const func3 = sinon.spy((next: INext) => next.next());
-      const func4 = sinon.spy((next: INext) => next.next());
-      const func5 = sinon.spy((next: INext) => next.next());
+      const func1 = sinon.spy((next: INext<Network>) => next.next());
+      const func2 = sinon.spy((next: INext<Network>) => next.skip(2));
+      const func3 = sinon.spy((next: INext<Network>) => next.next());
+      const func4 = sinon.spy((next: INext<Network>) => next.next());
+      const func5 = sinon.spy((next: INext<Network>) => next.next());
 
       network
         .getSurrogate()
@@ -123,14 +123,15 @@ describe('Next', () => {
     });
 
     it('should not skip the calling method', () => {
-      const func1 = sinon.spy((next: INext) => next.next());
-      const func2 = sinon.spy((next: INext) => next.skip(20));
-      const func3 = sinon.spy((next: INext) => next.next());
-      const func4 = sinon.spy((next: INext) => next.next());
+      const func1 = sinon.spy((next: INext<Network>) => next.next());
+      const func2 = sinon.spy((next: INext<Network>) => next.skip(20));
+      const func3 = sinon.spy((next: INext<Network>) => next.next());
+      const func4 = sinon.spy((next: INext<Network>) => next.next());
 
       network
         .getSurrogate()
         .registerPreHook('connect', [func1, func2, func3, func4]);
+
       network.connect();
 
       sinon.assert.calledOnce(func1);
@@ -141,21 +142,22 @@ describe('Next', () => {
     });
 
     it('should not skip post handlers when skipping pre handlers', () => {
-      const func1 = sinon.spy((next: INext) => next.next());
-      const func2 = sinon.spy((next: INext) => next.skip(20));
-      const func3 = sinon.spy((next: INext) => next.next());
-      const func4 = sinon.spy((next: INext) => next.next());
-      const func5 = sinon.spy((next: INext) => next.next());
+      const func1 = sinon.spy((next: INext<Network>) => next.next());
+      const func2 = sinon.spy((next: INext<Network>) => next.skip(20));
+      const func3 = sinon.spy((next: INext<Network>) => next.next());
+      const func4 = sinon.spy((next: INext<Network>) => next.next());
+      const func5 = sinon.spy((next: INext<Network>) => next.next());
 
-      const func6 = sinon.spy((next: INext) => next.next());
-      const func7 = sinon.spy((next: INext) => next.next());
-      const func8 = sinon.spy((next: INext) => next.next());
-      const func9 = sinon.spy((next: INext) => next.next());
+      const func6 = sinon.spy((next: INext<Network>) => next.next());
+      const func7 = sinon.spy((next: INext<Network>) => next.next());
+      const func8 = sinon.spy((next: INext<Network>) => next.next());
+      const func9 = sinon.spy((next: INext<Network>) => next.next());
 
       network
         .getSurrogate()
         .registerPreHook('connect', [func1, func2, func3, func4, func5])
         .registerPostHook('connect', [func6, func7, func8, func9]);
+
       network.connect();
 
       sinon.assert.calledOnce(func1);
@@ -171,16 +173,16 @@ describe('Next', () => {
     });
 
     it('should skip pre and post handlers', () => {
-      const func1 = sinon.spy((next: INext) => next.next());
-      const func2 = sinon.spy((next: INext) => next.skip(20));
-      const func3 = sinon.spy((next: INext) => next.next());
-      const func4 = sinon.spy((next: INext) => next.next());
-      const func5 = sinon.spy((next: INext) => next.next());
+      const func1 = sinon.spy((next: INext<Network>) => next.next());
+      const func2 = sinon.spy((next: INext<Network>) => next.skip(20));
+      const func3 = sinon.spy((next: INext<Network>) => next.next());
+      const func4 = sinon.spy((next: INext<Network>) => next.next());
+      const func5 = sinon.spy((next: INext<Network>) => next.next());
 
-      const func6 = sinon.spy((next: INext) => next.next());
-      const func7 = sinon.spy((next: INext) => next.skip());
-      const func8 = sinon.spy((next: INext) => next.next());
-      const func9 = sinon.spy((next: INext) => next.next());
+      const func6 = sinon.spy((next: INext<Network>) => next.next());
+      const func7 = sinon.spy((next: INext<Network>) => next.skip());
+      const func8 = sinon.spy((next: INext<Network>) => next.next());
+      const func9 = sinon.spy((next: INext<Network>) => next.next());
 
       network
         .getSurrogate()

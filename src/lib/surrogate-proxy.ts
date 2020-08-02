@@ -172,7 +172,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return this;
   }
 
-  private createNextChain(context: Context<T>, args: any[]): NextChain {
+  private createNextChain(context: Context<T>, args: any[]): NextChain<T> {
     const { target, event, original } = context;
     const { [PRE_HOOK]: pre, [POST_HOOK]: post } = this.targets
       .get(target)
@@ -184,7 +184,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return new NextChain(preChain, postChain, original, args);
   }
 
-  private *containerGenerator(containers: Container[], original?: Function) {
+  private *containerGenerator(containers: Container<T>[], original?: Function) {
     for (const container of containers) {
       yield container;
     }

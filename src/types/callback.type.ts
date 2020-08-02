@@ -3,8 +3,8 @@ import { INext } from '../interfaces';
 /**
  *
  */
-export type SurrogateCallback = (
-  next: INext,
+export type SurrogateCallback<T extends object> = (
+  next: INext<T>,
   arg1?: any,
   arg2?: any,
   arg3?: any,

@@ -1,3 +1,4 @@
+import { INext } from '../../src/interfaces/inext.interface';
 export class Network {
   private enabled: boolean = true;
   private connected: boolean = false;
@@ -34,5 +35,11 @@ export class Network {
     console.log('disconnecting from somewhere...');
 
     this.connected = false;
+  }
+
+  preConnectHandler(next: INext<this>) {
+    next.next({
+      bail: this.isConnected || this.isDisabled,
+    });
   }
 }

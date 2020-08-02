@@ -2,7 +2,7 @@
   "name": "surrogate",
   "version": "1.0.0",
   "description": "Method hooking using ES2015 Proxy",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "sloc": "sloc ./src ",
     "commit": "git-cz",
@@ -12,7 +12,6 @@
     "prebuild": "rimraf dist",
     "build": "tsc",
     "lint": "tslint -p . --exclude **/*.d.ts",
-    "compile": "tsc -d",
     "coverage:check": "nyc check-coverage",
     "coverage:report": "nyc report --reporter=text-lcov > coverage.lcov",
     "coverage:post": "codecov",
@@ -21,6 +20,7 @@
     "precommit": "npm run coverage:test && npm run coverage:check",
     "prepush": "npm run coverage:test",
     "publish": "npx semantic-release",
+    "postinstall": "npm run build",
     "semantic-release": "semantic-release",
     "semantic:cli": "semantic-release-cli"
   },

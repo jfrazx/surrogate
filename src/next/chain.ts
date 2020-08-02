@@ -1,9 +1,9 @@
 import { INext } from '../interfaces';
 
-export class NextChain {
+export class NextChain<T extends object> {
   constructor(
-    private pre: INext,
-    private post: INext,
+    private pre: INext<T>,
+    private post: INext<T>,
     private original: Function,
     private args: any[],
   ) {}
@@ -20,7 +20,7 @@ export class NextChain {
     return result;
   }
 
-  private runNext(next: INext) {
+  private runNext(next: INext<T>) {
     next.next();
   }
 }
