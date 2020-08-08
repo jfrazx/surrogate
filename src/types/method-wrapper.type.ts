@@ -1,1 +1,1 @@
-export type MethodWrapper = 'none' | 'observable' | 'promise';
+export type MethodWrapper = 'none' | 'observable' | 'async';

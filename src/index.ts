@@ -20,3 +20,4 @@ export function surrogateWrap<T extends object>(
 
 export * from './lib';
 export { Surrogate, SurrogateEvents } from './types';
+export { SurrogateOptions, SurrogateEventHandler, INext, Hooks } from './interfaces';
