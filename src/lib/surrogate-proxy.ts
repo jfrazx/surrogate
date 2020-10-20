@@ -1,5 +1,5 @@
-import { Target, Surrogate, Handle, Property } from '../types';
 import { SurrogateEventManager } from './surrogate-event-manager';
+import { Target, Surrogate, Handle, Property } from '../types';
 import { SurrogateOptions } from '../interfaces';
 import { PRE_HOOK, POST_HOOK } from './hooks';
 import { Next, NextChain } from '../next';
@@ -25,15 +25,6 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return instance.setTarget(target);
   }
 
-  /**
-   * Trap for property getters
-   *
-   * @template K
-   * @param {T} target
-   * @param {(K | SurrogateEvents)} event
-   * @returns {(T[K] | T | Handle)}
-   * @memberof SurrogateProxy
-   */
   get<K extends keyof T>(
     target: T,
     event: Property,
@@ -51,9 +42,15 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return this.bindHandler(event, target);
   }
 
+  destroy(target: T): T {
+    this.targets.delete(target);
+
+    return target;
+  }
+
   /**
    * Use an ES6 Proxy to wrap an Object with Surrogate as the handler.
-   * Returns intersection of Object (T) and Hook methods
+   * Returns intersection of Object (T) and Surrogate
    *
    * @static
    * @template T
@@ -87,14 +84,6 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return this.isHandlerBound(func) || Context.isAlreadyContextBound(func);
   }
 
-  /**
-   * Handle calling of pre/post hooks, and the original method
-   *
-   * @param {Context<T>} context
-   * @param {...any[]} args
-   * @returns {*}
-   * @memberof SurrogateProxy
-   */
   surrogateHandler(context: Context<T>, ...args: any[]): any {
     const chain = this.createNextChain(context, args);
 
@@ -103,10 +92,6 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
      */
     return chain.start();
   }
-
-  /**
-   * PRIVATE METHODS
-   */
 
   private isGetSurrogate(event: Property) {
     return event.toString() === 'getSurrogate';
@@ -136,14 +121,6 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return Boolean(pre.length + post.length);
   }
 
-  /**
-   *
-   *
-   * @private
-   * @param {T} target
-   * @returns {SurrogateProxy<T>}
-   * @memberof SurrogateProxy
-   */
   private setTarget(target: T): SurrogateProxy<T> {
     if (!this.targets.has(target)) {
       this.targets.set(target, new SurrogateEventManager(this, target));
@@ -152,14 +129,6 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return this;
   }
 
-  /**
-   *
-   *
-   * @private
-   * @param {boolean} useSingleton
-   * @returns {SurrogateProxy<T>}
-   * @memberof SurrogateProxy
-   */
   private useInstance(useSingleton: boolean): SurrogateProxy<T> {
     if (useSingleton) {
       if (SurrogateProxy.instance) {
@@ -190,11 +159,5 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     }
 
     return original ? new Container(original as any) : void 0;
-  }
-
-  destroy(target: T): T {
-    this.targets.delete(target);
-
-    return target;
   }
 }

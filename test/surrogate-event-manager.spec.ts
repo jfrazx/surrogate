@@ -1,11 +1,10 @@
-import { expect } from 'chai';
-import sinon from 'sinon';
-
 import { SurrogateEventManager } from '../src/lib/surrogate-event-manager';
 import { surrogateWrap, Surrogate, PRE_HOOK, POST_HOOK } from '../src';
 import { INext } from '../src/interfaces';
 import { Network } from './lib/network';
-import { Which } from 'src/types';
+import { Which } from '../src/types';
+import { expect } from 'chai';
+import sinon from 'sinon';
 
 describe('Surrogate Event Manager', () => {
   let network: Surrogate<Network>;
