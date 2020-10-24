@@ -1,6 +1,6 @@
-import { NextFor } from '../../src/decorate/index';
 import {
   INext,
+  NextFor,
   POST_HOOK,
   Surrogate,
   SurrogatePre,
@@ -33,6 +33,6 @@ export class Thing {
 
   @NextFor({ type: POST_HOOK, action: 'connect' })
   postConnect(next: INext<this>) {
-    console.log('post connect method', next);
+    console.log('post connect method');
   }
 }

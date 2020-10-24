@@ -1,5 +1,4 @@
-import { surrogateWrap, Surrogate, SurrogateDelegate } from '../src';
-import { SurrogatePre } from '../src/decorate';
+import { surrogateWrap, Surrogate } from '../src';
 import { Network } from './lib/network';
 import { expect } from 'chai';
 
