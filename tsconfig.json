@@ -6,7 +6,7 @@
     "declaration": true,
     "sourceMap": true,
     "outDir": "./build",
-    "removeComments": true,
+    "removeComments": false,
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": false,
@@ -19,7 +19,8 @@
     "baseUrl": "./src",
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src"],
   "exclude": ["test"]

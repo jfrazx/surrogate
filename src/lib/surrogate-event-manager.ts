@@ -1,7 +1,7 @@
-import { EventMap, WhichContainers, SurrogateMethodOptions } from '../interfaces';
-import { Property, SurrogateCallback, Which } from '../types';
+import { EventMap, WhichContainers, SurrogateMethodOptions } from './interfaces';
+import { Property, SurrogateCallback } from './types';
+import { PRE_HOOK, POST_HOOK, Which } from './which';
 import { SurrogateProxy } from './surrogate-proxy';
-import { PRE_HOOK, POST_HOOK } from './hooks';
 import { Defaults } from '@status/defaults';
 import { asArray } from '@jfrazx/asarray';
 import { Container } from './container';
@@ -9,10 +9,7 @@ import { Container } from './container';
 export class SurrogateEventManager<T extends object = any> {
   private readonly events: EventMap;
 
-  constructor(
-    private readonly proxy: SurrogateProxy<T>,
-    private readonly target: T,
-  ) {
+  constructor(private readonly proxy: SurrogateProxy<T>, private readonly target: T) {
     this.events = Defaults.wrap<EventMap, WhichContainers>({
       defaultValue: {
         [PRE_HOOK]: [],
@@ -34,12 +31,31 @@ export class SurrogateEventManager<T extends object = any> {
     return this.events[event];
   }
 
+  /**
+   *
+   *
+   * @param {Property} event
+   * @param {Which} type
+   * @param {(SurrogateCallback<T> | SurrogateCallback<T>[])} handler
+   * @param {SurrogateMethodOptions} [options={}]
+   * @returns {SurrogateEventManager<T>}
+   * @memberof SurrogateEventManager
+   */
+  registerHook(
+    event: Property,
+    type: Which,
+    handler: SurrogateCallback<T> | SurrogateCallback<T>[],
+    options: SurrogateMethodOptions = {},
+  ): SurrogateEventManager<T> {
+    return this.setEventHandlers(event, type, asArray(handler), options);
+  }
+
   private setEventHandlers(
     event: Property,
     type: Which,
     handlers: SurrogateCallback<T>[],
     options: SurrogateMethodOptions = {},
-  ): SurrogateEventManager {
+  ): SurrogateEventManager<T> {
     const eventHandlers: Container[] = this.getEventHandlersFor(event, type);
 
     const containers = handlers.reduce(
@@ -53,14 +69,14 @@ export class SurrogateEventManager<T extends object = any> {
     return this;
   }
 
-  private getEventHandlersFor(event: Property, which: Which): Container[] {
+  private getEventHandlersFor(event: Property, which: Which): Container<T>[] {
     return this.getEventHandlers(event)[which];
   }
 
   private setEventHandlersFor(
     event: Property,
     type: Which,
-    containers: Container[] = [],
+    containers: Container<T>[] = [],
   ): SurrogateEventManager {
     this.getEventHandlers(event)[type] = containers;
 
@@ -90,14 +106,14 @@ export class SurrogateEventManager<T extends object = any> {
    * @param {Property} event
    * @param {(SurrogateCallback<T> | SurrogateCallback<T>[])} handler
    * @param {SurrogateMethodOptions} [options]
-   * @returns {SurrogateEventManager}
+   * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
   registerPostHook(
     event: Property,
     handler: SurrogateCallback<T> | SurrogateCallback<T>[],
     options?: SurrogateMethodOptions,
-  ): SurrogateEventManager {
+  ): SurrogateEventManager<T> {
     return this.setEventHandlers(event, POST_HOOK, asArray(handler), options);
   }
 
@@ -132,10 +148,7 @@ export class SurrogateEventManager<T extends object = any> {
    * @returns {SurrogateEventManager}
    * @memberof SurrogateEventManager
    */
-  deregisterPreHook(
-    event: Property,
-    handler: SurrogateCallback<T>,
-  ): SurrogateEventManager {
+  deregisterPreHook(event: Property, handler: SurrogateCallback<T>): SurrogateEventManager {
     return this.deregisterHookFor(event, PRE_HOOK, handler);
   }
 
@@ -147,10 +160,7 @@ export class SurrogateEventManager<T extends object = any> {
    * @returns {SurrogateEventManager}
    * @memberof SurrogateEventManager
    */
-  deregisterPostHook(
-    event: Property,
-    handler: SurrogateCallback<T>,
-  ): SurrogateEventManager {
+  deregisterPostHook(event: Property, handler: SurrogateCallback<T>): SurrogateEventManager {
     return this.deregisterHookFor(event, POST_HOOK, handler);
   }
 

@@ -1,4 +1,4 @@
-import { INext } from '../interfaces';
+import { INext } from '../next';
 
 /**
  *

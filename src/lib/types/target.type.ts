@@ -1,4 +1,4 @@
-import { SurrogateEventManager } from '../lib/surrogate-event-manager';
+import { SurrogateEventManager } from '../surrogate-event-manager';
 
 /**
  * Custom type for WeakMap containing target object and any object method hooks

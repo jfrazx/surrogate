@@ -1,4 +1,4 @@
-import { SurrogateEventManager } from '../lib/surrogate-event-manager';
+import { SurrogateEventManager } from '../surrogate-event-manager';
 
 /**
  * Interface containing Surrogate hooks

@@ -1,10 +1,8 @@
-import { SurrogateProxy, Container, Context } from '../lib';
-import {
-  INext,
-  NextOptions,
-  ContainerGenerator,
-  SurrogateMethodOptions,
-} from '../interfaces';
+import { Container, ContainerGenerator } from '../container';
+import { SurrogateMethodOptions } from '../interfaces';
+import { SurrogateProxy } from '../surrogate-proxy';
+import { INext, NextOptions } from './interfaces';
+import { Context } from '../context';
 
 const defaultErrorOptions: SurrogateMethodOptions = {
   passErrors: false,

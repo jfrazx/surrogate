@@ -1,10 +1,10 @@
 import { SurrogateEventManager } from './surrogate-event-manager';
-import { Target, Surrogate, Handle, Property } from '../types';
-import { SurrogateOptions } from '../interfaces';
-import { PRE_HOOK, POST_HOOK } from './hooks';
-import { Next, NextChain } from '../next';
+import { Target, Surrogate, Handle, Property } from './types';
+import { SurrogateOptions } from './interfaces';
+import { PRE_HOOK, POST_HOOK } from './which';
+import { Next, NextChain } from './next';
+import { isFunction } from './helpers';
 import { Container } from './container';
-import { isFunction } from '../helpers';
 import { Context } from './context';
 
 /**
@@ -59,10 +59,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
    * @returns {Surrogate<T>}
    * @memberof SurrogateProxy
    */
-  static wrap<T extends object>(
-    object: T,
-    options?: SurrogateOptions,
-  ): Surrogate<T> {
+  static wrap<T extends object>(object: T, options?: SurrogateOptions): Surrogate<T> {
     return new Proxy(object, new SurrogateProxy(object, options)) as Surrogate<T>;
   }
 
@@ -105,11 +102,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return () => this.targets.get(target);
   }
 
-  private shouldProcess(
-    target: T,
-    original: any,
-    event: Property,
-  ): original is Function {
+  private shouldProcess(target: T, original: any, event: Property): original is Function {
     if (!isFunction(original) || Context.isAlreadyContextBound(original)) {
       return false;
     }

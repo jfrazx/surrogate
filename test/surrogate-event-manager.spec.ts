@@ -86,7 +86,7 @@ describe('Surrogate Event Manager', () => {
 
     it('should register multiple pre hooks', () => {
       const name = network.connect.name;
-      const func1 = sinon.spy((next: INext) => next.next());
+      const func1 = sinon.spy((next: INext<Network>) => next.next());
       const func2 = sinon.spy(() => {});
 
       network
@@ -112,7 +112,7 @@ describe('Surrogate Event Manager', () => {
 
     it('should register multiple post hooks', () => {
       const name = network.disconnect.name;
-      const func1 = sinon.spy((next: INext) => next.next());
+      const func1 = sinon.spy((next: INext<Network>) => next.next());
       const func2 = sinon.spy(() => {});
 
       network
@@ -129,9 +129,9 @@ describe('Surrogate Event Manager', () => {
 
     it('should register multiple pre and post hooks', () => {
       const name = network.connect.name;
-      const func1 = sinon.spy((next: INext) => next.next());
-      const func2 = sinon.spy((next: INext) => next.next());
-      const func3 = sinon.spy(function (next: INext) {
+      const func1 = sinon.spy((next: INext<Network>) => next.next());
+      const func2 = sinon.spy((next: INext<Network>) => next.next());
+      const func3 = sinon.spy(function (next: INext<Network>) {
         next.next();
       });
       const func4 = sinon.spy(function () {});
