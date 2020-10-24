@@ -1,11 +1,8 @@
+import { surrogateWrap, Surrogate, INext, Next } from '../src';
+import { FinalNext } from '../src/lib/next/final-next';
+import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-
-import { surrogateWrap, Surrogate } from '../src';
-import { FinalNext } from '../src/next/final-next';
-import { INext } from '../src/interfaces';
-import { Network } from './lib/network';
-import { Next } from '../src/next';
 
 describe('Next', () => {
   let network: Surrogate<Network>;
@@ -90,9 +87,7 @@ describe('Next', () => {
       const func3 = sinon.spy((next: INext<Network>) => next.next());
       const func4 = sinon.spy((next: INext<Network>) => next.next());
 
-      network
-        .getSurrogate()
-        .registerPreHook('connect', [func1, func2, func3, func4]);
+      network.getSurrogate().registerPreHook('connect', [func1, func2, func3, func4]);
       network.connect();
 
       sinon.assert.calledOnce(func1);
@@ -109,9 +104,7 @@ describe('Next', () => {
       const func4 = sinon.spy((next: INext<Network>) => next.next());
       const func5 = sinon.spy((next: INext<Network>) => next.next());
 
-      network
-        .getSurrogate()
-        .registerPreHook('connect', [func1, func2, func3, func4, func5]);
+      network.getSurrogate().registerPreHook('connect', [func1, func2, func3, func4, func5]);
       network.connect();
 
       sinon.assert.calledOnce(func1);
@@ -128,9 +121,7 @@ describe('Next', () => {
       const func3 = sinon.spy((next: INext<Network>) => next.next());
       const func4 = sinon.spy((next: INext<Network>) => next.next());
 
-      network
-        .getSurrogate()
-        .registerPreHook('connect', [func1, func2, func3, func4]);
+      network.getSurrogate().registerPreHook('connect', [func1, func2, func3, func4]);
 
       network.connect();
 

@@ -1,6 +1,7 @@
-import { SurrogateProxy, Context } from '../lib';
-import { SurrogateCallback } from '../types';
-import { INext } from './inext.interface';
+import { SurrogateProxy } from '../../surrogate-proxy';
+import { SurrogateCallback } from '../../types';
+import { Context } from '../../context';
+import { INext } from './iNext';
 
 export interface INextConstruct<T extends object> {
   new (

@@ -1,4 +1,4 @@
-import { INext, NextOptions } from '../interfaces';
+import { INext, NextOptions } from './interfaces';
 import { BaseNext } from './base-next';
 
 export class FinalNext<T extends object> extends BaseNext<T> implements INext<T> {

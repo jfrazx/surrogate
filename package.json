@@ -9,7 +9,7 @@
     "test": "mocha",
     "test:watch": "mocha --watch",
     "tsc": "tsc",
-    "prebuild": "rimraf dist",
+    "prebuild": "rimraf build",
     "build": "tsc",
     "lint": "tslint -p . --exclude **/*.d.ts",
     "coverage:check": "nyc check-coverage",

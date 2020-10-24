@@ -1,4 +1,5 @@
-import { Container, PRE_HOOK, POST_HOOK } from '../lib';
+import { PRE_HOOK, POST_HOOK } from '../which';
+import { Container } from '../container';
 
 export interface WhichContainers {
   [PRE_HOOK]: Container[];

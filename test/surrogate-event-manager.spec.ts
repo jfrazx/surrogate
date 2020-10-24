@@ -1,11 +1,15 @@
+import { Network } from './lib/network';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { SurrogateEventManager } from '../src/lib/surrogate-event-manager';
-import { surrogateWrap, Surrogate, PRE_HOOK, POST_HOOK } from '../src';
-import { INext } from '../src/interfaces';
-import { Network } from './lib/network';
-import { Which } from 'src/types';
+import {
+  Which,
+  INext,
+  PRE_HOOK,
+  Surrogate,
+  POST_HOOK,
+  surrogateWrap,
+  SurrogateEventManager,
+} from '../src';
 
 describe('Surrogate Event Manager', () => {
   let network: Surrogate<Network>;
@@ -38,9 +42,7 @@ describe('Surrogate Event Manager', () => {
     it('should retrieve event handlers', () => {
       const surrogate = network.getSurrogate();
 
-      surrogate
-        .registerPreHook('connect', () => {})
-        .registerPostHook('connect', () => {});
+      surrogate.registerPreHook('connect', () => {}).registerPostHook('connect', () => {});
 
       const events = surrogate.getEventHandlers('connect');
 
@@ -87,13 +89,10 @@ describe('Surrogate Event Manager', () => {
 
     it('should register multiple pre hooks', () => {
       const name = network.connect.name;
-      const func1 = sinon.spy((next: INext) => next.next());
+      const func1 = sinon.spy((next: INext<Network>) => next.next());
       const func2 = sinon.spy(() => {});
 
-      network
-        .getSurrogate()
-        .registerPreHook(name, func1)
-        .registerPreHook(name, func2);
+      network.getSurrogate().registerPreHook(name, func1).registerPreHook(name, func2);
       network.connect();
 
       sinon.assert.calledOnce(func1);
@@ -113,13 +112,10 @@ describe('Surrogate Event Manager', () => {
 
     it('should register multiple post hooks', () => {
       const name = network.disconnect.name;
-      const func1 = sinon.spy((next: INext) => next.next());
+      const func1 = sinon.spy((next: INext<Network>) => next.next());
       const func2 = sinon.spy(() => {});
 
-      network
-        .getSurrogate()
-        .registerPostHook(name, func1)
-        .registerPostHook(name, func2);
+      network.getSurrogate().registerPostHook(name, func1).registerPostHook(name, func2);
 
       network.disconnect();
 
@@ -130,9 +126,9 @@ describe('Surrogate Event Manager', () => {
 
     it('should register multiple pre and post hooks', () => {
       const name = network.connect.name;
-      const func1 = sinon.spy((next: INext) => next.next());
-      const func2 = sinon.spy((next: INext) => next.next());
-      const func3 = sinon.spy(function (next: INext) {
+      const func1 = sinon.spy((next: INext<Network>) => next.next());
+      const func2 = sinon.spy((next: INext<Network>) => next.next());
+      const func3 = sinon.spy(function (next: INext<Network>) {
         next.next();
       });
       const func4 = sinon.spy(function () {});
@@ -214,9 +210,7 @@ describe('Surrogate Event Manager', () => {
       const func1 = () => {};
       const func2 = () => {};
 
-      surrogate
-        .registerPostHook('connect', func1)
-        .registerPostHook('connect', func2);
+      surrogate.registerPostHook('connect', func1).registerPostHook('connect', func2);
 
       const { [POST_HOOK]: postPre } = surrogate.getEventHandlers('connect');
       expect(postPre).to.have.lengthOf(2);

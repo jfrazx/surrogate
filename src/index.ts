@@ -1,6 +1,5 @@
-import { SurrogateOptions } from './interfaces';
-import { SurrogateProxy } from './lib';
-import { Surrogate } from './types';
+import { SurrogateProxy } from './lib/surrogate-proxy';
+import { SurrogateOptions, Surrogate } from './lib';
 
 /**
  * Simple function to create a Surrogate wrapped object
@@ -19,5 +18,3 @@ export function surrogateWrap<T extends object>(
 }
 
 export * from './lib';
-export { Surrogate, SurrogateEvents } from './types';
-export { SurrogateOptions, SurrogateEventHandler, INext, Hooks } from './interfaces';

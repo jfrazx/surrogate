@@ -1,4 +1,5 @@
-import { INext } from '../../src/interfaces/inext.interface';
+import { INext } from '../../src';
+
 export class Network {
   private enabled: boolean = true;
   private connected: boolean = false;

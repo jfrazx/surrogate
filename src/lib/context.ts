@@ -1,4 +1,6 @@
-import { Property, BoundContext } from '../types';
+import { Property } from './types';
+
+export type BoundContext<T extends object> = () => Context<T>;
 
 export class Context<T extends object> {
   constructor(public target: T, public event: Property, public original: Function) {}

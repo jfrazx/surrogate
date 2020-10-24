@@ -1,5 +1,5 @@
-import { NextOptions } from './next-options.interface';
-import { Context } from '../lib';
+import { NextOptions } from './nextOptions';
+import { Context } from '../../context';
 
 export interface INext<T extends object> {
   instance: T;
