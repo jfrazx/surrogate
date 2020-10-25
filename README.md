@@ -1,12 +1,12 @@
 # Surrogate
 
-Simple pre and post hosts using ES6 Proxy
+Easily create `Pre` and `Post` hooks on JavaScript objects.
 
 ## Install
 
 Currently unpublished..
 
-## Usage (eventually...)
+## Usage
 
 ```typescript
 import { surrogateWrap, Surrogate } from 'some-future-published-package';
