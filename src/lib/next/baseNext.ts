@@ -1,6 +1,6 @@
 import { Container, ContainerGenerator } from '../container';
 import { SurrogateMethodOptions } from '../interfaces';
-import { SurrogateProxy } from '../surrogate-proxy';
+import { SurrogateProxy } from '../surrogateProxy';
 import { INext, NextOptions } from './interfaces';
 import { Context } from '../context';
 
@@ -72,4 +72,4 @@ export abstract class BaseNext<T extends object> implements INext<T> {
 }
 
 import { Next } from './next';
-import { FinalNext } from './final-next';
+import { FinalNext } from './finalNext';

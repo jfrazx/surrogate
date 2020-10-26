@@ -1,4 +1,4 @@
-import { Property } from './types';
+import { Property } from './interfaces/property';
 
 export type BoundContext<T extends object> = () => Context<T>;
 

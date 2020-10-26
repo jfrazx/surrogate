@@ -1,4 +1,4 @@
-import { SurrogateEventManager } from '../surrogate-event-manager';
+import { SurrogateEventManager } from '../surrogateEventManager';
 
 /**
  * Interface containing Surrogate hooks
@@ -10,3 +10,5 @@ import { SurrogateEventManager } from '../surrogate-event-manager';
 export interface Hooks<T extends object> {
   getSurrogate(): SurrogateEventManager<T>;
 }
+
+export type Surrogate<T extends object> = Hooks<T> & T;

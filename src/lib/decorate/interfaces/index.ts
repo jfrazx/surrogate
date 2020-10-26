@@ -1,5 +1,4 @@
-import { SurrogateMethodOptions } from '../../interfaces';
-import { SurrogateCallback } from '../../types';
+import { SurrogateMethodOptions, SurrogateCallback } from '../../interfaces';
 import { Which } from '../../which';
 
 export interface SurrogateDecoratorOptions<T extends object> {

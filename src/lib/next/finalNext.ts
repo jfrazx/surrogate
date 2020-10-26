@@ -1,5 +1,5 @@
 import { INext, NextOptions } from './interfaces';
-import { BaseNext } from './base-next';
+import { BaseNext } from './baseNext';
 
 export class FinalNext<T extends object> extends BaseNext<T> implements INext<T> {
   skipWith(_times?: number, ...args: any[]): void {

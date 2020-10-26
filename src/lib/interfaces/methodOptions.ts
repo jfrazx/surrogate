@@ -1,9 +1,9 @@
-import { MethodWrapper } from '../types';
+export type MethodWrapper = 'none' | 'observable' | 'async';
 
 export interface SurrogateMethodOptions {
-  wrapper?: MethodWrapper;
   useNext?: boolean;
-  ignoreErrors?: boolean;
   passErrors?: boolean;
+  ignoreErrors?: boolean;
   passInstance?: boolean;
+  wrapper?: MethodWrapper;
 }

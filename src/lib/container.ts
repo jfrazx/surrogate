@@ -1,5 +1,4 @@
-import { SurrogateMethodOptions } from './interfaces';
-import { SurrogateCallback } from './types';
+import { SurrogateMethodOptions, SurrogateCallback } from './interfaces';
 
 export class Container<T extends object = any> {
   constructor(

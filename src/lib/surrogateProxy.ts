@@ -1,11 +1,14 @@
-import { SurrogateEventManager } from './surrogate-event-manager';
-import { Target, Surrogate, Handle, Property } from './types';
-import { SurrogateOptions } from './interfaces';
+import { SurrogateEventManager } from './surrogateEventManager';
+import { SurrogateOptions, Surrogate } from './interfaces';
+import { Property } from './interfaces/property';
 import { PRE_HOOK, POST_HOOK } from './which';
 import { Next, NextChain } from './next';
 import { isFunction } from './helpers';
 import { Container } from './container';
 import { Context } from './context';
+
+type Handle = (...args: any[]) => any;
+type Target<T extends object> = WeakMap<any, SurrogateEventManager<T>>;
 
 /**
  * Surrogate is a ProxyHandler aimed at providing simple pre and post hooks for object methods.

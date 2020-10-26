@@ -1,5 +1,5 @@
-import { SurrogateProxy } from '../../surrogate-proxy';
-import { SurrogateCallback } from '../../types';
+import { SurrogateProxy } from '../../surrogateProxy';
+import { SurrogateCallback } from '../../interfaces';
 import { Context } from '../../context';
 import { INext } from './iNext';
 
