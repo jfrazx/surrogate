@@ -1,4 +1,4 @@
-import { SurrogateProxy } from './lib/surrogate-proxy';
+import { SurrogateProxy } from './lib/surrogateProxy';
 import { SurrogateOptions, Surrogate } from './lib';
 
 /**

@@ -1,7 +1,7 @@
 import { Container, ContainerGenerator } from '../container';
-import { SurrogateProxy } from '../surrogate-proxy';
+import { SurrogateProxy } from '../surrogateProxy';
 import { NextOptions, INext } from './interfaces';
-import { BaseNext } from './base-next';
+import { BaseNext } from './baseNext';
 import { Context } from '../context';
 
 const nextOptionDefaults: NextOptions = { error: null, using: [], bail: false };

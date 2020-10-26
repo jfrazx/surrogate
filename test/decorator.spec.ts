@@ -1,6 +1,6 @@
 import { SurrogateDelegate, SurrogatePre, SurrogatePost } from '../src';
-import { expect } from 'chai';
 import { Thing } from './lib/thing';
+import { expect } from 'chai';
 
 describe('SurrogateDecorators', () => {
   describe('SurrogateDelegate', () => {

@@ -1,7 +1,7 @@
-import { SurrogateEventManager } from '../surrogate-event-manager';
+import { SurrogateEventManager } from '../surrogateEventManager';
 import { SurrogateDecoratorOptions } from './interfaces';
 import { Which, POST_HOOK, PRE_HOOK } from '../which';
-import { SurrogateProxy } from '../surrogate-proxy';
+import { SurrogateProxy } from '../surrogateProxy';
 import { SurrogateOptions } from '../interfaces';
 import { wrapDefaults } from '@status/defaults';
 

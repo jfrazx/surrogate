@@ -1,10 +1,14 @@
-import { EventMap, WhichContainers, SurrogateMethodOptions } from './interfaces';
-import { Property, SurrogateCallback } from './types';
+import { WhichContainers, SurrogateMethodOptions, SurrogateCallback } from './interfaces';
 import { PRE_HOOK, POST_HOOK, Which } from './which';
-import { SurrogateProxy } from './surrogate-proxy';
+import { SurrogateProxy } from './surrogateProxy';
+import { Property } from './interfaces/property';
 import { Defaults } from '@status/defaults';
 import { asArray } from '@jfrazx/asarray';
 import { Container } from './container';
+
+export interface EventMap {
+  [event: string]: WhichContainers;
+}
 
 export class SurrogateEventManager<T extends object = any> {
   private readonly events: EventMap;
