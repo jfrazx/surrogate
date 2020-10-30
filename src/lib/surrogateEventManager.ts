@@ -60,15 +60,11 @@ export class SurrogateEventManager<T extends object = any> {
     handlers: SurrogateCallback<T>[],
     options: SurrogateMethodOptions = {},
   ): SurrogateEventManager<T> {
-    const eventHandlers: Container[] = this.getEventHandlersFor(event, type);
+    const currentContainers: Container[] = this.getEventHandlersFor(event, type);
+    const containers = handlers.map((handler) => new Container(handler, options));
+    const allContainers = [...currentContainers, ...containers];
 
-    const containers = handlers.reduce(
-      (memo, handler) => [...memo, new Container(handler, options)],
-      eventHandlers,
-    );
-
-    this.setEventHandlersFor(event, type, containers);
-    this.proxy.bindHandler(event, this.target);
+    this.setEventHandlersFor(event, type, allContainers);
 
     return this;
   }
@@ -182,14 +178,14 @@ export class SurrogateEventManager<T extends object = any> {
   private deregisterHookFor(
     event: Property,
     which: Which,
-    handler: SurrogateCallback<T>,
+    handlerToRemove: SurrogateCallback<T>,
   ): SurrogateEventManager {
     const containers = this.getEventHandlersFor(event, which);
 
     return this.setEventHandlersFor(
       event,
       which,
-      containers.filter(({ callback }) => callback !== handler),
+      containers.filter(({ handler }) => handler !== handlerToRemove),
     );
   }
 

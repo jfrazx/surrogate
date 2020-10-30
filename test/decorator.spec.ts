@@ -1,5 +1,5 @@
 import { SurrogateDelegate, SurrogatePre, SurrogatePost } from '../src';
-import { Thing } from './lib/thing';
+import { Guitar } from './lib/guitar';
 import { expect } from 'chai';
 
 describe('SurrogateDecorators', () => {
@@ -15,9 +15,9 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should run pre hooks', () => {
-      const thing = new Thing();
+      const guitar = new Guitar();
 
-      thing.connect();
+      guitar.play();
     });
   });
 

@@ -80,10 +80,6 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return Reflect.get(target, event);
   }
 
-  isBound(func: Function) {
-    return this.isHandlerBound(func) || Context.isAlreadyContextBound(func);
-  }
-
   surrogateHandler(context: Context<T>, ...args: any[]): any {
     const chain = this.createNextChain(context, args);
 
@@ -143,8 +139,8 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
       .get(target)
       .getEventHandlers(event);
 
-    const postChain = Next.for(this, context, this.containerGenerator(post));
-    const preChain = Next.for(this, context, this.containerGenerator(pre, original));
+    const postChain = Next.for(this, context, POST_HOOK, this.containerGenerator(post));
+    const preChain = Next.for(this, context, PRE_HOOK, this.containerGenerator(pre, original));
 
     return new NextChain(preChain, postChain, original, args);
   }

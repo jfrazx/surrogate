@@ -3,7 +3,7 @@ import { Which } from '../../which';
 
 export interface SurrogateDecoratorOptions<T extends object> {
   handler: SurrogateCallback<T> | SurrogateCallback<T>[];
-  options?: SurrogateMethodOptions;
+  options?: SurrogateMethodOptions<T>;
 }
 
 export type SurrogateDelegateOptions<T extends object> =
@@ -12,12 +12,12 @@ export type SurrogateDelegateOptions<T extends object> =
   | SurrogateDecoratorOptions<T>
   | SurrogateDecoratorOptions<T>[];
 
-export interface NextHookOptions {
+export interface NextHookOptions<T extends object> {
   action: string;
   condition?: Function;
-  options?: SurrogateMethodOptions;
+  options?: SurrogateMethodOptions<T>;
 }
 
-export interface NextForOptions extends NextHookOptions {
+export interface NextForOptions<T extends object> extends NextHookOptions<T> {
   type: Which;
 }

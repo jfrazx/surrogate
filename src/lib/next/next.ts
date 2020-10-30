@@ -1,21 +1,21 @@
 import { Container, ContainerGenerator } from '../container';
 import { SurrogateProxy } from '../surrogateProxy';
-import { NextOptions, INext } from './interfaces';
 import { BaseNext } from './baseNext';
 import { Context } from '../context';
-
-const nextOptionDefaults: NextOptions = { error: null, using: [], bail: false };
+import { INext } from './interfaces';
+import { Which } from '../which';
 
 export class Next<T extends object> extends BaseNext<T> implements INext<T> {
   constructor(
     proxy: SurrogateProxy<T>,
     context: Context<T>,
+    type: Which,
     iterator: Generator<Container, Container, ContainerGenerator>,
     container: Container,
   ) {
-    super(proxy, context, iterator, container);
+    super(proxy, context, type, iterator, container);
 
-    this._next = Next.for(proxy, context, iterator);
+    this._next = Next.for(proxy, context, type, iterator);
   }
 
   skipWith(times = 1, ...args: any[]): void {
@@ -24,23 +24,5 @@ export class Next<T extends object> extends BaseNext<T> implements INext<T> {
     }
 
     return this.next({ using: args });
-  }
-
-  next(options: NextOptions = {}) {
-    const useOptions = { ...nextOptionDefaults, ...options };
-    const { error, using, bail } = useOptions;
-
-    if (error) {
-      return this.nextError(error, ...using);
-    }
-
-    if (bail) {
-      // stop processing
-    }
-
-    const { callback } = this.container;
-    const { target } = this.context;
-
-    callback.call(target, this._next, ...using);
   }
 }

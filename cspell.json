@@ -1,11 +1,12 @@
 {
   "version": "0.1",
   "language": "en",
-  "words": ["codecov", "klass"],
+  "words": ["codecov", "klass", "sloc", "deregisters", "lcov", "prettierrc"],
   "ignoreRegExpList": [
-    "/from '[a-zA-Z]'/",
+    "/\"(pre|post)[a-zA-Z]+\":/",
+    "from '(@|\\./)?[/a-zA-Z0-9]+'",
     "/\"name\": \"[a-zA-Z]+\"/",
-    "/\"[a-zA-Z]*\": \"1.0.0\"/",
+    "/\"@?[a-zA-Z0-9]+(/[a-zA-Z0-9]+)?\": \"\\^?[\\d+\\.]+\"/",
     "/YY[YMD hms]+/"
   ]
 }

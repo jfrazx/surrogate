@@ -12,3 +12,4 @@ export interface Hooks<T extends object> {
 }
 
 export type Surrogate<T extends object> = Hooks<T> & T;
+export type Unwrapped<T extends object> = Omit<T, 'getSurrogate'>;
