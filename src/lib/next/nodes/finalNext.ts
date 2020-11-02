@@ -1,4 +1,4 @@
-import { INext, NextOptions } from './interfaces';
+import { INext, NextOptions } from '../interfaces';
 import { BaseNext } from './baseNext';
 
 export class FinalNext<T extends object> extends BaseNext<T> implements INext<T> {
@@ -10,5 +10,7 @@ export class FinalNext<T extends object> extends BaseNext<T> implements INext<T>
     if (error) {
       return this.nextError(error, ...using);
     }
+
+    this.controller.complete(this, using);
   }
 }

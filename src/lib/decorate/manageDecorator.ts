@@ -15,8 +15,8 @@ export const manageDecorator = <T extends object>(
   };
 };
 
-const organizeOptions = (options: SurrogateDelegateOptions<any>) => {
-  return asArray(options)
+const organizeOptions = (delegateOptions: SurrogateDelegateOptions<any>) => {
+  return asArray(delegateOptions)
     .map<SurrogateDecoratorOptions<any>[]>((value) => {
       if (isFunction(value)) {
         return [{ handler: value, options: {} }];

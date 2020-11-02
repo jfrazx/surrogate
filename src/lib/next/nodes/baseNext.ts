@@ -1,11 +1,10 @@
-import { Container, ContainerGenerator } from '../container';
-import { SurrogateMethodOptions } from '../interfaces';
-import { SurrogateProxy } from '../surrogateProxy';
-import { INext, NextOptions } from './interfaces';
-import { Unwrapped } from '../interfaces/hooks';
+import { SurrogateMethodOptions, Unwrapped } from '../../interfaces';
+import { IContainer, ContainerGenerator } from '../../container';
+import { INext, NextOptions, NextNode } from '../interfaces';
+import { SurrogateProxy } from '../../surrogateProxy';
 import { asArray } from '@jfrazx/asarray';
-import { Context } from '../context';
-import { Which } from '../which';
+import { Context } from '../../context';
+import { Execution } from '../context';
 
 const defaultErrorOptions: SurrogateMethodOptions = {
   passErrors: false,
@@ -13,35 +12,39 @@ const defaultErrorOptions: SurrogateMethodOptions = {
   passInstance: false,
 };
 
-const nextOptionDefaults: NextOptions = {
-  error: null,
-  using: [],
-  bail: false,
-};
+interface NextConstruct<T extends object> {
+  new (
+    proxy: SurrogateProxy<T>,
+    context: Context<T>,
+    controller: Execution<T>,
+    generator: Generator<IContainer<T>, IContainer<T>, ContainerGenerator<T>>,
+    container: IContainer<T>,
+  ): NextNode<T>;
+}
 
 export abstract class BaseNext<T extends object> implements INext<T> {
-  protected _next: INext<T> = null;
+  public nextNode: NextNode<T> = null;
   public didBail = false;
 
   constructor(
     protected proxy: SurrogateProxy<T>,
     public context: Context<T>,
-    protected type: Which,
-    protected iterator: Generator<Container<T>, Container<T>, ContainerGenerator>,
-    protected container: Container<T>,
+    public controller: Execution<T>,
+    protected generator: Generator<IContainer<T>, IContainer<T>, ContainerGenerator<T>>,
+    protected container: IContainer<T>,
   ) {}
 
-  static for(
-    proxy: SurrogateProxy<any>,
-    context: Context<any>,
-    type: Which,
-    iterator: Generator<Container, Container, ContainerGenerator>,
-  ): INext<any> {
-    const { value, done } = iterator.next();
+  static for<T extends object>(
+    proxy: SurrogateProxy<T>,
+    context: Context<T>,
+    controller: Execution<T>,
+    generator: Generator<IContainer<T>, IContainer<T>, ContainerGenerator<T>>,
+  ): NextNode<T> {
+    const { value, done } = generator.next();
 
-    return done
-      ? new FinalNext(proxy, context, type, iterator, value)
-      : new Next(proxy, context, type, iterator, value);
+    const UseNext: NextConstruct<T> = done ? FinalNext : (Next as any);
+
+    return new UseNext(proxy, context, controller, generator, value as any);
   }
 
   skip(times: number = 1): void {
@@ -61,7 +64,7 @@ export abstract class BaseNext<T extends object> implements INext<T> {
       });
     }
 
-    this.iterator.throw(error);
+    this.generator.throw(error);
   }
 
   protected determineErrorArgs(
@@ -89,28 +92,19 @@ export abstract class BaseNext<T extends object> implements INext<T> {
   }
 
   get instance(): Unwrapped<T> {
-    return this.context.target;
+    return this.context.target as Unwrapped<T>;
   }
 
-  next(nextOptions: NextOptions = {}): void {
-    const useNextOptions = { ...nextOptionDefaults, ...nextOptions };
-    const { error, using, bail } = useNextOptions;
-
-    if (error) {
-      return this.nextError(error, ...using);
+  addNext(next: NextNode<T>) {
+    if (this.nextNode) {
+      return this.nextNode.addNext(next);
     }
 
-    if (bail) {
-      this.didBail = bail;
-    }
-
-    const { handler } = this.container;
-    const { target } = this.context;
-
-    this.shouldRun() ? handler.call(target, this._next, ...using) : this.skip();
+    this.nextNode = next;
   }
 
   abstract skipWith(times?: number, ...args: any[]): void;
+  abstract next(options?: NextOptions): void;
 }
 
 import { Next } from './next';

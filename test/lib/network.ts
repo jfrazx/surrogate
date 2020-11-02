@@ -26,7 +26,7 @@ export class Network {
     this.enabled = false;
   }
 
-  connect(): void {
+  connect() {
     console.log('connecting to somewhere...');
 
     this.connected = true;

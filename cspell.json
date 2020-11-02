@@ -1,7 +1,7 @@
 {
   "version": "0.1",
   "language": "en",
-  "words": ["codecov", "klass", "sloc", "deregisters", "lcov", "prettierrc"],
+  "words": ["codecov", "klass", "sloc", "deregisters", "lcov", "prettierrc", "proxied"],
   "ignoreRegExpList": [
     "/\"(pre|post)[a-zA-Z]+\":/",
     "from '(@|\\./)?[/a-zA-Z0-9]+'",

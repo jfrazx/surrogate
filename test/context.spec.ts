@@ -1,5 +1,6 @@
 import { Context } from '../src/lib/context';
 import { Network } from './lib/network';
+import { Surrogate } from '../src';
 import { expect } from 'chai';
 
 describe('Context', () => {
@@ -8,7 +9,7 @@ describe('Context', () => {
 
   beforeEach(() => {
     network = new Network();
-    context = new Context(network, 'connect', network.connect);
+    context = new Context(network, network as Surrogate<Network>, 'connect', network.connect);
   });
 
   it('should be an instance of Context', () => {
