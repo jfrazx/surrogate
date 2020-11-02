@@ -1,4 +1,4 @@
-import { Unwrapped } from './hooks';
+import { Unwrapped } from './surrogate';
 
 export type MethodWrapper = 'none' | 'async';
 
