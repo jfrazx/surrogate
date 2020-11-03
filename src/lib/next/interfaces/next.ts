@@ -7,6 +7,11 @@ export interface INext<T extends object> {
   context: Context<T>;
   instance: Unwrapped<T>;
   skip(times?: number): void;
-  skipWith(times?: number, ...args: any[]): void;
   next({ error, using }?: NextOptions): void;
+  skipWith(times?: number, ...args: any[]): void;
+}
+
+export interface NextNode<T extends object> extends INext<T> {
+  addNext(next: NextNode<T>): void;
+  nextNode: NextNode<T>;
 }

@@ -1,5 +1,5 @@
 import { SurrogateMethodOptions, SurrogateCallback } from '../../interfaces';
-import { Which } from '../../which';
+import { Whichever } from '../../which';
 
 export interface SurrogateDecoratorOptions<T extends object> {
   handler: SurrogateCallback<T> | SurrogateCallback<T>[];
@@ -19,5 +19,5 @@ export interface NextHookOptions<T extends object> {
 }
 
 export interface NextForOptions<T extends object> extends NextHookOptions<T> {
-  type: Which;
+  type: Whichever;
 }

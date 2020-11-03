@@ -1,10 +1,10 @@
+import { containerGenerator, IContainer, MethodContainer } from './container';
 import { SurrogateEventManager } from './surrogateEventManager';
+import { Next, ExecutionContext, Execution } from './next';
 import { SurrogateOptions, Surrogate } from './interfaces';
 import { Property } from './interfaces/property';
+import { isFunction, isAsync } from './helpers';
 import { PRE_HOOK, POST_HOOK } from './which';
-import { Next, NextChain } from './next';
-import { isFunction } from './helpers';
-import { Container } from './container';
 import { Context } from './context';
 
 type Handle = (...args: any[]) => any;
@@ -31,6 +31,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   get<K extends keyof T>(
     target: T,
     event: Property,
+    receiver: Surrogate<T>,
   ): T[K] | SurrogateEventManager<T> | Handle {
     if (this.isGetSurrogate(event)) {
       return this.retrieveEventManager(target);
@@ -42,7 +43,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
       return original;
     }
 
-    return this.bindHandler(event, target);
+    return this.bindHandler(event, target, receiver);
   }
 
   destroy(target: T): T {
@@ -66,13 +67,13 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return new Proxy(object, new SurrogateProxy(object, options)) as Surrogate<T>;
   }
 
-  bindHandler(event: Property, target: T) {
+  bindHandler(event: Property, target: T, receiver: Surrogate<T>) {
     const original = Reflect.get(target, event);
 
     if (!this.isHandlerBound(original)) {
       const context = Context.isAlreadyContextBound<T>(original)
         ? original()
-        : new Context(target, event, original);
+        : new Context(target, receiver, event, original);
 
       Reflect.set(target, event, this.surrogateHandler.bind(this, context));
     }
@@ -81,12 +82,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   }
 
   surrogateHandler(context: Context<T>, ...args: any[]): any {
-    const chain = this.createNextChain(context, args);
-
-    /**
-     * @todo create execution context
-     */
-    return chain.start();
+    return this.createExecutionContext(context, args).start();
   }
 
   private isGetSurrogate(event: Property) {
@@ -133,23 +129,26 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return this;
   }
 
-  private createNextChain(context: Context<T>, args: any[]): NextChain<T> {
+  private createExecutionContext(context: Context<T>, args: any[]): Execution<T> {
     const { target, event, original } = context;
     const { [PRE_HOOK]: pre, [POST_HOOK]: post } = this.targets
       .get(target)
       .getEventHandlers(event);
 
-    const postChain = Next.for(this, context, POST_HOOK, this.containerGenerator(post));
-    const preChain = Next.for(this, context, PRE_HOOK, this.containerGenerator(pre, original));
+    const hasAsync = [...pre, ...post].some(
+      ({ handler, options }) => isAsync(handler) || options?.wrapper === 'async',
+    );
+    const executionContext = ExecutionContext.for<T>(original, args, hasAsync);
+    const methodContainer = new MethodContainer(original, args);
 
-    return new NextChain(preChain, postChain, original, args);
-  }
+    const postChain = Next.for(this, context, executionContext, containerGenerator(post));
+    const preChain = Next.for(
+      this,
+      context,
+      executionContext,
+      containerGenerator(pre, methodContainer as IContainer<T>),
+    );
 
-  private *containerGenerator(containers: Container<T>[], original?: Function) {
-    for (const container of containers) {
-      yield container;
-    }
-
-    return original ? new Container(original as any) : void 0;
+    return executionContext.setHooks(preChain, postChain);
   }
 }
