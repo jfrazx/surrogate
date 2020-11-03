@@ -1,16 +1,20 @@
-import { EventMap, WhichContainers, SurrogateMethodOptions } from './interfaces';
-import { Property, SurrogateCallback } from './types';
+import { WhichContainers, SurrogateMethodOptions, SurrogateCallback } from './interfaces';
 import { PRE_HOOK, POST_HOOK, Which } from './which';
-import { SurrogateProxy } from './surrogate-proxy';
+import { SurrogateProxy } from './surrogateProxy';
+import { Property } from './interfaces/property';
+import { HandlerContainer } from './container';
 import { Defaults } from '@status/defaults';
 import { asArray } from '@jfrazx/asarray';
-import { Container } from './container';
+
+export interface EventMap<T extends object> {
+  [event: string]: WhichContainers<T>;
+}
 
 export class SurrogateEventManager<T extends object = any> {
-  private readonly events: EventMap;
+  private readonly events: EventMap<T>;
 
   constructor(private readonly proxy: SurrogateProxy<T>, private readonly target: T) {
-    this.events = Defaults.wrap<EventMap, WhichContainers>({
+    this.events = Defaults.wrap<EventMap<T>, WhichContainers<T>>({
       defaultValue: {
         [PRE_HOOK]: [],
         [POST_HOOK]: [],
@@ -27,7 +31,7 @@ export class SurrogateEventManager<T extends object = any> {
    * @returns {WhichContainers}
    * @memberof SurrogateEventManager
    */
-  getEventHandlers(event: Property): WhichContainers {
+  getEventHandlers(event: Property): WhichContainers<T> {
     return this.events[event];
   }
 
@@ -56,27 +60,23 @@ export class SurrogateEventManager<T extends object = any> {
     handlers: SurrogateCallback<T>[],
     options: SurrogateMethodOptions = {},
   ): SurrogateEventManager<T> {
-    const eventHandlers: Container[] = this.getEventHandlersFor(event, type);
+    const currentContainers: HandlerContainer<T>[] = this.getEventHandlersFor(event, type);
+    const containers = handlers.map((handler) => new HandlerContainer(handler, type, options));
+    const allContainers = [...currentContainers, ...containers];
 
-    const containers = handlers.reduce(
-      (memo, handler) => [...memo, new Container(handler, options)],
-      eventHandlers,
-    );
-
-    this.setEventHandlersFor(event, type, containers);
-    this.proxy.bindHandler(event, this.target);
+    this.setEventHandlersFor(event, type, allContainers);
 
     return this;
   }
 
-  private getEventHandlersFor(event: Property, which: Which): Container<T>[] {
+  private getEventHandlersFor(event: Property, which: Which): HandlerContainer<T>[] {
     return this.getEventHandlers(event)[which];
   }
 
   private setEventHandlersFor(
     event: Property,
     type: Which,
-    containers: Container<T>[] = [],
+    containers: HandlerContainer<T>[] = [],
   ): SurrogateEventManager {
     this.getEventHandlers(event)[type] = containers;
 
@@ -178,14 +178,14 @@ export class SurrogateEventManager<T extends object = any> {
   private deregisterHookFor(
     event: Property,
     which: Which,
-    handler: SurrogateCallback<T>,
+    handlerToRemove: SurrogateCallback<T>,
   ): SurrogateEventManager {
     const containers = this.getEventHandlersFor(event, which);
 
     return this.setEventHandlersFor(
       event,
       which,
-      containers.filter(({ callback }) => callback !== handler),
+      containers.filter(({ handler }) => handler !== handlerToRemove),
     );
   }
 

@@ -1,5 +1,5 @@
 import { surrogateWrap, Surrogate, INext, Next } from '../src';
-import { FinalNext } from '../src/lib/next/final-next';
+import { FinalNext } from '../src/lib/next/nodes';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
@@ -179,6 +179,7 @@ describe('Next', () => {
         .getSurrogate()
         .registerPreHook('connect', [func1, func2, func3, func4, func5])
         .registerPostHook('connect', [func6, func7, func8, func9]);
+
       network.connect();
 
       sinon.assert.calledOnce(func1);

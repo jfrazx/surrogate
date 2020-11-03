@@ -157,6 +157,8 @@ describe('Surrogate Event Manager', () => {
 
       surrogate.registerPreHook('connect', func1).registerPreHook('connect', func2);
 
+      console.log(surrogate);
+
       const { [PRE_HOOK]: prePre } = surrogate.getEventHandlers('connect');
       expect(prePre).to.have.lengthOf(2);
 
