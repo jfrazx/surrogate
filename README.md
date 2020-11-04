@@ -8,33 +8,125 @@ Currently unpublished..
 
 ## Usage
 
+There are a couple ways to manage Surrogate. The first is to utilize an exposed helper function, `wrapSurrogate`, to wrap objects  
+and register pre and post methods through it.
+
 ```typescript
-import { surrogateWrap, Surrogate } from 'some-future-published-package';
+import { wrapSurrogate, Surrogate, INext } from 'some-future-package';
 
-const instance: Surrogate<MyClass> = surrogateWrap(new MyClass(), options);
+const instance: Surrogate<Guitar> = wrapSurrogate(new Guitar(), options);
 
-instance.registerPreHook('instanceMethod', () => {
-  // do stuff before or after your instance method,
-  // or determine if the chosen method should run at all
-  // return false to stop calling handlers(pre or post)
+instance.getSurrogate().registerPreHook('play', (next: INext<Guitar>) => {
+  // do things before running 'play'
+
+  next.next();
 });
 ```
 
-## Methods
+After wrapping your instance with Surrogate a new method is available, `getSurrogate`, which, when called will return  
+an instance of Surrogate Event Manager that will allow management of pre and post methods.
 
-registerPreHook(method: string, handler: Function): Surrogate\<T\>  
-registerPostHook(method: string, handler: Function): Surrogate\<T\>
+### SurrogateEventManager Methods
 
-Work in progress...  
-deregisterPreHook(method: string, handler: Function): Surrogate\<T\>  
-deregisterPostHook(method: string, handler: Function): Surrogate\<T\>  
-deregisterHooksFor(event: string): Surrogate\<T\>
+registerHook(event: Property, type: Which, handler: SurrogateHandler, options?: SurrogateMethodOptions): SurrogateEventManager  
+registerPreHook(event: Property, handler: SurrogateHandler, options?: SurrogateMethodOptions): SurrogateEventManager  
+registerPostHook(event: Property, handler: SurrogateHandler, options?: SurrogateMethodOptions): SurrogateEventManager  
+deregisterPreHooks(event: Property): SurrogateEventManager  
+deregisterPostHooks(event: Property): SurrogateEventManager  
+deregisterHooks(): SurrogateEventManager  
+getEventHandlers(event: Property): WhichContainers
 
-## Options
+SurrogateHandler is any function that accepts a `Next` object which is used to control flow through pre and post hooks.
 
-useSingleton: boolean # informs Surrogate to operate as a Singleton -- default: `true`  
-suppressWarnings: boolean # suppress certain messages Surrogate may produce -- default: `false`
+### Wrap Surrogate Options
 
-### Information
+useSingleton: boolean - informs Surrogate to operate as a Singleton -- default: `true`
 
-Surrogate holds onto your class instance in a Weakmap, so once you're done with it no cleanup needed.
+## Decorators
+
+Perhaps a more convenient way to register hooks is with decorators.
+
+```typescript
+import { SurrogateDelegate } from 'some-future-package';
+
+@SurrogateDelegate()
+class Guitar {}
+```
+
+`SurrogateDelegate` registers your class and will automatically wrap instances of the class with Surrogate.
+
+Registering hooks:
+
+```typescript
+import { SurrogateDelegate, SurrogatePre, SurrogatePost, INext } from 'some-future-package';
+
+@SurrogateDelegate()
+class Guitar {
+  @SurrogatePre((next: INext<Guitar>) => {
+    console.log(`Tuning guitar`);
+
+    next.next();
+  })
+  @SurrogatePost<Guitar>((next) => {
+    console.log(`Put guitar away`);
+
+    next.next();
+  })
+  play() {
+    console.log(`playing guitar`);
+  }
+}
+```
+
+There may be times when you don't need a particular hook to run.
+
+```typescript
+import { SurrogateDelegate, SurrogatePre, SurrogatePost, INext } from 'some-future-package';
+
+@SurrogateDelegate()
+class Guitar {
+  isTuned = false;
+  isStrung = false;
+  hasBrokenString = false;
+
+  @SurrogatePre<Guitar>([
+    {
+      handler: (next) => {
+        console.log('stringing guitar');
+
+        next.instance.isStrung = true;
+
+        next.next();
+      },
+      options: {
+        runConditions: [(guitar) => !guitar.isStrung],
+      },
+    },
+    {
+      handler: (next) => {
+        const { instance } = next;
+        console.log('tuning guitar');
+
+        instance.isTuned = true;
+
+        next.next({
+          bail: instance.hasBrokenString,
+        });
+      },
+      options: {
+        runConditions: [(guitar) => !guitar.isTuned],
+      },
+    },
+  ])
+  @SurrogatePost({
+    handler: (next: INext<Guitar>) => {
+      console.log('celebrate rocking out');
+
+      next.next();
+    },
+  })
+  play() {
+    console.log(`playing guitar`);
+  }
+}
+```

@@ -13,7 +13,6 @@
     "build": "tsc",
     "prebuild:examples": "rimraf build-examples && npm run build",
     "build:examples": "tsc -p ./examples/tsconfig.json",
-    "lint": "tslint -p . --exclude **/*.d.ts",
     "coverage:check": "nyc check-coverage",
     "coverage:report": "nyc report --reporter=text-lcov > coverage.lcov",
     "coverage:post": "codecov",

@@ -43,9 +43,8 @@ export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
     this.nextNode = next;
   }
 
-  complete(node: NextNode<T>, passedArgs: any[]): void {
+  complete(node: NextNode<T>, _passedArgs: any[]): void {
     this.setNext(node.nextNode);
-    console.info(passedArgs);
   }
 
   setHooks(pre: NextNode<T>, post: NextNode<T>): this {

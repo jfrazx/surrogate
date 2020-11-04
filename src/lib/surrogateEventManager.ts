@@ -1,8 +1,8 @@
-import { WhichContainers, SurrogateMethodOptions, SurrogateCallback } from './interfaces';
+import { WhichContainers, SurrogateMethodOptions, SurrogateHandler } from './interfaces';
 import { PRE_HOOK, POST_HOOK, Which } from './which';
 import { SurrogateProxy } from './surrogateProxy';
 import { Property } from './interfaces/property';
-import { HandlerContainer } from './container';
+import { HandlerContainer } from './containers';
 import { Defaults } from '@status/defaults';
 import { asArray } from '@jfrazx/asarray';
 
@@ -15,6 +15,7 @@ export class SurrogateEventManager<T extends object = any> {
 
   constructor(private readonly proxy: SurrogateProxy<T>, private readonly target: T) {
     this.events = Defaults.wrap<EventMap<T>, WhichContainers<T>>({
+      wrap: Object.create(null),
       defaultValue: {
         [PRE_HOOK]: [],
         [POST_HOOK]: [],
@@ -40,7 +41,7 @@ export class SurrogateEventManager<T extends object = any> {
    *
    * @param {Property} event
    * @param {Which} type
-   * @param {(SurrogateCallback<T> | SurrogateCallback<T>[])} handler
+   * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
    * @param {SurrogateMethodOptions<T>} [options={}]
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
@@ -48,16 +49,50 @@ export class SurrogateEventManager<T extends object = any> {
   registerHook(
     event: Property,
     type: Which,
-    handler: SurrogateCallback<T> | SurrogateCallback<T>[],
+    handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options: SurrogateMethodOptions<T> = {},
   ): SurrogateEventManager<T> {
     return this.setEventHandlers(event, type, asArray(handler), options);
   }
 
+  /**
+   * Register a handler to be called before the chosen method
+   *
+   * @param {Property} event
+   * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
+   * @param {SurrogateMethodOptions<T>} [options]
+   * @returns {SurrogateEventManager}
+   * @memberof SurrogateEventManager
+   */
+  registerPreHook(
+    event: Property,
+    handler: SurrogateHandler<T> | SurrogateHandler<T>[],
+    options?: SurrogateMethodOptions<T>,
+  ): SurrogateEventManager {
+    return this.setEventHandlers(event, PRE_HOOK, asArray(handler), options);
+  }
+
+  /**
+   * * Register a handler to be called after the chosen method
+   *
+   * @param {Property} event
+   * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
+   * @param {SurrogateMethodOptions<T>} [options]
+   * @returns {SurrogateEventManager<T>}
+   * @memberof SurrogateEventManager
+   */
+  registerPostHook(
+    event: Property,
+    handler: SurrogateHandler<T> | SurrogateHandler<T>[],
+    options?: SurrogateMethodOptions<T>,
+  ): SurrogateEventManager<T> {
+    return this.setEventHandlers(event, POST_HOOK, asArray(handler), options);
+  }
+
   private setEventHandlers(
     event: Property,
     type: Which,
-    handlers: SurrogateCallback<T>[],
+    handlers: SurrogateHandler<T>[],
     options: SurrogateMethodOptions<T> = {},
   ): SurrogateEventManager<T> {
     const currentContainers: HandlerContainer<T>[] = this.getEventHandlersFor(event, type);
@@ -81,40 +116,6 @@ export class SurrogateEventManager<T extends object = any> {
     this.getEventHandlers(event)[type] = containers;
 
     return this;
-  }
-
-  /**
-   * Register a handler to be called before the chosen method
-   *
-   * @param {Property} event
-   * @param {(SurrogateCallback<T> | SurrogateCallback<T>[])} handler
-   * @param {SurrogateMethodOptions<T>} [options]
-   * @returns {SurrogateEventManager}
-   * @memberof SurrogateEventManager
-   */
-  registerPreHook(
-    event: Property,
-    handler: SurrogateCallback<T> | SurrogateCallback<T>[],
-    options?: SurrogateMethodOptions<T>,
-  ): SurrogateEventManager {
-    return this.setEventHandlers(event, PRE_HOOK, asArray(handler), options);
-  }
-
-  /**
-   * * Register a handler to be called after the chosen method
-   *
-   * @param {Property} event
-   * @param {(SurrogateCallback<T> | SurrogateCallback<T>[])} handler
-   * @param {SurrogateMethodOptions<T>} [options]
-   * @returns {SurrogateEventManager<T>}
-   * @memberof SurrogateEventManager
-   */
-  registerPostHook(
-    event: Property,
-    handler: SurrogateCallback<T> | SurrogateCallback<T>[],
-    options?: SurrogateMethodOptions<T>,
-  ): SurrogateEventManager<T> {
-    return this.setEventHandlers(event, POST_HOOK, asArray(handler), options);
   }
 
   /**
@@ -144,11 +145,11 @@ export class SurrogateEventManager<T extends object = any> {
    * Deregister a pre handler for a particular event
    *
    * @param {Property} event
-   * @param {SurrogateCallback} handler
+   * @param {SurrogateHandler} handler
    * @returns {SurrogateEventManager}
    * @memberof SurrogateEventManager
    */
-  deregisterPreHook(event: Property, handler: SurrogateCallback<T>): SurrogateEventManager {
+  deregisterPreHook(event: Property, handler: SurrogateHandler<T>): SurrogateEventManager {
     return this.deregisterHookFor(event, PRE_HOOK, handler);
   }
 
@@ -156,11 +157,11 @@ export class SurrogateEventManager<T extends object = any> {
    * Deregister a post handler for a particular event
    *
    * @param {Property} event
-   * @param {SurrogateCallback} handler
+   * @param {SurrogateHandler} handler
    * @returns {SurrogateEventManager}
    * @memberof SurrogateEventManager
    */
-  deregisterPostHook(event: Property, handler: SurrogateCallback<T>): SurrogateEventManager {
+  deregisterPostHook(event: Property, handler: SurrogateHandler<T>): SurrogateEventManager {
     return this.deregisterHookFor(event, POST_HOOK, handler);
   }
 
@@ -178,7 +179,7 @@ export class SurrogateEventManager<T extends object = any> {
   private deregisterHookFor(
     event: Property,
     which: Which,
-    handlerToRemove: SurrogateCallback<T>,
+    handlerToRemove: SurrogateHandler<T>,
   ): SurrogateEventManager {
     const containers = this.getEventHandlersFor(event, which);
 

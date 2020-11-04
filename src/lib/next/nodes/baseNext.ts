@@ -1,5 +1,5 @@
 import { SurrogateMethodOptions, Unwrapped } from '../../interfaces';
-import { IContainer, ContainerGenerator } from '../../container';
+import { IContainer, ContainerGenerator } from '../../containers';
 import { INext, NextOptions, NextNode } from '../interfaces';
 import { SurrogateProxy } from '../../surrogateProxy';
 import { asArray } from '@jfrazx/asarray';
@@ -52,7 +52,6 @@ export abstract class BaseNext<T extends object> implements INext<T> {
   }
 
   nextError(error: Error, ...args: any[]) {
-    console.log(this);
     const { options } = this.container;
     const useOptions = { ...defaultErrorOptions, ...options };
     const useArgs = this.determineErrorArgs(useOptions, error, args);
@@ -64,8 +63,6 @@ export abstract class BaseNext<T extends object> implements INext<T> {
         bail: this.didBail,
       });
     }
-
-    console.log('about to error', error);
 
     this.generator.throw(error);
   }

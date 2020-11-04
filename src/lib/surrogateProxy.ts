@@ -1,4 +1,4 @@
-import { containerGenerator, IContainer, MethodContainer } from './container';
+import { containerGenerator, IContainer, MethodContainer, EmptyContainer } from './containers';
 import { SurrogateEventManager } from './surrogateEventManager';
 import { Next, ExecutionContext, Execution } from './next';
 import { SurrogateOptions, Surrogate } from './interfaces';
@@ -141,12 +141,17 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     const executionContext = ExecutionContext.for<T>(original, args, hasAsync);
     const methodContainer = new MethodContainer(original, args);
 
-    const postChain = Next.for(this, context, executionContext, containerGenerator(post));
     const preChain = Next.for(
       this,
       context,
       executionContext,
       containerGenerator(pre, methodContainer as IContainer<T>),
+    );
+    const postChain = Next.for(
+      this,
+      context,
+      executionContext,
+      containerGenerator(post, new EmptyContainer()),
     );
 
     return executionContext.setHooks(preChain, postChain);

@@ -17,7 +17,6 @@ export class NextContext<T extends object> extends ExecutionContext<T> {
 
       return this.returnValue;
     } catch (error) {
-      console.log(error);
       console.error(
         `SurrogateError: ${error?.message ? error.message : JSON.stringify(error)}`,
       );

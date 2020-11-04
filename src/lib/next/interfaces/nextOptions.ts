@@ -1,5 +1,5 @@
 export interface NextOptions {
-  error?: Error | any;
+  error?: Error | false;
   using?: any[];
   bail?: boolean;
 }

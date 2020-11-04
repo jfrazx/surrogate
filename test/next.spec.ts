@@ -1,4 +1,4 @@
-import { surrogateWrap, Surrogate, INext, Next } from '../src';
+import { wrapSurrogate, Surrogate, INext, Next } from '../src';
 import { FinalNext } from '../src/lib/next/nodes';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
@@ -11,7 +11,7 @@ describe('Next', () => {
 
   beforeEach(() => {
     logError = sinon.stub(console, 'error');
-    network = surrogateWrap(new Network());
+    network = wrapSurrogate(new Network());
     log = sinon.stub(console, 'log');
   });
 
@@ -98,6 +98,23 @@ describe('Next', () => {
       sinon.assert.notCalled(func3);
       sinon.assert.calledOnce(func4);
       sinon.assert.calledOnce(log);
+    });
+
+    it('should skip multiple handlers when called multiple times', () => {
+      const func1 = sinon.spy((next: INext<Network>) => next.skip(2));
+      const func2 = sinon.spy((next: INext<Network>) => next.next());
+      const func3 = sinon.spy((next: INext<Network>) => next.next());
+      const func4 = sinon.spy((next: INext<Network>) => next.next());
+
+      network.getSurrogate().registerPreHook('connect', [func1, func2, func3, func4]);
+      network.connect();
+      network.connect();
+
+      sinon.assert.callCount(func1, 2);
+      sinon.assert.notCalled(func2);
+      sinon.assert.notCalled(func3);
+      sinon.assert.callCount(func4, 2);
+      sinon.assert.callCount(log, 2);
     });
 
     it('should skip and the resume the next chain', () => {
@@ -229,6 +246,97 @@ describe('Next', () => {
       network.getSurrogate().registerPreHook('connect', [func1, func2]);
 
       expect(() => network.connect()).to.throw(error.message);
+      sinon.assert.calledOnce(func1);
+      sinon.assert.calledOnce(func2);
+    });
+
+    it('should ignore error received from Next(PRE)', () => {
+      const error = new Error('fail');
+
+      const func1 = sinon.spy((next: INext<Network>) => {
+        expect(next).to.be.instanceOf(Next);
+
+        next.next({ error });
+      });
+      const func2 = sinon.spy(
+        (next: INext<Network>, passedError: Error, instance: Network) => {
+          expect(passedError).to.equal(error);
+          expect(instance).to.be.undefined;
+
+          next.next();
+        },
+      );
+
+      network.getSurrogate().registerPreHook('connect', [func1, func2], {
+        passErrors: true,
+        ignoreErrors: true,
+      });
+
+      network.connect();
+
+      sinon.assert.calledOnce(func1);
+      sinon.assert.calledOnce(func2);
+    });
+
+    it('should throw error received from Next(POST)', () => {
+      const error = new Error('fail');
+
+      const func1 = sinon.spy((next: INext<Network>) => {
+        expect(next).to.be.instanceOf(Next);
+
+        next.next({ error });
+      });
+      const func2 = sinon.spy((next: INext<Network>) => next.next());
+
+      network.getSurrogate().registerPostHook('connect', [func1, func2]);
+
+      expect(() => network.connect()).to.throw(error.message);
+      sinon.assert.calledOnce(func1);
+      sinon.assert.notCalled(func2);
+    });
+
+    it('should throw an error on FinalNext(POST)', () => {
+      const error = new Error('fail');
+
+      const func1 = sinon.spy((next: INext<Network>) => next.next());
+      const func2 = sinon.spy((next: INext<Network>) => {
+        expect(next).to.be.instanceOf(FinalNext);
+
+        next.next({ error });
+      });
+
+      network.getSurrogate().registerPostHook('connect', [func1, func2]);
+
+      expect(() => network.connect()).to.throw(error.message);
+      sinon.assert.calledOnce(func1);
+      sinon.assert.calledOnce(func2);
+    });
+
+    it('should ignore error received from Next(POST)', () => {
+      const error = new Error('fail');
+
+      const func1 = sinon.spy((next: INext<Network>) => {
+        expect(next).to.be.instanceOf(Next);
+
+        next.next({ error });
+      });
+      const func2 = sinon.spy(
+        (next: INext<Network>, passedError: Error, instance: Network) => {
+          expect(passedError).to.equal(error);
+          expect(instance).to.equal(next.instance);
+
+          next.next();
+        },
+      );
+
+      network.getSurrogate().registerPostHook('connect', [func1, func2], {
+        passErrors: true,
+        ignoreErrors: true,
+        passInstance: true,
+      });
+
+      network.connect();
+
       sinon.assert.calledOnce(func1);
       sinon.assert.calledOnce(func2);
     });

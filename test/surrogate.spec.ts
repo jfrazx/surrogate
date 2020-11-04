@@ -1,4 +1,4 @@
-import { surrogateWrap, Surrogate } from '../src';
+import { wrapSurrogate, Surrogate } from '../src';
 import { Network } from './lib/network';
 import { expect } from 'chai';
 
@@ -6,7 +6,7 @@ describe('SurrogateProxy', () => {
   let network: Surrogate<Network>;
 
   beforeEach(() => {
-    network = surrogateWrap(new Network());
+    network = wrapSurrogate(new Network());
   });
 
   describe('General', () => {

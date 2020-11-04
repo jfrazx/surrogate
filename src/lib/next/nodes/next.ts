@@ -1,4 +1,4 @@
-import { HandlerContainer, ContainerGenerator, IContainer } from '../../container';
+import { HandlerContainer, ContainerGenerator, IContainer } from '../../containers';
 import { SurrogateProxy } from '../../surrogateProxy';
 import { INext, NextOptions } from '../interfaces';
 import { nextOptionDefaults } from './lib';
