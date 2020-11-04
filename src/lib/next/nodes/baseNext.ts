@@ -6,7 +6,7 @@ import { asArray } from '@jfrazx/asarray';
 import { Context } from '../../context';
 import { Execution } from '../context';
 
-const defaultErrorOptions: SurrogateMethodOptions = {
+const defaultErrorOptions: SurrogateMethodOptions<any> = {
   passErrors: false,
   ignoreErrors: false,
   passInstance: false,
@@ -52,6 +52,7 @@ export abstract class BaseNext<T extends object> implements INext<T> {
   }
 
   nextError(error: Error, ...args: any[]) {
+    console.log(this);
     const { options } = this.container;
     const useOptions = { ...defaultErrorOptions, ...options };
     const useArgs = this.determineErrorArgs(useOptions, error, args);
@@ -64,11 +65,13 @@ export abstract class BaseNext<T extends object> implements INext<T> {
       });
     }
 
+    console.log('about to error', error);
+
     this.generator.throw(error);
   }
 
   protected determineErrorArgs(
-    { passErrors, passInstance }: SurrogateMethodOptions,
+    { passErrors, passInstance }: SurrogateMethodOptions<T>,
     error: Error,
     args: any[],
   ) {

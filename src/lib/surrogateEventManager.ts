@@ -41,7 +41,7 @@ export class SurrogateEventManager<T extends object = any> {
    * @param {Property} event
    * @param {Which} type
    * @param {(SurrogateCallback<T> | SurrogateCallback<T>[])} handler
-   * @param {SurrogateMethodOptions} [options={}]
+   * @param {SurrogateMethodOptions<T>} [options={}]
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
@@ -49,7 +49,7 @@ export class SurrogateEventManager<T extends object = any> {
     event: Property,
     type: Which,
     handler: SurrogateCallback<T> | SurrogateCallback<T>[],
-    options: SurrogateMethodOptions = {},
+    options: SurrogateMethodOptions<T> = {},
   ): SurrogateEventManager<T> {
     return this.setEventHandlers(event, type, asArray(handler), options);
   }
@@ -58,7 +58,7 @@ export class SurrogateEventManager<T extends object = any> {
     event: Property,
     type: Which,
     handlers: SurrogateCallback<T>[],
-    options: SurrogateMethodOptions = {},
+    options: SurrogateMethodOptions<T> = {},
   ): SurrogateEventManager<T> {
     const currentContainers: HandlerContainer<T>[] = this.getEventHandlersFor(event, type);
     const containers = handlers.map((handler) => new HandlerContainer(handler, type, options));
@@ -88,14 +88,14 @@ export class SurrogateEventManager<T extends object = any> {
    *
    * @param {Property} event
    * @param {(SurrogateCallback<T> | SurrogateCallback<T>[])} handler
-   * @param {SurrogateMethodOptions} [options]
+   * @param {SurrogateMethodOptions<T>} [options]
    * @returns {SurrogateEventManager}
    * @memberof SurrogateEventManager
    */
   registerPreHook(
     event: Property,
     handler: SurrogateCallback<T> | SurrogateCallback<T>[],
-    options?: SurrogateMethodOptions,
+    options?: SurrogateMethodOptions<T>,
   ): SurrogateEventManager {
     return this.setEventHandlers(event, PRE_HOOK, asArray(handler), options);
   }
@@ -105,14 +105,14 @@ export class SurrogateEventManager<T extends object = any> {
    *
    * @param {Property} event
    * @param {(SurrogateCallback<T> | SurrogateCallback<T>[])} handler
-   * @param {SurrogateMethodOptions} [options]
+   * @param {SurrogateMethodOptions<T>} [options]
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
   registerPostHook(
     event: Property,
     handler: SurrogateCallback<T> | SurrogateCallback<T>[],
-    options?: SurrogateMethodOptions,
+    options?: SurrogateMethodOptions<T>,
   ): SurrogateEventManager<T> {
     return this.setEventHandlers(event, POST_HOOK, asArray(handler), options);
   }

@@ -8,23 +8,23 @@ export const manageDecorator = <T extends object>(
   type: Which,
   options: SurrogateDelegateOptions<T>,
 ) => {
-  const decoratorOptions = organizeOptions(options);
+  const decoratorOptions = organizeOptions<T>(options);
 
   return (target: T, event: string) => {
     SurrogateClassWrapper.addDecorators(target.constructor, type, event, decoratorOptions);
   };
 };
 
-const organizeOptions = (delegateOptions: SurrogateDelegateOptions<any>) => {
+const organizeOptions = <T extends object>(delegateOptions: SurrogateDelegateOptions<T>) => {
   return asArray(delegateOptions)
-    .map<SurrogateDecoratorOptions<any>[]>((value) => {
-      if (isFunction(value)) {
-        return [{ handler: value, options: {} }];
-      }
+    .map<SurrogateDecoratorOptions<T>[]>((value) => {
+      const mapHandlers = (decoratorOptions: SurrogateDecoratorOptions<T>) => {
+        const { handler: handlers, options = {} } = decoratorOptions;
 
-      const { handler: handlers, options = {} } = value;
+        return asArray(handlers).map((handler) => ({ handler, options }));
+      };
 
-      return asArray(handlers).map((handler) => ({ handler, options }));
+      return isFunction(value) ? [{ handler: value, options: {} }] : mapHandlers(value);
     })
     .reduce((acc, option) => [...acc, ...option], []);
 };

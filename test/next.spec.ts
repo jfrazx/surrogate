@@ -7,8 +7,10 @@ import { expect } from 'chai';
 describe('Next', () => {
   let network: Surrogate<Network>;
   let log: sinon.SinonStub<any, void>;
+  let logError: sinon.SinonStub<any, void>;
 
   beforeEach(() => {
+    logError = sinon.stub(console, 'error');
     network = surrogateWrap(new Network());
     log = sinon.stub(console, 'log');
   });
@@ -20,6 +22,7 @@ describe('Next', () => {
   it('should pass Next objects to the callbacks', () => {
     const func1 = sinon.spy(function (next: INext<Network>) {
       expect(next).to.be.instanceOf(Next);
+
       next.next();
     });
 
@@ -192,6 +195,42 @@ describe('Next', () => {
       sinon.assert.calledOnce(func7);
       sinon.assert.notCalled(func8);
       sinon.assert.calledOnce(func9);
+    });
+  });
+
+  describe('Error', () => {
+    it('should throw error received from Next(PRE)', () => {
+      const error = new Error('fail');
+
+      const func1 = sinon.spy((next: INext<Network>) => {
+        expect(next).to.be.instanceOf(Next);
+
+        next.next({ error });
+      });
+      const func2 = sinon.spy((next: INext<Network>) => next.next());
+
+      network.getSurrogate().registerPreHook('connect', [func1, func2]);
+
+      expect(() => network.connect()).to.throw(error.message);
+      sinon.assert.calledOnce(func1);
+      sinon.assert.notCalled(func2);
+    });
+
+    it('should throw an error on FinalNext(PRE)', () => {
+      const error = new Error('fail');
+
+      const func1 = sinon.spy((next: INext<Network>) => next.next());
+      const func2 = sinon.spy((next: INext<Network>) => {
+        expect(next).to.be.instanceOf(FinalNext);
+
+        next.next({ error });
+      });
+
+      network.getSurrogate().registerPreHook('connect', [func1, func2]);
+
+      expect(() => network.connect()).to.throw(error.message);
+      sinon.assert.calledOnce(func1);
+      sinon.assert.calledOnce(func2);
     });
   });
 });

@@ -3,7 +3,7 @@ import { WhichMethod, Which, METHOD } from './which';
 
 export interface IContainer<T extends Object> {
   type: WhichMethod;
-  options: SurrogateMethodOptions;
+  options: SurrogateMethodOptions<T>;
   handler: SurrogateCallback<T> | Function;
 }
 
@@ -11,7 +11,7 @@ export abstract class BaseContainer<T extends object> implements IContainer<T> {
   constructor(
     public handler: SurrogateCallback<T> | Function,
     public type: WhichMethod,
-    public options: SurrogateMethodOptions = { wrapper: 'none' },
+    public options: SurrogateMethodOptions<T> = { wrapper: 'none' },
   ) {}
 }
 
@@ -19,7 +19,7 @@ export class HandlerContainer<T extends object> extends BaseContainer<T> {
   constructor(
     public handler: SurrogateCallback<T>,
     public type: Which,
-    options: SurrogateMethodOptions = {},
+    options: SurrogateMethodOptions<T> = {},
   ) {
     super(handler, type, options);
   }

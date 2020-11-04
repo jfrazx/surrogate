@@ -1,15 +1,10 @@
 import { HandlerContainer, ContainerGenerator, IContainer } from '../../container';
 import { SurrogateProxy } from '../../surrogateProxy';
 import { INext, NextOptions } from '../interfaces';
+import { nextOptionDefaults } from './lib';
 import { Context } from '../../context';
 import { Execution } from '../context';
 import { BaseNext } from './baseNext';
-
-const nextOptionDefaults: NextOptions = {
-  bail: false,
-  error: null,
-  using: [],
-};
 
 export class Next<T extends object> extends BaseNext<T> implements INext<T> {
   constructor(

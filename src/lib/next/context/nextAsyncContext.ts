@@ -23,7 +23,7 @@ export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
 
       try {
         this.runNext();
-      } catch (error: any) {
+      } catch (error) {
         this.rejecter(error);
       }
     }).catch((error) => this.rejecter(error));

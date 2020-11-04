@@ -22,5 +22,5 @@
     "emitDecoratorMetadata": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["test", "node_modules", "coverage", "build", ".nyc_outputs"]
+  "include": ["./src"]
 }
