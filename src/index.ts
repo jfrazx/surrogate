@@ -10,7 +10,7 @@ import { SurrogateOptions, Surrogate } from './lib';
  * @param {SurrogateOptions} [options={}]
  * @returns {Surrogate<T>}
  */
-export function surrogateWrap<T extends object>(
+export function wrapSurrogate<T extends object>(
   object: T,
   options: SurrogateOptions = {},
 ): Surrogate<T> {

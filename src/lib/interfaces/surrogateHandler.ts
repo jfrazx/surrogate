@@ -3,7 +3,7 @@ import { INext } from '../next';
 /**
  *
  */
-export type SurrogateCallback<T extends object> = (
+export type SurrogateHandler<T extends object> = (
   next: INext<T>,
   arg1?: any,
   arg2?: any,

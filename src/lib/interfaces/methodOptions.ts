@@ -4,13 +4,7 @@ export type MethodWrapper = 'none' | 'async';
 
 export type RunCondition<T extends object> = (instance: Unwrapped<T>) => boolean;
 
-export interface SurrogateMethodOptions<T extends object = any> {
-  ignoreErrors?: boolean;
-  passInstance?: boolean;
-  runConditions?: RunCondition<T> | RunCondition<T>[];
-}
-
-export interface SurrogateMethodOptions<T extends object = any> {
+export interface SurrogateMethodOptions<T extends object> {
   /**
    * Pass next object to the Surrogate Method
    */

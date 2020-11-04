@@ -7,7 +7,7 @@ import {
   PRE_HOOK,
   Surrogate,
   POST_HOOK,
-  surrogateWrap,
+  wrapSurrogate,
   SurrogateEventManager,
 } from '../src';
 
@@ -16,7 +16,7 @@ describe('Surrogate Event Manager', () => {
   let log: sinon.SinonStub<any, void>;
 
   beforeEach(() => {
-    network = surrogateWrap(new Network());
+    network = wrapSurrogate(new Network());
     log = sinon.stub(console, 'log');
   });
 
@@ -49,8 +49,8 @@ describe('Surrogate Event Manager', () => {
       expect(events).to.be.an('object');
       expect(Object.getOwnPropertySymbols(events)).to.be.length(2);
 
-      Object.getOwnPropertySymbols(events).forEach((symbol: any) => {
-        const handlers = events[symbol as Which];
+      Object.getOwnPropertySymbols(events).forEach((symbol: Which) => {
+        const handlers = events[symbol];
 
         expect(symbol).to.be.a('symbol');
         expect(handlers).to.be.an('array');
@@ -66,8 +66,8 @@ describe('Surrogate Event Manager', () => {
       expect(events).to.be.an('object');
       expect(Object.getOwnPropertySymbols(events)).to.be.length(2);
 
-      Object.getOwnPropertySymbols(events).forEach((symbol: any) => {
-        const handlers = events[symbol as Which];
+      Object.getOwnPropertySymbols(events).forEach((symbol: Which) => {
+        const handlers = events[symbol];
 
         expect(symbol).to.be.a('symbol');
         expect(handlers).to.be.an('array');

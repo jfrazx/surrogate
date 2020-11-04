@@ -1,12 +1,12 @@
 import { SurrogateMethodOptions, Unwrapped } from '../../interfaces';
-import { IContainer, ContainerGenerator } from '../../container';
+import { IContainer, ContainerGenerator } from '../../containers';
 import { INext, NextOptions, NextNode } from '../interfaces';
 import { SurrogateProxy } from '../../surrogateProxy';
 import { asArray } from '@jfrazx/asarray';
 import { Context } from '../../context';
 import { Execution } from '../context';
 
-const defaultErrorOptions: SurrogateMethodOptions = {
+const defaultErrorOptions: SurrogateMethodOptions<any> = {
   passErrors: false,
   ignoreErrors: false,
   passInstance: false,
@@ -68,7 +68,7 @@ export abstract class BaseNext<T extends object> implements INext<T> {
   }
 
   protected determineErrorArgs(
-    { passErrors, passInstance }: SurrogateMethodOptions,
+    { passErrors, passInstance }: SurrogateMethodOptions<T>,
     error: Error,
     args: any[],
   ) {
