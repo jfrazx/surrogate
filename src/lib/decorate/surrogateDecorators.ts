@@ -1,6 +1,6 @@
+import { manageDecorator, manageAsyncDecorator } from './manageDecorator';
 import { SurrogateClassWrapper } from './surrogateClassWrapper';
 import { SurrogateDelegateOptions } from './interfaces';
-import { manageDecorator } from './manageDecorator';
 import { SurrogateOptions } from '../interfaces';
 import { POST_HOOK, PRE_HOOK } from '../which';
 
@@ -16,4 +16,12 @@ export const SurrogatePre = <T extends object>(options: SurrogateDelegateOptions
 
 export const SurrogatePost = <T extends object>(options: SurrogateDelegateOptions<T>) => {
   return manageDecorator(POST_HOOK, options);
+};
+
+export const SurrogateAsyncPost = <T extends object>(options: SurrogateDelegateOptions<T>) => {
+  return manageAsyncDecorator(POST_HOOK, options);
+};
+
+export const SurrogateAsyncPre = <T extends object>(options: SurrogateDelegateOptions<T>) => {
+  return manageAsyncDecorator(PRE_HOOK, options);
 };

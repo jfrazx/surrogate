@@ -3,7 +3,6 @@ import { NextNode } from '../interfaces';
 
 export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
   private head: NextNode<T>;
-  protected nextNode: NextNode<T>;
 
   public resolver: (value: any) => void;
   private rejecter: (reason: any) => void;
@@ -39,10 +38,6 @@ export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
     return this;
   }
 
-  setNext(next: NextNode<T>) {
-    this.nextNode = next;
-  }
-
   complete(node: NextNode<T>, _passedArgs: any[]): void {
     this.setNext(node.nextNode);
   }
@@ -55,5 +50,7 @@ export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
     return this;
   }
 
-  bail() {}
+  bail(bailWith?: any) {
+    this.resolver(bailWith ?? this.returnValue);
+  }
 }

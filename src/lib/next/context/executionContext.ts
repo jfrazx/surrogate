@@ -7,6 +7,7 @@ interface ExecutionConstruct<T extends object> {
 }
 
 export abstract class ExecutionContext<T extends object> implements Execution<T> {
+  protected nextNode: NextNode<T>;
   protected returnValue: any;
 
   constructor(public originalMethod: Function, public originalArgs: any[]) {}
@@ -26,8 +27,12 @@ export abstract class ExecutionContext<T extends object> implements Execution<T>
     this.returnValue = value;
   }
 
+  setNext(next: NextNode<T>) {
+    this.nextNode = next;
+  }
+
   abstract start(): any;
-  abstract bail(bailWith?: any): any;
+  abstract bail(next: NextNode<T>, bailWith?: any): any;
   abstract setHooks(pre: NextNode<T>, post: NextNode<T>): this;
   abstract complete(node: NextNode<T>, passedArgs: any[]): void;
 }

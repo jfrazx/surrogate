@@ -21,6 +21,8 @@ export class Next<T extends object> extends BaseNext<T> implements INext<T> {
 
   skipWith(times = 1, ...args: any[]): void {
     if (times > 0) {
+      this.controller.setNext(this.nextNode);
+
       return this.nextNode.skipWith(times - 1, ...args);
     }
 
@@ -37,6 +39,8 @@ export class Next<T extends object> extends BaseNext<T> implements INext<T> {
 
     if (bail) {
       this.didBail = bail;
+
+      return this.controller.bail(this, useNextOptions.bailWith);
     }
 
     const { handler } = this.container;
