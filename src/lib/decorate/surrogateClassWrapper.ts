@@ -1,9 +1,9 @@
 import { SurrogateEventManager } from '../surrogateEventManager';
 import { SurrogateDecoratorOptions } from './interfaces';
-import { Which, POST_HOOK, PRE_HOOK } from '../which';
 import { SurrogateProxy } from '../surrogateProxy';
 import { SurrogateOptions } from '../interfaces';
 import { wrapDefaults } from '@status/defaults';
+import { Which, POST, PRE } from '../which';
 
 type Constructor<T> = { new (...args: any[]): T };
 
@@ -12,8 +12,8 @@ interface DecoratedEventMap {
 }
 
 interface DecoratorContainer {
-  [PRE_HOOK]: SurrogateDecoratorOptions<any>[];
-  [POST_HOOK]: SurrogateDecoratorOptions<any>[];
+  [PRE]: SurrogateDecoratorOptions<any>[];
+  [POST]: SurrogateDecoratorOptions<any>[];
 }
 
 export class SurrogateClassWrapper<T extends object> implements ProxyHandler<T> {
@@ -55,15 +55,15 @@ export class SurrogateClassWrapper<T extends object> implements ProxyHandler<T> 
     return new Proxy(klass, new SurrogateClassWrapper(options));
   }
 
-  static addDecorators(
+  static addDecorators<T extends object>(
     klass: object,
     type: Which,
-    event: string,
+    event: keyof T,
     SurrogateDecoratorOptions: SurrogateDecoratorOptions<any>[],
   ) {
     const decoratorMap = this.retrieveTargetDecoratorMap(klass);
 
-    decoratorMap[event][type].push(...SurrogateDecoratorOptions);
+    decoratorMap[event as string][type].push(...SurrogateDecoratorOptions);
 
     return this.decoratorMap.set(klass, decoratorMap);
   }
@@ -73,8 +73,8 @@ export class SurrogateClassWrapper<T extends object> implements ProxyHandler<T> 
       this.decoratorMap.get(klass) ??
       wrapDefaults({
         defaultValue: {
-          [PRE_HOOK]: [],
-          [POST_HOOK]: [],
+          [PRE]: [],
+          [POST]: [],
         },
         setUndefined: true,
         shallowCopy: false,

@@ -13,7 +13,7 @@ export type SurrogateDelegateOptions<T extends object> =
   | SurrogateDecoratorOptions<T>[];
 
 export interface NextHookOptions<T extends object> {
-  action: string;
+  action: keyof T | (keyof T)[];
   options?: SurrogateMethodOptions<T>;
 }
 

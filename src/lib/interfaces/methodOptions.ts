@@ -1,6 +1,11 @@
 import { Unwrapped } from './surrogate';
 
-export type MethodWrapper = 'none' | 'async';
+export type MethodWrappers = 'none' | 'async';
+
+export enum MethodWrapper {
+  None = 'none',
+  Async = 'async',
+}
 
 export type RunCondition<T extends object> = (instance: Unwrapped<T>) => boolean;
 
@@ -24,7 +29,7 @@ export interface SurrogateMethodOptions<T extends object> {
    */
   ignoreErrors?: boolean;
   passInstance?: boolean;
-  wrapper?: MethodWrapper;
+  wrapper?: MethodWrappers;
 
   /**
    * Conditions to determine if a handler should be executed

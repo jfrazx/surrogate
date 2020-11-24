@@ -21,7 +21,7 @@ export class Animal {
   }
 
   @NextPost<Animal>({
-    action: 'pet',
+    action: ['pet'],
     options: {
       runConditions: (animal) => animal.mayBeFed,
     },

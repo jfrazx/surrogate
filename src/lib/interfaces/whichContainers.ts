@@ -1,7 +1,7 @@
 import { HandlerContainer } from '../containers';
-import { PRE_HOOK, POST_HOOK } from '../which';
+import { PRE, POST } from '../which';
 
-export interface WhichContainers<T extends Object> {
-  [PRE_HOOK]: HandlerContainer<T>[];
-  [POST_HOOK]: HandlerContainer<T>[];
+export interface WhichContainers<T extends object> {
+  [PRE]: HandlerContainer<T>[];
+  [POST]: HandlerContainer<T>[];
 }

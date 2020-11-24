@@ -2,11 +2,11 @@ import { Network } from './lib/network';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import {
+  PRE,
+  POST,
   Which,
   INext,
-  PRE_HOOK,
   Surrogate,
-  POST_HOOK,
   wrapSurrogate,
   SurrogateEventManager,
 } from '../src';
@@ -159,12 +159,12 @@ describe('Surrogate Event Manager', () => {
 
       console.log(surrogate);
 
-      const { [PRE_HOOK]: prePre } = surrogate.getEventHandlers('connect');
+      const { [PRE]: prePre } = surrogate.getEventHandlers('connect');
       expect(prePre).to.have.lengthOf(2);
 
       surrogate.deregisterPreHook('connect', func1);
 
-      const { [PRE_HOOK]: preAfter } = surrogate.getEventHandlers('connect');
+      const { [PRE]: preAfter } = surrogate.getEventHandlers('connect');
 
       expect(prePre).to.not.equal(preAfter);
       expect(preAfter).to.have.lengthOf(1);
@@ -178,12 +178,12 @@ describe('Surrogate Event Manager', () => {
       surrogate.registerPostHook('connect', func2);
       surrogate.registerPostHook('connect', func1);
 
-      const { [POST_HOOK]: postPre } = surrogate.getEventHandlers('connect');
+      const { [POST]: postPre } = surrogate.getEventHandlers('connect');
       expect(postPre).to.have.lengthOf(2);
 
       surrogate.deregisterPostHook('connect', func1);
 
-      const { [POST_HOOK]: postAfter } = surrogate.getEventHandlers('connect');
+      const { [POST]: postAfter } = surrogate.getEventHandlers('connect');
 
       expect(postPre).to.not.equal(postAfter);
       expect(postAfter).to.have.lengthOf(1);
@@ -196,12 +196,12 @@ describe('Surrogate Event Manager', () => {
 
       surrogate.registerPreHook('connect', func1).registerPreHook('connect', func2);
 
-      const { [PRE_HOOK]: prePre } = surrogate.getEventHandlers('connect');
+      const { [PRE]: prePre } = surrogate.getEventHandlers('connect');
       expect(prePre).to.have.lengthOf(2);
 
       surrogate.deregisterPreHooks('connect');
 
-      const { [PRE_HOOK]: preAfter } = surrogate.getEventHandlers('connect');
+      const { [PRE]: preAfter } = surrogate.getEventHandlers('connect');
 
       expect(prePre).to.not.equal(preAfter);
       expect(preAfter).to.have.lengthOf(0);
@@ -214,12 +214,12 @@ describe('Surrogate Event Manager', () => {
 
       surrogate.registerPostHook('connect', func1).registerPostHook('connect', func2);
 
-      const { [POST_HOOK]: postPre } = surrogate.getEventHandlers('connect');
+      const { [POST]: postPre } = surrogate.getEventHandlers('connect');
       expect(postPre).to.have.lengthOf(2);
 
       surrogate.deregisterPostHooks('connect');
 
-      const { [POST_HOOK]: postAfter } = surrogate.getEventHandlers('connect');
+      const { [POST]: postAfter } = surrogate.getEventHandlers('connect');
 
       expect(postPre).to.not.equal(postAfter);
       expect(postAfter).to.have.lengthOf(0);
@@ -239,13 +239,12 @@ describe('Surrogate Event Manager', () => {
         .registerPreHook('disconnect', func3)
         .registerPostHook('disconnect', func4);
 
+      const { [PRE]: prePreConnect, [POST]: postPreConnect } = surrogate.getEventHandlers(
+        'connect',
+      );
       const {
-        [PRE_HOOK]: prePreConnect,
-        [POST_HOOK]: postPreConnect,
-      } = surrogate.getEventHandlers('connect');
-      const {
-        [PRE_HOOK]: prePreDisconnect,
-        [POST_HOOK]: postPreDisconnect,
+        [PRE]: prePreDisconnect,
+        [POST]: postPreDisconnect,
       } = surrogate.getEventHandlers('disconnect');
 
       expect(prePreConnect).to.have.lengthOf(1);
@@ -255,13 +254,12 @@ describe('Surrogate Event Manager', () => {
 
       surrogate.deregisterHooks();
 
+      const { [PRE]: prePostConnect, [POST]: postPostConnect } = surrogate.getEventHandlers(
+        'connect',
+      );
       const {
-        [PRE_HOOK]: prePostConnect,
-        [POST_HOOK]: postPostConnect,
-      } = surrogate.getEventHandlers('connect');
-      const {
-        [PRE_HOOK]: prePostDisconnect,
-        [POST_HOOK]: postPostDisconnect,
+        [PRE]: prePostDisconnect,
+        [POST]: postPostDisconnect,
       } = surrogate.getEventHandlers('disconnect');
 
       expect(prePostConnect).to.have.lengthOf(0);

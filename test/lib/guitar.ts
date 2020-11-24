@@ -1,7 +1,7 @@
 import {
+  POST,
   INext,
   NextFor,
-  POST_HOOK,
   Surrogate,
   SurrogatePre,
   SurrogatePost,
@@ -31,7 +31,6 @@ export class Guitar {
         runConditions: [(guitar) => !guitar.isStrung],
       },
     },
-
     {
       handler: (next) => {
         const { instance } = next;
@@ -44,7 +43,7 @@ export class Guitar {
         });
       },
       options: {
-        runConditions: [(guitar) => !guitar.isTuned],
+        runConditions: (guitar) => !guitar.isTuned,
       },
     },
   ])
@@ -60,8 +59,8 @@ export class Guitar {
   }
 
   @NextFor<Guitar>({
-    type: POST_HOOK,
-    action: 'play',
+    type: POST,
+    action: ['play'],
     options: {
       runConditions: (guitar) => guitar.hasBrokenString,
     },

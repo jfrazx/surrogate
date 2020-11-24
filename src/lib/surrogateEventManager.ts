@@ -1,9 +1,9 @@
 import { WhichContainers, SurrogateMethodOptions, SurrogateHandler } from './interfaces';
-import { PRE_HOOK, POST_HOOK, Which } from './which';
 import { SurrogateProxy } from './surrogateProxy';
 import { Property } from './interfaces/property';
 import { HandlerContainer } from './containers';
 import { Defaults } from '@status/defaults';
+import { PRE, POST, Which } from './which';
 import { asArray } from '@jfrazx/asarray';
 
 export interface EventMap<T extends object> {
@@ -17,8 +17,8 @@ export class SurrogateEventManager<T extends object = any> {
     this.events = Defaults.wrap<EventMap<T>, WhichContainers<T>>({
       wrap: Object.create(null),
       defaultValue: {
-        [PRE_HOOK]: [],
-        [POST_HOOK]: [],
+        [POST]: [],
+        [PRE]: [],
       },
       setUndefined: true,
       shallowCopy: false,
@@ -69,7 +69,7 @@ export class SurrogateEventManager<T extends object = any> {
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options?: SurrogateMethodOptions<T>,
   ): SurrogateEventManager {
-    return this.setEventHandlers(event, PRE_HOOK, asArray(handler), options);
+    return this.setEventHandlers(event, PRE, asArray(handler), options);
   }
 
   /**
@@ -86,7 +86,7 @@ export class SurrogateEventManager<T extends object = any> {
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options?: SurrogateMethodOptions<T>,
   ): SurrogateEventManager<T> {
-    return this.setEventHandlers(event, POST_HOOK, asArray(handler), options);
+    return this.setEventHandlers(event, POST, asArray(handler), options);
   }
 
   private setEventHandlers(
@@ -150,7 +150,7 @@ export class SurrogateEventManager<T extends object = any> {
    * @memberof SurrogateEventManager
    */
   deregisterPreHook(event: Property, handler: SurrogateHandler<T>): SurrogateEventManager {
-    return this.deregisterHookFor(event, PRE_HOOK, handler);
+    return this.deregisterHookFor(event, PRE, handler);
   }
 
   /**
@@ -162,7 +162,7 @@ export class SurrogateEventManager<T extends object = any> {
    * @memberof SurrogateEventManager
    */
   deregisterPostHook(event: Property, handler: SurrogateHandler<T>): SurrogateEventManager {
-    return this.deregisterHookFor(event, POST_HOOK, handler);
+    return this.deregisterHookFor(event, POST, handler);
   }
 
   /**
@@ -198,7 +198,7 @@ export class SurrogateEventManager<T extends object = any> {
    * @memberof SurrogateEventManager
    */
   deregisterPostHooks(event: Property): SurrogateEventManager {
-    return this.setEventHandlersFor(event, POST_HOOK);
+    return this.setEventHandlersFor(event, POST);
   }
 
   /**
@@ -209,6 +209,6 @@ export class SurrogateEventManager<T extends object = any> {
    * @memberof SurrogateEventManager
    */
   deregisterPreHooks(event: Property): SurrogateEventManager {
-    return this.setEventHandlersFor(event, PRE_HOOK);
+    return this.setEventHandlersFor(event, PRE);
   }
 }

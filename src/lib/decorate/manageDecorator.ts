@@ -1,6 +1,7 @@
 import { SurrogateDecoratorOptions, SurrogateDelegateOptions } from './interfaces';
 import { SurrogateClassWrapper } from './surrogateClassWrapper';
 import { SurrogateMethodOptions } from '../index';
+import { MethodWrapper } from '../interfaces';
 import { asArray } from '@jfrazx/asarray';
 import { isFunction } from '../helpers';
 import { Which } from '../which';
@@ -11,7 +12,7 @@ export const manageDecorator = <T extends object>(
 ) => {
   const decoratorOptions = organizeOptions<T>(options);
 
-  return (target: T, event: string) => {
+  return (target: T, event: keyof T) => {
     SurrogateClassWrapper.addDecorators(target.constructor, type, event, decoratorOptions);
   };
 };
@@ -20,7 +21,7 @@ export const manageAsyncDecorator = <T extends object>(
   type: Which,
   options: SurrogateDelegateOptions<T>,
 ) => {
-  const wrapper: SurrogateMethodOptions<T> = { wrapper: 'async' };
+  const wrapper: SurrogateMethodOptions<T> = { wrapper: MethodWrapper.Async };
 
   const asyncOptions = asArray(options).map<SurrogateDecoratorOptions<T>>((opt) =>
     isFunction(opt)

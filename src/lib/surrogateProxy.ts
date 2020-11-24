@@ -1,10 +1,10 @@
 import { containerGenerator, IContainer, MethodContainer, EmptyContainer } from './containers';
+import { SurrogateOptions, Surrogate, MethodWrapper } from './interfaces';
 import { SurrogateEventManager } from './surrogateEventManager';
 import { Next, ExecutionContext, Execution } from './next';
-import { SurrogateOptions, Surrogate } from './interfaces';
 import { Property } from './interfaces/property';
 import { isFunction, isAsync } from './helpers';
-import { PRE_HOOK, POST_HOOK } from './which';
+import { PRE, POST } from './which';
 import { Context } from './context';
 
 type Handle = (...args: any[]) => any;
@@ -102,9 +102,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
       return false;
     }
 
-    const { [PRE_HOOK]: pre, [POST_HOOK]: post } = this.targets
-      .get(target)
-      .getEventHandlers(event);
+    const { [PRE]: pre, [POST]: post } = this.targets.get(target).getEventHandlers(event);
 
     return Boolean(pre.length + post.length);
   }
@@ -131,12 +129,10 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
 
   private createExecutionContext(context: Context<T>, args: any[]): Execution<T> {
     const { target, event, original } = context;
-    const { [PRE_HOOK]: pre, [POST_HOOK]: post } = this.targets
-      .get(target)
-      .getEventHandlers(event);
+    const { [PRE]: pre, [POST]: post } = this.targets.get(target).getEventHandlers(event);
 
     const hasAsync = [...pre, ...post].some(
-      ({ handler, options }) => isAsync(handler) || options?.wrapper === 'async',
+      ({ handler, options }) => isAsync(handler) || options?.wrapper === MethodWrapper.Async,
     );
     const executionContext = ExecutionContext.for<T>(original, args, hasAsync);
     const methodContainer = new MethodContainer(original, args);
