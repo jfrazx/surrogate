@@ -1,8 +1,8 @@
-import { SurrogateProxy } from './lib/surrogateProxy';
 import { SurrogateOptions, Surrogate } from './lib';
+import { SurrogateProxy } from './lib/proxy';
 
 /**
- * Simple function to create a Surrogate wrapped object
+ * Helper function to create Surrogate wrapped objects
  *
  * @export
  * @template T
@@ -10,11 +10,9 @@ import { SurrogateOptions, Surrogate } from './lib';
  * @param {SurrogateOptions} [options={}]
  * @returns {Surrogate<T>}
  */
-export function wrapSurrogate<T extends object>(
+export const wrapSurrogate = <T extends object>(
   object: T,
   options: SurrogateOptions = {},
-): Surrogate<T> {
-  return SurrogateProxy.wrap(object, options);
-}
+): Surrogate<T> => SurrogateProxy.wrap(object, options);
 
 export * from './lib';

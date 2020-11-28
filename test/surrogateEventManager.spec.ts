@@ -1,15 +1,8 @@
+import { PRE, POST, INext, Surrogate, wrapSurrogate, SurrogateEventManager } from '../src';
+import { Which } from '../src/lib/which';
 import { Network } from './lib/network';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import {
-  PRE,
-  POST,
-  Which,
-  INext,
-  Surrogate,
-  wrapSurrogate,
-  SurrogateEventManager,
-} from '../src';
 
 describe('Surrogate Event Manager', () => {
   let network: Surrogate<Network>;
@@ -96,7 +89,7 @@ describe('Surrogate Event Manager', () => {
 
       network
         .getSurrogate()
-        .registerPreHook(name, func1)
+        .registerPreHook(name, [func1])
         .registerPreHook(name, func2, { useNext: false });
 
       network.connect();

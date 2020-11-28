@@ -1,10 +1,14 @@
-import { WhichContainers, SurrogateMethodOptions, SurrogateHandler } from './interfaces';
-import { SurrogateProxy } from './surrogateProxy';
-import { Property } from './interfaces/property';
-import { HandlerContainer } from './containers';
+import { HandlerContainer } from '../containers';
+import { PRE, POST, Which } from '../which';
 import { Defaults } from '@status/defaults';
-import { PRE, POST, Which } from './which';
+import { SurrogateProxy } from '../proxy';
 import { asArray } from '@jfrazx/asarray';
+import {
+  Property,
+  WhichContainers,
+  SurrogateHandler,
+  SurrogateMethodOptions,
+} from '../interfaces';
 
 export interface EventMap<T extends object> {
   [event: string]: WhichContainers<T>;

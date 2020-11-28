@@ -2,7 +2,7 @@ import { PassSurrogateRule } from './passSurrogate.rule';
 import { PassInstanceRule } from './passInstance.rule';
 import { PassErrorRule } from './passError.rule';
 import { UseNextRule } from './useNext.rule';
-import { NextNode } from '../../next/interfaces/next';
+import { NextNode } from '../../next';
 import { Rule } from './interfaces';
 
 export abstract class ArgumentRuleRunner {

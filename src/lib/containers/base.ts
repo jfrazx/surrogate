@@ -1,6 +1,6 @@
 import { IContainer } from './interfaces';
 import { WhichMethod } from '../which';
-import { Context } from '../context/index';
+import { Context } from '../context';
 import {
   MethodWrapper,
   SurrogateContext,

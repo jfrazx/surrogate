@@ -1,5 +1,5 @@
 import { MethodContainer, ContainerGenerator } from '../../containers';
-import { SurrogateProxy } from '../../surrogateProxy';
+import { SurrogateProxy } from '../../proxy';
 import { NextOptions } from '../interfaces';
 import { FinalNext } from './finalNext';
 import { Context } from '../../context';

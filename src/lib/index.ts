@@ -1,5 +1,13 @@
+export { SurrogateEventManager } from './manager';
+export { INext, NextOptions } from './next';
+export { POST, PRE, BOTH } from './which';
 export * from './decorate';
-export * from './interfaces';
-export * from './next';
-export * from './surrogateEventManager';
-export * from './which';
+export {
+  Surrogate,
+  GetSurrogate,
+  MethodWrapper,
+  SurrogateContext,
+  SurrogateHandler,
+  SurrogateOptions,
+  SurrogateMethodOptions,
+} from './interfaces';

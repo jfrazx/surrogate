@@ -1,6 +1,6 @@
 import { manageDecorator, determineWhich } from './manageDecorator';
 import { NextForOptions, NextHookOptions } from './interfaces';
-import { MethodWrapper } from '../interfaces/methodOptions';
+import { MethodWrapper } from '../interfaces';
 import { POST, PRE, Which } from '../which';
 import { asArray } from '@jfrazx/asarray';
 

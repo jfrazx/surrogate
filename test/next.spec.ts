@@ -1,5 +1,5 @@
-import { FinalNext, PreMethodNext } from '../src/lib/next/nodes';
-import { wrapSurrogate, Surrogate, INext, Next } from '../src';
+import { FinalNext, PreMethodNext, Next } from '../src/lib/next';
+import { wrapSurrogate, Surrogate, INext } from '../src';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';

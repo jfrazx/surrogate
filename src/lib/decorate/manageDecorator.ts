@@ -1,8 +1,7 @@
 import { SurrogateDecoratorOptions, SurrogateDelegateOptions } from './interfaces';
+import { SurrogateMethodOptions, MethodWrapper } from '../interfaces';
 import { SurrogateClassWrapper } from './surrogateClassWrapper';
 import { Which, Whichever, PRE, POST, BOTH } from '../which';
-import { SurrogateMethodOptions } from '../index';
-import { MethodWrapper } from '../interfaces';
 import { asArray } from '@jfrazx/asarray';
 import { isFunction } from '../helpers';
 

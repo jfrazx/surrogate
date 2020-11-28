@@ -1,4 +1,4 @@
-import { SurrogateEventManager } from '../surrogateEventManager';
+import { SurrogateEventManager } from '../manager';
 
 export interface GetSurrogate<T extends object> {
   getSurrogate(): SurrogateEventManager<T>;

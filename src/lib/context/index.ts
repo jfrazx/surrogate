@@ -1,5 +1,4 @@
-import { Property } from '../interfaces/property';
-import { Surrogate } from '../interfaces';
+import { Property, Surrogate } from '../interfaces';
 
 export type BoundContext<T extends object> = () => Context<T>;
 

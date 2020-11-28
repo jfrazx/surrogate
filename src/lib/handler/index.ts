@@ -1,4 +1,4 @@
-import { SurrogateHandler } from '../interfaces/surrogateHandler';
+import { SurrogateHandler } from '../interfaces';
 import { MethodWrapper } from '../interfaces';
 import { ArgumentRuleRunner } from './rules';
 import { asArray } from '@jfrazx/asarray';

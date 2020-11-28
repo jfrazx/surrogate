@@ -1,8 +1,7 @@
 import { SurrogateMethodOptions, SurrogateHandler } from '../../interfaces';
-import { SurrogateProxy } from '../../surrogateProxy';
-import { NextNode } from '../../next/interfaces';
-import { Execution } from '../../next/context';
+import { NextNode, Execution } from '../../next';
 import { HandlerContainer } from '../handler';
+import { SurrogateProxy } from '../../proxy';
 import { WhichMethod } from '../../which';
 import { Context } from '../../context';
 

@@ -1,6 +1,6 @@
 import { ContainerGenerator, IContainer, MethodContainer } from '../../containers';
-import { SurrogateProxy } from '../../surrogateProxy';
 import { INext, NextOptions } from '../interfaces';
+import { SurrogateProxy } from '../../proxy';
 import { nextOptionDefaults } from './lib';
 import { MethodNext } from './methodNext';
 import { FinalNext } from './finalNext';

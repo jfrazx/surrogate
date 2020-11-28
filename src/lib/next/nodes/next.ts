@@ -1,11 +1,11 @@
 import { HandlerContainer, ContainerGenerator } from '../../containers';
-import { SurrogateProxy } from '../../surrogateProxy';
 import { INext, NextOptions } from '../interfaces';
+import { HandlerRunner } from '../../handler';
+import { SurrogateProxy } from '../../proxy';
 import { nextOptionDefaults } from './lib';
 import { Context } from '../../context';
 import { Execution } from '../context';
 import { BaseNext } from './baseNext';
-import { HandlerRunner } from '../../handler/index';
 
 export class Next<T extends object> extends BaseNext<T> implements INext<T> {
   constructor(
@@ -33,6 +33,8 @@ export class Next<T extends object> extends BaseNext<T> implements INext<T> {
   next(nextOptions: NextOptions = {}): void {
     const useNextOptions = { ...nextOptionDefaults, ...nextOptions };
     const { error, using, bail } = useNextOptions;
+
+    this.didBail = bail ?? this.didBail;
 
     if (error) {
       return this.nextError(error, ...using);

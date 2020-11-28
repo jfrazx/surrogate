@@ -1,11 +1,10 @@
-import { SurrogateOptions, Surrogate, MethodWrapper } from './interfaces';
-import { SurrogateEventManager } from './surrogateEventManager';
-import { Next, ExecutionContext, Execution } from './next';
-import { containerGenerator, Tail } from './containers';
-import { Property } from './interfaces/property';
-import { isFunction, isAsync } from './helpers';
-import { PRE, POST } from './which';
-import { Context } from './context';
+import { SurrogateOptions, Surrogate, MethodWrapper, Property } from '../interfaces';
+import { Next, ExecutionContext, Execution } from '../next';
+import { containerGenerator, Tail } from '../containers';
+import { SurrogateEventManager } from '../manager';
+import { isFunction, isAsync } from '../helpers';
+import { PRE, POST } from '../which';
+import { Context } from '../context';
 
 type Handle = (...args: any[]) => any;
 type Target<T extends object> = WeakMap<any, SurrogateEventManager<T>>;

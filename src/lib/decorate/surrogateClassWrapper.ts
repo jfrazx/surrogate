@@ -1,9 +1,9 @@
-import { SurrogateEventManager } from '../surrogateEventManager';
 import { SurrogateDecoratorOptions } from './interfaces';
-import { SurrogateProxy } from '../surrogateProxy';
+import { SurrogateEventManager } from '../manager';
 import { SurrogateOptions } from '../interfaces';
 import { wrapDefaults } from '@status/defaults';
 import { Which, POST, PRE } from '../which';
+import { SurrogateProxy } from '../proxy';
 
 type Constructor<T> = { new (...args: any[]): T };
 
