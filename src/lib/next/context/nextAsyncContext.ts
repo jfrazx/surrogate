@@ -1,53 +1,39 @@
 import { ExecutionContext } from './executionContext';
-import { NextNode } from '../interfaces';
+import { MethodNext } from '../nodes';
 
 export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
-  private head: NextNode<T>;
-
   public resolver: (value: any) => void;
   private rejecter: (reason: any) => void;
-
-  private runNext(next?: NextNode<T>) {
-    const node = next ?? this.nextNode;
-
-    this.setNext(node.nextNode);
-
-    return node.next();
-  }
 
   async start() {
     return new Promise((resolve, reject) => {
       this.resolver = resolve;
       this.rejecter = reject;
 
-      try {
-        this.runNext();
-      } catch (error) {
-        this.rejecter(error);
-      }
-    }).catch((error) => this.rejecter(error));
+      this.runNext();
+    }).catch((error) => this.handleError(error));
   }
 
-  addNext(next: NextNode<T>): this {
-    if (this.head) {
-      this.head.addNext(next);
-    } else {
-      this.head = next;
+  complete(): void {
+    this.resolver(this.returnValue);
+  }
+
+  async runOriginal(node: MethodNext<T>) {
+    const { container, context } = node;
+    const { handler, originalArgs } = container;
+
+    try {
+      this.returnValue = await handler.apply(context.target, originalArgs);
+
+      this.runNext(node.nextNode);
+    } catch (error) {
+      this.handleError(error);
     }
-
-    return this;
   }
 
-  complete(node: NextNode<T>, _passedArgs: any[]): void {
-    this.setNext(node.nextNode);
-  }
-
-  setHooks(pre: NextNode<T>, post: NextNode<T>): this {
-    pre.addNext(post);
-
-    this.addNext(pre);
-
-    return this;
+  private handleError(error?: Error) {
+    this.logError(error);
+    this.rejecter(error);
   }
 
   bail(bailWith?: any) {

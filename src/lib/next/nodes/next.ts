@@ -1,17 +1,18 @@
-import { HandlerContainer, ContainerGenerator, IContainer } from '../../containers';
+import { HandlerContainer, ContainerGenerator } from '../../containers';
 import { SurrogateProxy } from '../../surrogateProxy';
 import { INext, NextOptions } from '../interfaces';
 import { nextOptionDefaults } from './lib';
 import { Context } from '../../context';
 import { Execution } from '../context';
 import { BaseNext } from './baseNext';
+import { HandlerRunner } from '../../handler/index';
 
 export class Next<T extends object> extends BaseNext<T> implements INext<T> {
   constructor(
     proxy: SurrogateProxy<T>,
     context: Context<T>,
     executionContext: Execution<T>,
-    iterator: Generator<IContainer<T>, IContainer<T>, ContainerGenerator<T>>,
+    iterator: ContainerGenerator<T>,
     public container: HandlerContainer<T>,
   ) {
     super(proxy, context, executionContext, iterator, container);
@@ -43,9 +44,8 @@ export class Next<T extends object> extends BaseNext<T> implements INext<T> {
       return this.controller.bail(this, useNextOptions.bailWith);
     }
 
-    const { handler } = this.container;
-    const { target } = this.context;
+    const handler = HandlerRunner.for(this);
 
-    this.shouldRun() ? handler.call(target, this.nextNode, ...using) : this.skip();
+    this.shouldRun() ? handler.run(using, this.didError) : this.skip();
   }
 }

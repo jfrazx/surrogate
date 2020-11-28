@@ -1,37 +1,31 @@
 import { ExecutionContext } from './executionContext';
-import { NextNode } from '../interfaces';
+import { MethodNext } from '../nodes';
 
 export class NextContext<T extends object> extends ExecutionContext<T> {
-  protected post: NextNode<T>;
-  protected pre: NextNode<T>;
-
   start() {
-    const { instance } = this.pre;
-
     try {
-      this.pre.next();
-
-      this.setReturnValue(this.originalMethod.apply(instance, this.originalArgs));
-
-      this.post.next();
+      this.runNext();
 
       return this.returnValue;
     } catch (error) {
-      console.error(
-        `SurrogateError: ${error?.message ? error.message : JSON.stringify(error)}`,
-      );
+      this.logError(error);
 
       throw error;
     }
   }
 
   complete() {}
-  bail() {}
 
-  setHooks(pre: NextNode<T>, post: NextNode<T>): this {
-    this.pre = pre;
-    this.post = post;
+  runOriginal(node: MethodNext<T>) {
+    const { container, context } = node;
+    const { handler, originalArgs } = container;
 
-    return this;
+    this.returnValue = handler.apply(context.original, originalArgs);
+
+    this.runNext(node.nextNode);
+  }
+
+  bail(bailWith?: any) {
+    this.returnValue ??= bailWith;
   }
 }

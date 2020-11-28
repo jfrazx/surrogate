@@ -1,4 +1,6 @@
-import { SurrogateDelegate, SurrogatePre, INext, NextPost } from '../build';
+import { SurrogateDelegate, SurrogatePre, INext, NextPost, GetSurrogate } from '../build';
+
+export interface Animal extends GetSurrogate<Animal> {}
 
 @SurrogateDelegate()
 export class Animal {

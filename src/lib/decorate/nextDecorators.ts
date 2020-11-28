@@ -1,7 +1,7 @@
+import { manageDecorator, determineWhich } from './manageDecorator';
 import { NextForOptions, NextHookOptions } from './interfaces';
-import { POST, PRE, BOTH, Which, Whichever } from '../which';
 import { MethodWrapper } from '../interfaces/methodOptions';
-import { manageDecorator } from './manageDecorator';
+import { POST, PRE, Which } from '../which';
 import { asArray } from '@jfrazx/asarray';
 
 export const NextFor = <T extends object>(nextOptions: NextForOptions<T>) => {
@@ -46,6 +46,3 @@ export const NextPre = <T extends object>(nextOptions: NextHookOptions<T>) => {
 export const NextPost = <T extends object>(nextOptions: NextHookOptions<T>) => {
   return NextFor<T>({ ...nextOptions, type: POST });
 };
-
-const determineWhich = (type: Whichever): Which[] =>
-  type === BOTH ? [PRE, POST] : [type === PRE ? PRE : POST];

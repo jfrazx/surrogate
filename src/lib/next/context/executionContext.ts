@@ -31,9 +31,39 @@ export abstract class ExecutionContext<T extends object> implements Execution<T>
     this.nextNode = next;
   }
 
+  setHooks(pre: NextNode<T>, post: NextNode<T>): this {
+    pre.addNext(post);
+
+    this.addNext(pre);
+
+    return this;
+  }
+
+  protected addNext(next: NextNode<T>): this {
+    if (this.nextNode) {
+      this.nextNode.addNext(next);
+    } else {
+      this.nextNode = next;
+    }
+
+    return this;
+  }
+
+  protected runNext(next?: NextNode<T>) {
+    const node = next ?? this.nextNode;
+
+    this.setNext(node.nextNode);
+
+    return node.next();
+  }
+
+  protected logError(error?: Error): void {
+    console.error(`SurrogateError: ${error?.message ? error.message : JSON.stringify(error)}`);
+  }
+
   abstract start(): any;
+  abstract runOriginal(node: NextNode<T>): void;
   abstract bail(next: NextNode<T>, bailWith?: any): any;
-  abstract setHooks(pre: NextNode<T>, post: NextNode<T>): this;
   abstract complete(node: NextNode<T>, passedArgs: any[]): void;
 }
 

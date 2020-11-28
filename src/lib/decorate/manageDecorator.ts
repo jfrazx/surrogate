@@ -1,10 +1,10 @@
 import { SurrogateDecoratorOptions, SurrogateDelegateOptions } from './interfaces';
 import { SurrogateClassWrapper } from './surrogateClassWrapper';
+import { Which, Whichever, PRE, POST, BOTH } from '../which';
 import { SurrogateMethodOptions } from '../index';
 import { MethodWrapper } from '../interfaces';
 import { asArray } from '@jfrazx/asarray';
 import { isFunction } from '../helpers';
-import { Which } from '../which';
 
 export const manageDecorator = <T extends object>(
   type: Which,
@@ -16,6 +16,9 @@ export const manageDecorator = <T extends object>(
     SurrogateClassWrapper.addDecorators(target.constructor, type, event, decoratorOptions);
   };
 };
+
+export const determineWhich = (type: Whichever): Which[] =>
+  type === BOTH ? [PRE, POST] : [type === PRE ? PRE : POST];
 
 export const manageAsyncDecorator = <T extends object>(
   type: Which,
