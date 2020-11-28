@@ -4,7 +4,7 @@ import { INext } from '../next';
  *
  */
 export type SurrogateHandler<T extends object> = (
-  next: INext<T>,
+  next?: INext<T>,
   arg1?: any,
   arg2?: any,
   arg3?: any,

@@ -1,13 +1,13 @@
-import { wrapSurrogate, INext, Surrogate } from '../build';
+import { wrapSurrogate, INext, GetSurrogate } from '../build';
 
 interface INetwork {
   isEnabled: boolean;
   isDisabled: boolean;
   isConnected: boolean;
-  preConnectHandler(next: INext<INetwork>): void;
+  preConnectHandler(next: INext<Network>): void;
 }
 
-interface Network extends Surrogate<INetwork> {}
+interface Network extends GetSurrogate<Network> {}
 
 class Network implements INetwork {
   private enabled: boolean = true;
@@ -51,7 +51,7 @@ class Network implements INetwork {
     this.connected = false;
   }
 
-  preConnectHandler(next: INext<INetwork>) {
+  preConnectHandler(next: INext<Network>) {
     next.next({
       bail: this.isConnected || this.isDisabled,
     });

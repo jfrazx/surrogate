@@ -1,6 +1,8 @@
 import { Guitar } from './lib/guitar';
 import { expect } from 'chai';
+import sinon from 'sinon';
 import {
+  INext,
   NextFor,
   NextPre,
   NextPost,
@@ -11,6 +13,7 @@ import {
   SurrogateAsyncPre,
   SurrogateDelegate,
   SurrogateAsyncPost,
+  SurrogateHandler,
 } from '../src';
 
 describe('SurrogateDecorators', () => {
@@ -30,11 +33,55 @@ describe('SurrogateDecorators', () => {
 
       guitar.play();
     });
+
+    it('should pre decorate a synchronous method', () => {
+      const handler: SurrogateHandler<Test> = sinon.spy((next: INext<Test>) =>
+        next.next(),
+      ) as any;
+      const results = 'SurrogatePre';
+
+      @SurrogateDelegate()
+      class Test {
+        @SurrogatePre<Test>(handler)
+        method() {
+          return results;
+        }
+      }
+
+      const test = new Test();
+
+      const result = test.method();
+
+      sinon.assert.called(handler as any);
+      expect(result).to.equal(results);
+    });
   });
 
   describe('SurrogatePost', () => {
     it('should be a function', () => {
       expect(SurrogatePost).to.be.a('function');
+    });
+
+    it('should post decorate a synchronous method', () => {
+      const handler: SurrogateHandler<Test> = sinon.spy((next: INext<Test>) =>
+        next.next(),
+      ) as any;
+      const results = 'SurrogatePost';
+
+      @SurrogateDelegate()
+      class Test {
+        @SurrogatePost<Test>(handler)
+        method() {
+          return results;
+        }
+      }
+
+      const test = new Test();
+
+      const result = test.method();
+
+      sinon.assert.called(handler as any);
+      expect(result).to.equal(results);
     });
   });
 
@@ -42,11 +89,55 @@ describe('SurrogateDecorators', () => {
     it('should be a function', () => {
       expect(SurrogateAsyncPost).to.be.a('function');
     });
+
+    it('should post decorate an async method', async () => {
+      const handler: SurrogateHandler<Test> = sinon.spy((next: INext<Test>) =>
+        next.next(),
+      ) as any;
+      const results = 'SurrogateAsyncPost';
+
+      @SurrogateDelegate()
+      class Test {
+        @SurrogateAsyncPost<Test>(handler)
+        async method() {
+          return results;
+        }
+      }
+
+      const test = new Test();
+
+      const result = await test.method();
+
+      sinon.assert.called(handler as any);
+      expect(result).to.equal(results);
+    });
   });
 
   describe('SurrogateAsyncPre', () => {
     it('should be a function', () => {
       expect(SurrogateAsyncPre).to.be.a('function');
+    });
+
+    it('should pre decorate an async method', async () => {
+      const handler: SurrogateHandler<Test> = sinon.spy((next: INext<Test>) =>
+        next.next(),
+      ) as any;
+      const results = 'SurrogateAsyncPre';
+
+      @SurrogateDelegate()
+      class Test {
+        @SurrogateAsyncPre<Test>(handler)
+        async method() {
+          return results;
+        }
+      }
+
+      const test = new Test();
+
+      const result = await test.method();
+
+      sinon.assert.called(handler as any);
+      expect(result).to.equal(results);
     });
   });
 

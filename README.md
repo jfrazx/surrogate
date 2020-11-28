@@ -8,8 +8,7 @@ Currently unpublished..
 
 ## Usage
 
-There are a couple ways to manage Surrogate. The first is to utilize an exposed helper function, `wrapSurrogate`, to wrap objects  
-and register pre and post methods through it.
+There are a couple ways to manage Surrogate. The first is to utilize an exposed helper function, `wrapSurrogate`, to wrap objects and register pre and post methods through it.
 
 ```typescript
 import { wrapSurrogate, Surrogate, INext } from 'some-future-package';

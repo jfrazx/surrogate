@@ -80,7 +80,9 @@ describe('Surrogate Event Manager', () => {
     it('should register a single pre hook', () => {
       const func = sinon.spy(function () {});
 
-      network.getSurrogate().registerPreHook(network.connect.name, func);
+      network.getSurrogate().registerPreHook(network.connect.name, func, {
+        useNext: false,
+      });
       network.connect();
 
       sinon.assert.calledOnce(func);
@@ -92,7 +94,11 @@ describe('Surrogate Event Manager', () => {
       const func1 = sinon.spy((next: INext<Network>) => next.next());
       const func2 = sinon.spy(() => {});
 
-      network.getSurrogate().registerPreHook(name, func1).registerPreHook(name, func2);
+      network
+        .getSurrogate()
+        .registerPreHook(name, func1)
+        .registerPreHook(name, func2, { useNext: false });
+
       network.connect();
 
       sinon.assert.calledOnce(func1);
@@ -103,7 +109,7 @@ describe('Surrogate Event Manager', () => {
     it('should register a single post hook', () => {
       const func = sinon.spy(() => {});
 
-      network.getSurrogate().registerPostHook('connect', func);
+      network.getSurrogate().registerPostHook('connect', func, { useNext: false });
       network.connect();
 
       sinon.assert.calledOnce(func);
@@ -115,7 +121,10 @@ describe('Surrogate Event Manager', () => {
       const func1 = sinon.spy((next: INext<Network>) => next.next());
       const func2 = sinon.spy(() => {});
 
-      network.getSurrogate().registerPostHook(name, func1).registerPostHook(name, func2);
+      network
+        .getSurrogate()
+        .registerPostHook(name, func1)
+        .registerPostHook(name, func2, { useNext: false });
 
       network.disconnect();
 

@@ -1,5 +1,5 @@
+import { FinalNext, PreMethodNext } from '../src/lib/next/nodes';
 import { wrapSurrogate, Surrogate, INext, Next } from '../src';
-import { FinalNext } from '../src/lib/next/nodes';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
@@ -239,6 +239,7 @@ describe('Next', () => {
       const func1 = sinon.spy((next: INext<Network>) => next.next());
       const func2 = sinon.spy((next: INext<Network>) => {
         expect(next).to.be.instanceOf(FinalNext);
+        expect(next).to.be.instanceOf(PreMethodNext);
 
         next.next({ error });
       });

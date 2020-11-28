@@ -12,6 +12,11 @@ export type SurrogateDelegateOptions<T extends object> =
   | SurrogateDecoratorOptions<T>
   | SurrogateDecoratorOptions<T>[];
 
+export interface SurrogateForOptions<T extends object> {
+  type: Whichever;
+  options: SurrogateDelegateOptions<T>;
+}
+
 export interface NextHookOptions<T extends object> {
   action: keyof T | (keyof T)[];
   options?: SurrogateMethodOptions<T>;
