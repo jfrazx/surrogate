@@ -7,7 +7,7 @@ import {
   Property,
   WhichContainers,
   SurrogateHandler,
-  SurrogateMethodOptions,
+  SurrogateHandlerOptions,
 } from '../interfaces';
 
 export interface EventMap<T extends object> {
@@ -46,7 +46,7 @@ export class SurrogateEventManager<T extends object = any> {
    * @param {Property} event
    * @param {Which} type
    * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
-   * @param {SurrogateMethodOptions<T>} [options={}]
+   * @param {SurrogateHandlerOptions<T>} [options={}]
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
@@ -54,7 +54,7 @@ export class SurrogateEventManager<T extends object = any> {
     event: Property,
     type: Which,
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
-    options: SurrogateMethodOptions<T> = {},
+    options: SurrogateHandlerOptions<T> = {},
   ): SurrogateEventManager<T> {
     return this.setEventHandlers(event, type, asArray(handler), options);
   }
@@ -64,14 +64,14 @@ export class SurrogateEventManager<T extends object = any> {
    *
    * @param {Property} event
    * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
-   * @param {SurrogateMethodOptions<T>} [options]
+   * @param {SurrogateHandlerOptions<T>} [options]
    * @returns {SurrogateEventManager}
    * @memberof SurrogateEventManager
    */
   registerPreHook(
     event: Property,
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
-    options?: SurrogateMethodOptions<T>,
+    options?: SurrogateHandlerOptions<T>,
   ): SurrogateEventManager {
     return this.setEventHandlers(event, PRE, asArray(handler), options);
   }
@@ -81,14 +81,14 @@ export class SurrogateEventManager<T extends object = any> {
    *
    * @param {Property} event
    * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
-   * @param {SurrogateMethodOptions<T>} [options]
+   * @param {SurrogateHandlerOptions<T>} [options]
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
   registerPostHook(
     event: Property,
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
-    options?: SurrogateMethodOptions<T>,
+    options?: SurrogateHandlerOptions<T>,
   ): SurrogateEventManager<T> {
     return this.setEventHandlers(event, POST, asArray(handler), options);
   }
@@ -97,7 +97,7 @@ export class SurrogateEventManager<T extends object = any> {
     event: Property,
     type: Which,
     handlers: SurrogateHandler<T>[],
-    options: SurrogateMethodOptions<T> = {},
+    options: SurrogateHandlerOptions<T> = {},
   ): SurrogateEventManager<T> {
     const currentContainers: HandlerContainer<T>[] = this.getEventHandlersFor(event, type);
     const containers = handlers.map((handler) => new HandlerContainer(handler, type, options));

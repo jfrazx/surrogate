@@ -1,4 +1,3 @@
-import { SurrogateHandler } from '../interfaces';
 import { MethodWrapper } from '../interfaces';
 import { ArgumentRuleRunner } from './rules';
 import { asArray } from '@jfrazx/asarray';
@@ -28,35 +27,32 @@ export abstract class HandlerRunner<T extends object> {
     const useArgs = ArgumentRuleRunner.generateArgumentsFromRules(this.node, args, error);
 
     useNext
-      ? this.runWithNext(handler as SurrogateHandler<T>, useContext, useArgs)
+      ? this.runWithNext(handler, useContext, useArgs)
       : this.runWithoutNext(handler, useContext, useArgs);
   }
 
-  protected runWithNext(handler: SurrogateHandler<T>, context: any, args: any[]): void {
-    handler.call(context, ...args);
+  protected runWithNext(handler: Function, context: any, args: any[]): void {
+    handler.apply(context, args);
   }
 
-  protected abstract runWithoutNext(
-    handler: SurrogateHandler<T> | Function,
-    context: any,
-    args: any[],
-  ): void;
+  protected abstract runWithoutNext(handler: Function, context: any, args: any[]): void;
 }
 
 class AsyncHandlerRunner<T extends object> extends HandlerRunner<T> {
-  protected runWithoutNext(handler: SurrogateHandler<T>, context: any, args: any[]): void {
+  protected runWithoutNext(handler: Function, context: any, args: any[]): void {
     const { nextNode } = this.node;
 
     handler
-      .call(context, ...args)
+      .apply(context, args)
       .then((result: any) => nextNode.next({ using: asArray(result) }));
   }
 }
 
 class SyncHandlerRunner<T extends object> extends HandlerRunner<T> {
-  protected runWithoutNext(handler: SurrogateHandler<T>, context: any, args: any[]): void {
+  protected runWithoutNext(handler: Function, context: any, args: any[]): void {
     const { nextNode } = this.node;
-    const result = handler.call(context, ...args);
+
+    const result = handler.apply(context, args);
 
     nextNode.next({ using: asArray(result) });
   }

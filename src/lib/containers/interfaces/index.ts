@@ -1,4 +1,4 @@
-import { SurrogateMethodOptions, SurrogateHandler } from '../../interfaces';
+import { SurrogateHandlerOptions, SurrogateHandler } from '../../interfaces';
 import { NextNode, Execution } from '../../next';
 import { HandlerContainer } from '../handler';
 import { SurrogateProxy } from '../../proxy';
@@ -7,7 +7,7 @@ import { Context } from '../../context';
 
 export interface IContainer<T extends object> {
   type: WhichMethod;
-  options: SurrogateMethodOptions<T>;
+  options: SurrogateHandlerOptions<T>;
   handler: SurrogateHandler<T> | Function;
   determineContext(context: Context<T>): any;
 }

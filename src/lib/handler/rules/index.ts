@@ -12,8 +12,8 @@ export abstract class ArgumentRuleRunner {
     error?: Error,
   ) {
     const rules: Rule<T>[] = [
-      new UseNextRule<T>(),
       new PassErrorRule<T>(error),
+      new UseNextRule<T>(),
       new PassInstanceRule<T>(),
       new PassSurrogateRule<T>(),
     ];

@@ -15,7 +15,7 @@ export enum MethodWrapper {
 
 export type RunCondition<T extends object> = (instance: Unwrapped<T>) => boolean;
 
-export interface SurrogateMethodOptions<T extends object> {
+export interface SurrogateHandlerOptions<T extends object> {
   /**
    * Pass next object to the Surrogate Method
    *

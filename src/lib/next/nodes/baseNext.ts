@@ -1,12 +1,12 @@
 import { IContainer, ContainerGenerator, TailGeneration } from '../../containers';
-import { SurrogateMethodOptions, Unwrapped } from '../../interfaces';
+import { SurrogateHandlerOptions, Unwrapped } from '../../interfaces';
 import { INext, NextOptions, NextNode } from '../interfaces';
 import { SurrogateProxy } from '../../proxy';
 import { asArray } from '@jfrazx/asarray';
 import { Context } from '../../context';
 import { Execution } from '../context';
 
-const defaultErrorOptions: SurrogateMethodOptions<any> = {
+const defaultErrorOptions: SurrogateHandlerOptions<any> = {
   passErrors: false,
   ignoreErrors: false,
   passInstance: false,

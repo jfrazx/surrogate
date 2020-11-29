@@ -27,9 +27,9 @@ an instance of Surrogate Event Manager that will allow management of pre and pos
 
 ### SurrogateEventManager Methods
 
-registerHook(event: Property, type: Which, handler: SurrogateHandler, options?: SurrogateMethodOptions): SurrogateEventManager  
-registerPreHook(event: Property, handler: SurrogateHandler, options?: SurrogateMethodOptions): SurrogateEventManager  
-registerPostHook(event: Property, handler: SurrogateHandler, options?: SurrogateMethodOptions): SurrogateEventManager  
+registerHook(event: Property, type: Which, handler: SurrogateHandler, options?: SurrogateHandlerOptions): SurrogateEventManager  
+registerPreHook(event: Property, handler: SurrogateHandler, options?: SurrogateHandlerOptions): SurrogateEventManager  
+registerPostHook(event: Property, handler: SurrogateHandler, options?: SurrogateHandlerOptions): SurrogateEventManager  
 deregisterPreHooks(event: Property): SurrogateEventManager  
 deregisterPostHooks(event: Property): SurrogateEventManager  
 deregisterHooks(): SurrogateEventManager  

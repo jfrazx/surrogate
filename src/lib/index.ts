@@ -9,5 +9,5 @@ export {
   SurrogateContext,
   SurrogateHandler,
   SurrogateOptions,
-  SurrogateMethodOptions,
+  SurrogateHandlerOptions,
 } from './interfaces';

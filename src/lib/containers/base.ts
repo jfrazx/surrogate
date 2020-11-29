@@ -5,10 +5,10 @@ import {
   MethodWrapper,
   SurrogateContext,
   SurrogateHandler,
-  SurrogateMethodOptions,
+  SurrogateHandlerOptions,
 } from '../interfaces';
 
-const defaultMethodOptions: Required<SurrogateMethodOptions<any>> = {
+const defaultMethodOptions: Required<SurrogateHandlerOptions<any>> = {
   useNext: true,
   passErrors: false,
   runConditions: [],
@@ -20,12 +20,12 @@ const defaultMethodOptions: Required<SurrogateMethodOptions<any>> = {
 };
 
 export abstract class BaseContainer<T extends object> implements IContainer<T> {
-  public options: SurrogateMethodOptions<T>;
+  public options: SurrogateHandlerOptions<T>;
 
   constructor(
     public handler: SurrogateHandler<T> | Function,
     public type: WhichMethod,
-    options: SurrogateMethodOptions<T> = {},
+    options: SurrogateHandlerOptions<T> = {},
   ) {
     this.options = { ...defaultMethodOptions, ...options };
   }

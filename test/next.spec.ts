@@ -260,7 +260,7 @@ describe('Next', () => {
         next.next({ error });
       });
       const func2 = sinon.spy(
-        (next: INext<Network>, passedError: Error, instance: Network) => {
+        (passedError: Error, next: INext<Network>, instance: Network) => {
           expect(passedError).to.equal(error);
           expect(instance).to.be.undefined;
 
@@ -322,7 +322,7 @@ describe('Next', () => {
         next.next({ error });
       });
       const func2 = sinon.spy(
-        (next: INext<Network>, passedError: Error, instance: Network) => {
+        (passedError: Error, next: INext<Network>, instance: Network) => {
           expect(passedError).to.equal(error);
           expect(instance).to.equal(next.instance);
 

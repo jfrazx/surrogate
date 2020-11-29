@@ -1,6 +1,8 @@
+import { Next } from '../src/lib/next';
 import { Guitar } from './lib/guitar';
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { Surrogate } from '../src/lib/interfaces/surrogate';
 import {
   INext,
   NextFor,
@@ -10,10 +12,10 @@ import {
   SurrogatePre,
   NextAsyncPost,
   SurrogatePost,
+  SurrogateHandler,
   SurrogateAsyncPre,
   SurrogateDelegate,
   SurrogateAsyncPost,
-  SurrogateHandler,
 } from '../src';
 
 describe('SurrogateDecorators', () => {
@@ -68,7 +70,7 @@ describe('SurrogateDecorators', () => {
       ) as any;
       const results = 'SurrogatePost';
 
-      @SurrogateDelegate()
+      @SurrogateDelegate({ useSingleton: false })
       class Test {
         @SurrogatePost<Test>(handler)
         method() {
@@ -127,6 +129,106 @@ describe('SurrogateDecorators', () => {
       @SurrogateDelegate()
       class Test {
         @SurrogateAsyncPre<Test>(handler)
+        async method() {
+          return results;
+        }
+      }
+
+      const test = new Test();
+
+      const result = await test.method();
+
+      sinon.assert.called(handler as any);
+      expect(result).to.equal(results);
+    });
+
+    it('should pre decorate an async method without using next', async () => {
+      const handler: SurrogateHandler<Test> = sinon.spy(() => Promise.resolve());
+      const results = 'SurrogateAsyncPreWithoutNext';
+
+      @SurrogateDelegate()
+      class Test {
+        @SurrogateAsyncPre<Test>({ handler, options: { useNext: false } })
+        async method() {
+          return results;
+        }
+      }
+
+      const test = new Test();
+
+      const result = await test.method();
+
+      sinon.assert.called(handler as any);
+      expect(result).to.equal(results);
+    });
+
+    it('should pre decorate an async method without using next passing instance', async () => {
+      const handler: SurrogateHandler<Test> = sinon.spy(async (instance) => {
+        expect(instance).to.not.equal(test);
+        expect(instance).to.be.instanceOf(Test);
+
+        return Promise.resolve();
+      });
+      const results = 'SurrogateAsyncPreWithoutNextWithInstance';
+
+      @SurrogateDelegate()
+      class Test {
+        @SurrogateAsyncPre<Test>({ handler, options: { useNext: false, passInstance: true } })
+        async method() {
+          return results;
+        }
+      }
+
+      const test = new Test();
+
+      const result = await test.method();
+
+      sinon.assert.called(handler as any);
+      expect(result).to.equal(results);
+    });
+
+    it('should pre decorate an async method without using next passing surrogate', async () => {
+      const results = 'SurrogateAsyncPreWithoutNextWithSurrogate';
+      const handler: SurrogateHandler<Test> = sinon.spy(async (surrogate) => {
+        expect(surrogate).to.equal(test);
+        expect(surrogate).to.be.instanceOf(Test);
+
+        return Promise.resolve();
+      });
+
+      @SurrogateDelegate()
+      class Test {
+        @SurrogateAsyncPre<Test>({ handler, options: { useNext: false, passSurrogate: true } })
+        async method() {
+          return results;
+        }
+      }
+
+      const test = new Test();
+
+      const result = await test.method();
+
+      sinon.assert.called(handler as any);
+      expect(result).to.equal(results);
+    });
+
+    it('should pre decorate an async method without using next passing instance and surrogate', async () => {
+      const results = 'SurrogateAsyncPreWithoutNextWithInstanceAndSurrogate';
+      const handler: SurrogateHandler<Test> = sinon.spy(async (instance, surrogate) => {
+        expect(surrogate).to.equal(test);
+        expect(instance).to.not.equal(test);
+        expect(surrogate).to.be.instanceOf(Test);
+        expect(instance).to.be.instanceOf(Test);
+
+        return Promise.resolve();
+      });
+
+      @SurrogateDelegate()
+      class Test {
+        @SurrogateAsyncPre<Test>({
+          handler,
+          options: { useNext: false, passSurrogate: true, passInstance: true },
+        })
         async method() {
           return results;
         }

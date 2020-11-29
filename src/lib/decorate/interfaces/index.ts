@@ -1,9 +1,9 @@
-import { SurrogateMethodOptions, SurrogateHandler } from '../../interfaces';
+import { SurrogateHandlerOptions, SurrogateHandler } from '../../interfaces';
 import { Whichever } from '../../which';
 
 export interface SurrogateDecoratorOptions<T extends object> {
   handler: SurrogateHandler<T> | SurrogateHandler<T>[];
-  options?: SurrogateMethodOptions<T>;
+  options?: SurrogateHandlerOptions<T>;
 }
 
 export type SurrogateDelegateOptions<T extends object> =
@@ -19,7 +19,7 @@ export interface SurrogateForOptions<T extends object> {
 
 export interface NextHookOptions<T extends object> {
   action: keyof T | (keyof T)[];
-  options?: SurrogateMethodOptions<T>;
+  options?: SurrogateHandlerOptions<T>;
 }
 
 export interface NextForOptions<T extends object> extends NextHookOptions<T> {

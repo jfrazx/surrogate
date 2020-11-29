@@ -6,6 +6,6 @@ export class PassSurrogateRule<T extends object> implements Rule<T> {
     { container: { options }, context: { receiver } }: NextNode<T>,
     args: any[],
   ): any[] {
-    return options.passInstance ? [...args, receiver] : args;
+    return options.passSurrogate ? [...args, receiver] : args;
   }
 }
