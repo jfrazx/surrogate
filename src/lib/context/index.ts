@@ -1,10 +1,16 @@
-import { Property, Surrogate } from '../interfaces';
+import {
+  Property,
+  Surrogate,
+  SurrogateHandlerOptions,
+  SurrogateContext,
+  Unwrapped,
+} from '../interfaces';
 
 export type BoundContext<T extends object> = () => Context<T>;
 
 export class Context<T extends object> {
   constructor(
-    public target: T,
+    public target: Unwrapped<T>,
     public receiver: Surrogate<T>,
     public event: Property,
     public original: Function,
@@ -30,5 +36,23 @@ export class Context<T extends object> {
 
   resetContext(): void {
     Reflect.set(this.target, this.event, this.original);
+  }
+
+  determineContext(options: SurrogateHandlerOptions<T>): any {
+    const { useContext } = options;
+
+    return this.useInstance(useContext)
+      ? this.target
+      : this.useSurrogate(useContext)
+      ? this.receiver
+      : useContext;
+  }
+
+  private useInstance(context: SurrogateHandlerOptions<T>['useContext']) {
+    return context === SurrogateContext.Instance;
+  }
+
+  private useSurrogate(context: SurrogateHandlerOptions<T>['useContext']) {
+    return context === SurrogateContext.Surrogate;
   }
 }

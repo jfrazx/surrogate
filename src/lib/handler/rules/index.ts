@@ -6,16 +6,16 @@ import { NextNode } from '../../next';
 import { Rule } from './interfaces';
 
 export abstract class ArgumentRuleRunner {
-  static generateArgumentsFromRules<T extends object>(
-    node: NextNode<T>,
+  static generateArgumentsFromRules(
+    node: NextNode<any>,
     currentArguments: any[],
     error?: Error,
   ) {
-    const rules: Rule<T>[] = [
-      new PassErrorRule<T>(error),
-      new UseNextRule<T>(),
-      new PassInstanceRule<T>(),
-      new PassSurrogateRule<T>(),
+    const rules: Rule[] = [
+      new PassErrorRule(error),
+      new UseNextRule(),
+      new PassInstanceRule(),
+      new PassSurrogateRule(),
     ];
 
     const generatedArgs = rules.reduce((args, rule) => rule.includeArg(node, args), []);

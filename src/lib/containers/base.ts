@@ -1,6 +1,5 @@
 import { IContainer } from './interfaces';
 import { WhichMethod } from '../which';
-import { Context } from '../context';
 import {
   MethodWrapper,
   SurrogateContext,
@@ -28,27 +27,5 @@ export abstract class BaseContainer<T extends object> implements IContainer<T> {
     options: SurrogateHandlerOptions<T> = {},
   ) {
     this.options = { ...defaultMethodOptions, ...options };
-  }
-
-  determineContext(context: Context<T>): any {
-    const { useContext } = this.options;
-
-    return this.useInstance()
-      ? context.target
-      : this.useSurrogate()
-      ? context.receiver
-      : useContext;
-  }
-
-  private useInstance() {
-    const { useContext } = this.options;
-
-    return useContext === SurrogateContext.Instance;
-  }
-
-  private useSurrogate() {
-    const { useContext } = this.options;
-
-    return useContext === SurrogateContext.Surrogate;
   }
 }

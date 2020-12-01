@@ -3,27 +3,25 @@ import { ArgumentRuleRunner } from './rules';
 import { asArray } from '@jfrazx/asarray';
 import { NextNode } from '../next';
 
-export abstract class HandlerRunner<T extends object> {
-  constructor(protected node: NextNode<T>) {}
-  static for<T extends object>(node: NextNode<T>) {
+export abstract class HandlerRunner {
+  constructor(protected node: NextNode<any>) {}
+  static for(node: NextNode<any>) {
     const {
       container: { options },
     } = node;
     const { wrapper } = options;
 
     return wrapper === MethodWrapper.Async
-      ? new AsyncHandlerRunner<T>(node)
-      : new SyncHandlerRunner<T>(node);
+      ? new AsyncHandlerRunner(node)
+      : new SyncHandlerRunner(node);
   }
 
   run(args: any[], error?: Error) {
     const { container, context } = this.node;
-    const {
-      handler,
-      options: { useNext },
-    } = container;
+    const { handler, options } = container;
+    const { useNext } = options;
 
-    const useContext = container.determineContext(context);
+    const useContext = context.determineContext(options);
     const useArgs = ArgumentRuleRunner.generateArgumentsFromRules(this.node, args, error);
 
     useNext
@@ -38,7 +36,7 @@ export abstract class HandlerRunner<T extends object> {
   protected abstract runWithoutNext(handler: Function, context: any, args: any[]): void;
 }
 
-class AsyncHandlerRunner<T extends object> extends HandlerRunner<T> {
+class AsyncHandlerRunner extends HandlerRunner {
   protected runWithoutNext(handler: Function, context: any, args: any[]): void {
     const { nextNode } = this.node;
 
@@ -48,7 +46,7 @@ class AsyncHandlerRunner<T extends object> extends HandlerRunner<T> {
   }
 }
 
-class SyncHandlerRunner<T extends object> extends HandlerRunner<T> {
+class SyncHandlerRunner extends HandlerRunner {
   protected runWithoutNext(handler: Function, context: any, args: any[]): void {
     const { nextNode } = this.node;
 
