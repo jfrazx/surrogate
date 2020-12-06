@@ -9,7 +9,6 @@ export interface IContainer<T extends object> {
   type: WhichMethod;
   options: SurrogateHandlerOptions<T>;
   handler: SurrogateHandler<T> | Function;
-  determineContext(context: Context<T>): any;
 }
 
 export interface ContainerGeneratorResults<T extends object> {

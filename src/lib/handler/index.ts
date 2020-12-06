@@ -18,12 +18,10 @@ export abstract class HandlerRunner<T extends object> {
 
   run(args: any[], error?: Error) {
     const { container, context } = this.node;
-    const {
-      handler,
-      options: { useNext },
-    } = container;
+    const { handler, options } = container;
+    const { useNext } = options;
 
-    const useContext = container.determineContext(context);
+    const useContext = context.determineContext(options);
     const useArgs = ArgumentRuleRunner.generateArgumentsFromRules(this.node, args, error);
 
     useNext

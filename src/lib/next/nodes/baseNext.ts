@@ -94,7 +94,7 @@ export abstract class BaseNext<T extends object> implements INext<T> {
   }
 
   protected get useContext() {
-    return this.container.determineContext(this.context);
+    return this.context.determineContext(this.container.options);
   }
 
   abstract skipWith(times?: number, ...args: any[]): void;

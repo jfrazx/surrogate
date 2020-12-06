@@ -10,13 +10,12 @@ tslint.json
 .prettierrc
 .releaserc
 .nycrc.json
+cspell.json
 *.lcov
 yarn.lock
 mocha.opts
 
 .env.*
-
-.nyc_output/
 
 !*.d.ts
 
@@ -26,5 +25,7 @@ examples/
 build-examples/
 spec/
 test/
+.nyc_output/
 .vscode/
+.github/
 coverage/

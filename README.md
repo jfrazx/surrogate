@@ -13,9 +13,9 @@ There are a couple ways to manage Surrogate. The first is to utilize an exposed 
 ```typescript
 import { wrapSurrogate, Surrogate, INext } from 'some-future-package';
 
-const instance: Surrogate<Guitar> = wrapSurrogate(new Guitar(), options);
+const guitar: Surrogate<Guitar> = wrapSurrogate(new Guitar(), options);
 
-instance.getSurrogate().registerPreHook('play', (next: INext<Guitar>) => {
+guitar.getSurrogate().registerPreHook('play', (next: INext<Guitar>) => {
   // do things before running 'play'
 
   next.next();
@@ -66,62 +66,12 @@ class Guitar {
 
     next.next();
   })
-  @SurrogatePost<Guitar>((next) => {
-    console.log(`Put guitar away`);
-
-    next.next();
-  })
-  play() {
-    console.log(`playing guitar`);
-  }
-}
-```
-
-There may be times when you don't need a particular hook to run.
-
-```typescript
-import { SurrogateDelegate, SurrogatePre, SurrogatePost, INext } from 'some-future-package';
-
-@SurrogateDelegate()
-class Guitar {
-  isTuned = false;
-  isStrung = false;
-  hasBrokenString = false;
-
-  @SurrogatePre<Guitar>([
-    {
-      handler: (next) => {
-        console.log('stringing guitar');
-
-        next.instance.isStrung = true;
-
-        next.next();
-      },
-      options: {
-        runConditions: [(guitar) => !guitar.isStrung],
-      },
+  @SurrogatePost<Guitar>({
+    handler: () => {
+      console.log(`Put guitar away`);
     },
-    {
-      handler: (next) => {
-        const { instance } = next;
-        console.log('tuning guitar');
-
-        instance.isTuned = true;
-
-        next.next({
-          bail: instance.hasBrokenString,
-        });
-      },
-      options: {
-        runConditions: [(guitar) => !guitar.isTuned],
-      },
-    },
-  ])
-  @SurrogatePost({
-    handler: (next: INext<Guitar>) => {
-      console.log('celebrate rocking out');
-
-      next.next();
+    options: {
+      useNext: false,
     },
   })
   play() {

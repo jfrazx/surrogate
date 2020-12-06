@@ -17,7 +17,7 @@ export const manageDecorator = <T extends object>(
 };
 
 export const determineWhich = (type: Whichever): Which[] =>
-  type === BOTH ? [PRE, POST] : [type === PRE ? PRE : POST];
+  type === BOTH ? [PRE, POST] : [type];
 
 export const manageAsyncDecorator = <T extends object>(
   type: Which,
@@ -35,15 +35,13 @@ export const manageAsyncDecorator = <T extends object>(
 };
 
 const organizeOptions = <T extends object>(delegateOptions: SurrogateDelegateOptions<T>) => {
-  return asArray(delegateOptions)
-    .map<SurrogateDecoratorOptions<T>[]>((value) => {
-      const mapHandlers = (decoratorOptions: SurrogateDecoratorOptions<T>) => {
-        const { handler: handlers, options = {} } = decoratorOptions;
+  return asArray(delegateOptions).flatMap<SurrogateDecoratorOptions<T>>((value) => {
+    const mapHandlers = (decoratorOptions: SurrogateDecoratorOptions<T>) => {
+      const { handler: handlers, options = {} } = decoratorOptions;
 
-        return asArray(handlers).map((handler) => ({ handler, options }));
-      };
+      return asArray(handlers).map((handler) => ({ handler, options }));
+    };
 
-      return isFunction(value) ? [{ handler: value, options: {} }] : mapHandlers(value);
-    })
-    .reduce((acc, option) => [...acc, ...option], []);
+    return isFunction(value) ? [{ handler: value, options: {} }] : mapHandlers(value);
+  });
 };
