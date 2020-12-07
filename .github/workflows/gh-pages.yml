@@ -11,14 +11,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: master
 
       - name: Build
         uses: andstor/jsdoc-action@v1
         with:
           source_dir: ./src
           output_dir: ./docs
+          config_file: jsdoc.json
           recurse: true
           template: minami
+          template_dir: template
           front_page: README.md
 
       - name: Deploy
