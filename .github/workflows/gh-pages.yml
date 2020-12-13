@@ -14,16 +14,16 @@ jobs:
         with:
           fetch-depth: 0
           ref: master
+      - run: yarn build
 
-      - name: Build
+      - name: Build Docs
         uses: andstor/jsdoc-action@v1
         with:
-          source_dir: ./src
+          source_dir: ./build
           output_dir: ./docs
           config_file: jsdoc.json
           recurse: true
           template: minami
-          template_dir: template
           front_page: README.md
 
       - name: Deploy

@@ -4,8 +4,8 @@
     "dictionaries": ["jsdoc"]
   },
   "source": {
-    "include": ["package.json", "README.md", "src"],
-    "includePattern": ".ts$",
+    "include": ["package.json", "README.md", "build"],
+    "includePattern": ".js$",
     "excludePattern": "(node_modules/|docs|tests/)"
   },
   "plugins": ["plugins/markdown"],
