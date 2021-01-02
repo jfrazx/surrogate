@@ -25,6 +25,7 @@ examples/
 build-examples/
 spec/
 test/
+docs/
 .nyc_output/
 .vscode/
 .github/

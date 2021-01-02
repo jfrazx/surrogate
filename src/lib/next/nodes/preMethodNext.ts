@@ -38,7 +38,7 @@ export class PreMethodNext<T extends object> extends FinalNext<T> implements INe
     }
 
     if (bail) {
-      return this.controller.bail(this, useNextOptions.bailWith);
+      return this.controller.bail(useNextOptions.bailWith);
     }
 
     return this.controller.runOriginal(this.nextNode);

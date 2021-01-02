@@ -1,4 +1,4 @@
-import { wrapSurrogate, INext, SurrogateMethods, SurrogateUnwrapped } from '../build';
+import { SurrogateDelegate, INext, SurrogateMethods, SurrogateUnwrapped } from '../build';
 
 interface INetwork {
   isEnabled: boolean;
@@ -9,6 +9,7 @@ interface INetwork {
 
 interface Network extends SurrogateMethods<Network> {}
 
+@SurrogateDelegate({ useSingleton: true })
 class Network implements INetwork {
   private enabled: boolean = Boolean(Math.random() > 0.5);
   private connected: boolean = Boolean(Math.random() > 0.5);
@@ -72,7 +73,7 @@ class Network implements INetwork {
   }
 }
 
-const network = wrapSurrogate(new Network());
+const network = new Network();
 
 network.init();
 network.connect();

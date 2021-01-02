@@ -62,8 +62,8 @@ export abstract class ExecutionContext<T extends object> implements Execution<T>
   }
 
   abstract start(): any;
+  abstract bail(bailWith?: any): any;
   abstract runOriginal(node: NextNode<T>): void;
-  abstract bail(next: NextNode<T>, bailWith?: any): any;
   abstract complete(node: NextNode<T>, passedArgs: any[]): void;
 }
 

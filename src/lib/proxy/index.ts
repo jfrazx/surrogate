@@ -45,7 +45,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return this.bindHandler(event, target, receiver);
   }
 
-  destroy(target: T): T {
+  dispose(target: T): T {
     this.targets.delete(target);
 
     return target;
@@ -96,7 +96,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return () => this.targets.get(target);
   }
 
-  private shouldProcess(target: T, original: any, event: Property): original is Function {
+  private shouldProcess(target: T, original: any, event: Property): boolean {
     if (!isFunction(original) || Context.isAlreadyContextBound(original)) {
       return false;
     }

@@ -12,14 +12,12 @@ export abstract class ArgumentRuleRunner {
     error?: Error,
   ) {
     const rules: Rule<T>[] = [
-      new PassErrorRule<T>(error),
-      new UseNextRule<T>(),
-      new PassInstanceRule<T>(),
       new PassSurrogateRule<T>(),
+      new PassInstanceRule<T>(),
+      new UseNextRule<T>(),
+      new PassErrorRule<T>(error),
     ];
 
-    const generatedArgs = rules.reduce((args, rule) => rule.includeArg(node, args), []);
-
-    return [...generatedArgs, ...currentArguments];
+    return rules.reduce((args, rule) => rule.includeArg(node, args), currentArguments);
   }
 }

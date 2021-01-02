@@ -1,6 +1,6 @@
-import { SurrogateDelegate, SurrogatePre, INext, NextPost, GetSurrogate } from '../build';
+import { SurrogateDelegate, SurrogatePre, INext, NextPost, SurrogateMethods } from '../build';
 
-export interface Animal extends GetSurrogate<Animal> {}
+export interface Animal extends SurrogateMethods<Animal> {}
 
 @SurrogateDelegate()
 export class Animal {
@@ -34,7 +34,7 @@ export class Animal {
     const animalBitesHand = Math.random() < 0.2;
 
     next.next({
-      error: animalBitesHand ? new Error(`Ouch`) : false,
+      error: animalBitesHand ? new Error(`Ouch`) : null,
     });
   }
 }

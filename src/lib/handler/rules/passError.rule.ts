@@ -5,6 +5,6 @@ export class PassErrorRule<T extends object> implements Rule<T> {
   constructor(private error?: Error) {}
 
   includeArg({ container: { options } }: NextNode<T>, args: any[]): any[] {
-    return options.passErrors && this.error ? [...args, this.error] : args;
+    return options.passErrors && this.error ? [this.error, ...args] : args;
   }
 }

@@ -4,10 +4,11 @@ export { POST, PRE, BOTH } from './which';
 export * from './decorate';
 export {
   Surrogate,
-  GetSurrogate,
   MethodWrapper,
   SurrogateContext,
   SurrogateHandler,
+  SurrogateMethods,
   SurrogateOptions,
+  SurrogateUnwrapped,
   SurrogateHandlerOptions,
 } from './interfaces';

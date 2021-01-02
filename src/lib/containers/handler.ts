@@ -6,7 +6,7 @@ export class HandlerContainer<T extends object> extends BaseContainer<T> {
   constructor(
     public handler: SurrogateHandler<T>,
     public type: Which,
-    options: SurrogateHandlerOptions<T> = {},
+    options: SurrogateHandlerOptions<T>,
   ) {
     super(handler, type, options);
   }

@@ -43,7 +43,7 @@ export class Next<T extends object> extends BaseNext<T> implements INext<T> {
     if (bail) {
       this.didBail = bail;
 
-      return this.controller.bail(this, useNextOptions.bailWith);
+      return this.controller.bail(useNextOptions.bailWith);
     }
 
     const handler = HandlerRunner.for(this);

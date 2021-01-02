@@ -24,9 +24,9 @@ export abstract class HandlerRunner<T extends object> {
     const useContext = context.determineContext(options);
     const useArgs = ArgumentRuleRunner.generateArgumentsFromRules(this.node, args, error);
 
-    useNext
-      ? this.runWithNext(handler, useContext, useArgs)
-      : this.runWithoutNext(handler, useContext, useArgs);
+    const runner = useNext ? this.runWithNext : this.runWithoutNext;
+
+    runner.call(this, handler, useContext, useArgs);
   }
 
   protected runWithNext(handler: Function, context: any, args: any[]): void {

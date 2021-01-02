@@ -1,8 +1,6 @@
-import { Next } from '../src/lib/next';
 import { Guitar } from './lib/guitar';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { Surrogate } from '../src/lib/interfaces/surrogate';
 import {
   INext,
   NextFor,
@@ -136,6 +134,53 @@ describe('SurrogateDecorators', () => {
 
       const test = new Test();
 
+      const result = await test.method();
+
+      sinon.assert.called(handler as any);
+      expect(result).to.equal(results);
+    });
+
+    it('should pre decorate an async method and bail', async () => {
+      const handler: SurrogateHandler<Test> = sinon.spy((next: INext<Test>) =>
+        next.next({
+          bail: true,
+        }),
+      ) as any;
+      const results = 'SurrogateAsyncPreBail';
+
+      @SurrogateDelegate()
+      class Test {
+        @SurrogateAsyncPre<Test>(handler)
+        async method() {
+          return results;
+        }
+      }
+
+      const test = new Test();
+      const result = await test.method();
+
+      sinon.assert.called(handler as any);
+      expect(result).to.be.undefined;
+    });
+
+    it('should pre decorate an async method and bail with', async () => {
+      const results = 'SurrogateAsyncPreBailWith';
+      const handler: SurrogateHandler<Test> = sinon.spy((next: INext<Test>) =>
+        next.next({
+          bail: true,
+          bailWith: results,
+        }),
+      ) as any;
+
+      @SurrogateDelegate()
+      class Test {
+        @SurrogateAsyncPre<Test>(handler)
+        async method() {
+          return 'SurrogateAsyncPreBailWithNotThis';
+        }
+      }
+
+      const test = new Test();
       const result = await test.method();
 
       sinon.assert.called(handler as any);

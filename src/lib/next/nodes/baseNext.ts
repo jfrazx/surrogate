@@ -1,5 +1,5 @@
 import { IContainer, ContainerGenerator, TailGeneration } from '../../containers';
-import { SurrogateHandlerOptions, Unwrapped } from '../../interfaces';
+import { SurrogateHandlerOptions, SurrogateUnwrapped } from '../../interfaces';
 import { INext, NextOptions, NextNode } from '../interfaces';
 import { SurrogateProxy } from '../../proxy';
 import { asArray } from '@jfrazx/asarray';
@@ -81,8 +81,8 @@ export abstract class BaseNext<T extends object> implements INext<T> {
     );
   }
 
-  get instance(): Unwrapped<T> {
-    return this.context.target as Unwrapped<T>;
+  get instance(): SurrogateUnwrapped<T> {
+    return this.context.target as SurrogateUnwrapped<T>;
   }
 
   addNext(next: NextNode<T>) {

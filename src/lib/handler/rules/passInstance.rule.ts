@@ -6,6 +6,6 @@ export class PassInstanceRule<T extends object> implements Rule<T> {
     { container: { options }, context: { target } }: NextNode<T>,
     args: any[],
   ): any[] {
-    return options.passInstance ? [...args, target] : args;
+    return options.passInstance ? [target, ...args] : args;
   }
 }

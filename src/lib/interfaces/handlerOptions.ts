@@ -1,4 +1,4 @@
-import { Unwrapped } from './surrogate';
+import { SurrogateUnwrapped } from './surrogate';
 
 export type SurrogateContexts = 'instance' | 'surrogate';
 export type MethodWrappers = 'none' | 'async';
@@ -13,7 +13,7 @@ export enum MethodWrapper {
   Async = 'async',
 }
 
-export type RunCondition<T extends object> = (instance: Unwrapped<T>) => boolean;
+export type RunCondition<T extends object> = (instance: SurrogateUnwrapped<T>) => boolean;
 
 export interface SurrogateHandlerOptions<T extends object> {
   /**

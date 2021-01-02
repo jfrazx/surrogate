@@ -1,8 +1,8 @@
 import { wrapSurrogate, INext } from '../build';
 
 class Network {
-  private enabled: boolean = true;
-  private connected: boolean = false;
+  private enabled: boolean = Boolean(Math.random() > 0.5);
+  private connected: boolean = Boolean(Math.random() > 0.5);
 
   readonly host: string = 'localhost';
 
@@ -38,7 +38,11 @@ class Network {
     this.connected = false;
   }
 
-  preConnectHandler(next: INext<Network>) {
+  preConnectionCheck(next: INext<Network>) {
+    console.info(
+      `Checking connected: (${this.isConnected}) and disabled: (${this.isDisabled}) status`,
+    );
+
     next.next({
       bail: this.isConnected || this.isDisabled,
     });
@@ -47,6 +51,6 @@ class Network {
 
 const network = wrapSurrogate(new Network());
 
-network.getSurrogate().registerPreHook('connect', network.preConnectHandler);
+network.getSurrogate().registerPreHook('connect', network.preConnectionCheck);
 
 network.connect();

@@ -1,12 +1,12 @@
 import { IContainer } from '../../containers';
-import { Unwrapped } from '../../interfaces';
+import { SurrogateUnwrapped } from '../../interfaces';
 import { NextOptions } from './nextOptions';
 import { Context } from '../../context';
 
 export interface INext<T extends object> {
   didBail: boolean;
   context: Context<T>;
-  instance: Unwrapped<T>;
+  instance: SurrogateUnwrapped<T>;
   container: IContainer<T>;
   skip(times?: number): void;
   next({ error, using }?: NextOptions): void;

@@ -9,8 +9,11 @@
   "branches": 0,
   "lines": 0,
   "reporter": ["lcov", "text-summary", "html"],
-  "all": true,
-  "cache": true,
+  "all": false,
+  "cache": false,
   "report-dir": "./coverage",
-  "tmp-directory": ".nyc_output"
+  "tmp-directory": ".nyc_output",
+  "extension": [".ts", ".tsx"],
+  "require": ["ts-node/register/transpile-only", "source-map-support/register"],
+  "exclude": ["src/lib/index.ts", "test/**/*", "coverage/**/*", "**/*.d.ts"]
 }

@@ -1,6 +1,6 @@
 import { HandlerContainer } from '../containers';
+import { wrapDefaults } from '@status/defaults';
 import { PRE, POST, Which } from '../which';
-import { Defaults } from '@status/defaults';
 import { SurrogateProxy } from '../proxy';
 import { asArray } from '@jfrazx/asarray';
 import {
@@ -18,8 +18,7 @@ export class SurrogateEventManager<T extends object = any> {
   private readonly events: EventMap<T>;
 
   constructor(private readonly proxy: SurrogateProxy<T>, private readonly target: T) {
-    this.events = Defaults.wrap<EventMap<T>, WhichContainers<T>>({
-      wrap: Object.create(null),
+    this.events = wrapDefaults<EventMap<T>, WhichContainers<T>>({
       defaultValue: {
         [POST]: [],
         [PRE]: [],
@@ -72,7 +71,7 @@ export class SurrogateEventManager<T extends object = any> {
     event: Property,
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options?: SurrogateHandlerOptions<T>,
-  ): SurrogateEventManager {
+  ): SurrogateEventManager<T> {
     return this.setEventHandlers(event, PRE, asArray(handler), options);
   }
 
@@ -116,7 +115,7 @@ export class SurrogateEventManager<T extends object = any> {
     event: Property,
     type: Which,
     containers: HandlerContainer<T>[] = [],
-  ): SurrogateEventManager {
+  ): SurrogateEventManager<T> {
     this.getEventHandlers(event)[type] = containers;
 
     return this;
@@ -128,7 +127,7 @@ export class SurrogateEventManager<T extends object = any> {
    * @returns
    * @memberof SurrogateEventManager
    */
-  deregisterHooks(): SurrogateEventManager {
+  deregisterHooks(): SurrogateEventManager<T> {
     Object.keys(this.events).forEach((event) => this.deregisterHooksFor(event));
 
     return this;
@@ -141,7 +140,7 @@ export class SurrogateEventManager<T extends object = any> {
    * @returns {SurrogateEventManager}
    * @memberof SurrogateEventManager
    */
-  deregisterHooksFor(event: Property): SurrogateEventManager {
+  deregisterHooksFor(event: Property): SurrogateEventManager<T> {
     return this.deregisterPreHooks(event).deregisterPostHooks(event);
   }
 
@@ -153,7 +152,7 @@ export class SurrogateEventManager<T extends object = any> {
    * @returns {SurrogateEventManager}
    * @memberof SurrogateEventManager
    */
-  deregisterPreHook(event: Property, handler: SurrogateHandler<T>): SurrogateEventManager {
+  deregisterPreHook(event: Property, handler: SurrogateHandler<T>): SurrogateEventManager<T> {
     return this.deregisterHookFor(event, PRE, handler);
   }
 
@@ -165,7 +164,7 @@ export class SurrogateEventManager<T extends object = any> {
    * @returns {SurrogateEventManager}
    * @memberof SurrogateEventManager
    */
-  deregisterPostHook(event: Property, handler: SurrogateHandler<T>): SurrogateEventManager {
+  deregisterPostHook(event: Property, handler: SurrogateHandler<T>): SurrogateEventManager<T> {
     return this.deregisterHookFor(event, POST, handler);
   }
 
@@ -177,14 +176,14 @@ export class SurrogateEventManager<T extends object = any> {
    * @memberof SurrogateEventManager
    */
   dispose(): T {
-    return this.deregisterHooks().proxy.destroy(this.target);
+    return this.deregisterHooks().proxy.dispose(this.target);
   }
 
   private deregisterHookFor(
     event: Property,
     which: Which,
     handlerToRemove: SurrogateHandler<T>,
-  ): SurrogateEventManager {
+  ): SurrogateEventManager<T> {
     const containers = this.getEventHandlersFor(event, which);
 
     return this.setEventHandlersFor(
@@ -201,7 +200,7 @@ export class SurrogateEventManager<T extends object = any> {
    * @returns {SurrogateEventManager}
    * @memberof SurrogateEventManager
    */
-  deregisterPostHooks(event: Property): SurrogateEventManager {
+  deregisterPostHooks(event: Property): SurrogateEventManager<T> {
     return this.setEventHandlersFor(event, POST);
   }
 
@@ -212,7 +211,7 @@ export class SurrogateEventManager<T extends object = any> {
    * @returns {SurrogateEventManager}
    * @memberof SurrogateEventManager
    */
-  deregisterPreHooks(event: Property): SurrogateEventManager {
+  deregisterPreHooks(event: Property): SurrogateEventManager<T> {
     return this.setEventHandlersFor(event, PRE);
   }
 }
