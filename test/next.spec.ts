@@ -1,4 +1,4 @@
-import { FinalNext, PreMethodNext, Next } from '../src/lib/next';
+import { FinalNext, PreMethodNext, Next } from '../src/next';
 import { wrapSurrogate, Surrogate, INext } from '../src';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';

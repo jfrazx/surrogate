@@ -1,6 +1,5 @@
-import { SurrogateHandlerOptions } from '../src/lib/interfaces';
-import { ArgumentRuleRunner } from '../src/lib/handler/rules';
-import { Surrogate, wrapSurrogate } from '../src';
+import { SurrogateHandlerOptions, Surrogate, wrapSurrogate } from '../src';
+import { ArgumentRuleRunner } from '../src/handler/rules';
 import { Network } from './lib/network';
 import { expect } from 'chai';
 
