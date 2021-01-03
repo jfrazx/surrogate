@@ -1,4 +1,4 @@
-import { Context } from '../src/lib/context';
+import { Context } from '../src/context';
 import { Network } from './lib/network';
 import { Surrogate } from '../src';
 import { expect } from 'chai';

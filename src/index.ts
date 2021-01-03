@@ -1,18 +1,15 @@
-import { SurrogateOptions, Surrogate } from './lib';
-import { SurrogateProxy } from './lib/proxy';
-
-/**
- * Helper function to create Surrogate wrapped objects
- *
- * @export
- * @template T
- * @param {T} object
- * @param {SurrogateOptions} [options={}]
- * @returns {Surrogate<T>}
- */
-export const wrapSurrogate = <T extends object>(
-  object: T,
-  options: SurrogateOptions = {},
-): Surrogate<T> => SurrogateProxy.wrap(object, options);
-
-export * from './lib';
+export { SurrogateEventManager } from './manager';
+export { INext, NextOptions } from './next';
+export { POST, PRE, BOTH } from './which';
+export { wrapSurrogate } from './proxy';
+export * from './decorate';
+export {
+  Surrogate,
+  MethodWrapper,
+  SurrogateContext,
+  SurrogateHandler,
+  SurrogateMethods,
+  SurrogateOptions,
+  SurrogateUnwrapped,
+  SurrogateHandlerOptions,
+} from './interfaces';

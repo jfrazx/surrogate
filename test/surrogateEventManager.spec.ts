@@ -1,4 +1,5 @@
 import { PRE, POST, INext, Surrogate, wrapSurrogate, SurrogateEventManager } from '../src';
+import { WhichContainers } from '../src/interfaces';
 import { Network } from './lib/network';
 import { expect } from 'chai';
 import sinon from 'sinon';
@@ -42,7 +43,7 @@ describe('Surrogate Event Manager', () => {
       expect(Object.getOwnPropertySymbols(events)).to.be.length(2);
 
       Object.getOwnPropertySymbols(events).forEach((symbol: any) => {
-        const handlers = events[symbol];
+        const handlers = events[symbol as keyof WhichContainers<Network>];
 
         expect(symbol).to.be.a('symbol');
         expect(handlers).to.be.an('array');
@@ -59,7 +60,7 @@ describe('Surrogate Event Manager', () => {
       expect(Object.getOwnPropertySymbols(events)).to.be.length(2);
 
       Object.getOwnPropertySymbols(events).forEach((symbol: any) => {
-        const handlers = events[symbol];
+        const handlers = events[symbol as keyof WhichContainers<Network>];
 
         expect(symbol).to.be.a('symbol');
         expect(handlers).to.be.an('array');
