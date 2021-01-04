@@ -65,7 +65,14 @@ export interface SurrogateHandlerOptions<T extends object> {
    *
    * @default instance
    */
-  useContext?: SurrogateContexts | typeof Object | typeof Function;
+  useContext?: SurrogateContexts | typeof Object | typeof Function | Object;
+
+  /**
+   * @description Determines if the original method should be restored after running
+   *
+   * @default true
+   */
+  resetContext?: boolean;
 
   /**
    * Specifies the method context wrapper to utilize

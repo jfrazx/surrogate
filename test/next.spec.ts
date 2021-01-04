@@ -1,5 +1,5 @@
+import { wrapSurrogate, Surrogate, INext, SurrogateContext } from '../src';
 import { FinalNext, PreMethodNext, Next } from '../src/next';
-import { wrapSurrogate, Surrogate, INext } from '../src';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
@@ -19,54 +19,90 @@ describe('Next', () => {
     sinon.restore();
   });
 
-  it('should pass Next objects to the callbacks', () => {
-    const func1 = sinon.spy(function (next: INext<Network>) {
-      expect(next).to.be.instanceOf(Next);
+  describe('General', () => {
+    it('should pass Next objects to the callbacks', () => {
+      const func1 = sinon.spy(function (next: INext<Network>) {
+        expect(next).to.be.instanceOf(Next);
 
-      next.next();
-    });
-
-    const func2 = sinon.spy((next: INext<Network>) => {
-      expect(next).to.be.instanceOf(FinalNext);
-
-      next.next();
-    });
-
-    network.getSurrogate().registerPreHook(network.connect.name, [func1, func2]);
-    network.connect();
-
-    sinon.assert.calledOnce(func1);
-    sinon.assert.calledOnce(func2);
-    sinon.assert.calledOnce(log);
-  });
-
-  it('should call handlers with the proxied (unwrapped) object as context', () => {
-    network
-      .getSurrogate()
-      .registerPreHook('connect', function (this: Network, next: INext<Network>) {
-        expect(this).to.be.instanceOf(Network);
-        expect(this).to.not.equal(network);
         next.next();
       });
 
-    network.connect();
-  });
+      const func2 = sinon.spy((next: INext<Network>) => {
+        expect(next).to.be.instanceOf(FinalNext);
 
-  it('should pass arguments from one handler to the next', () => {
-    network.getSurrogate().registerPreHook('connect', [
-      (next: INext<Network>) => next.next({ using: [1, 2, 3] }),
-      (next: INext<Network>, arg1: number, arg2: number, arg3: number) => {
-        expect(arg1).to.be.a('number');
-        expect(arg2).to.be.a('number');
-        expect(arg3).to.be.a('number');
-        expect(arg1).to.equal(1);
-        expect(arg2).to.equal(2);
-        expect(arg3).to.equal(3);
         next.next();
-      },
-    ]);
+      });
 
-    network.connect();
+      network.getSurrogate().registerPreHook('connect', [func1, func2]);
+      network.connect();
+
+      sinon.assert.calledOnce(func1);
+      sinon.assert.calledOnce(func2);
+      sinon.assert.calledOnce(log);
+    });
+
+    it('should call handlers with the proxied (unwrapped) object as context', () => {
+      network
+        .getSurrogate()
+        .registerPreHook('connect', function (this: Network, next: INext<Network>) {
+          expect(this).to.be.instanceOf(Network);
+          expect(this).to.not.equal(network);
+          next.next();
+        });
+
+      network.connect();
+    });
+
+    it('should call handlers with the surrogate (wrapped) object as context', () => {
+      network.getSurrogate().registerPreHook(
+        'connect',
+        function (this: Network, next: INext<Network>) {
+          expect(this).to.be.instanceOf(Network);
+          expect(this).to.equal(network);
+          next.next();
+        },
+        {
+          useContext: SurrogateContext.Surrogate,
+        },
+      );
+
+      network.connect();
+    });
+
+    it('should call handlers with the passed options object as context', () => {
+      const otherNetwork = new Network();
+
+      network.getSurrogate().registerPreHook(
+        'connect',
+        function (this: Network, next: INext<Network>) {
+          expect(this).to.be.instanceOf(Network);
+          expect(this).to.equal(otherNetwork);
+          next.next();
+        },
+        {
+          useContext: otherNetwork,
+        },
+      );
+
+      network.connect();
+    });
+
+    it('should pass arguments from one handler to the next', () => {
+      network.getSurrogate().registerPreHook('connect', [
+        (next: INext<Network>) => next.next({ using: [1, 2, 3] }),
+        (next: INext<Network>, arg1: number, arg2: number, arg3: number) => {
+          expect(arg1).to.be.a('number');
+          expect(arg2).to.be.a('number');
+          expect(arg3).to.be.a('number');
+          expect(arg1).to.equal(1);
+          expect(arg2).to.equal(2);
+          expect(arg3).to.equal(3);
+          next.next();
+        },
+      ]);
+
+      network.connect();
+    });
   });
 
   describe('Skip', () => {
@@ -294,6 +330,58 @@ describe('Next', () => {
       expect(() => network.connect()).to.throw(error.message);
       sinon.assert.calledOnce(func1);
       sinon.assert.notCalled(func2);
+    });
+
+    it('should throw error received from Next(PRE) when using ASYNC wrapper', async () => {
+      const error = new Error('fail');
+      let errorThrown = false;
+
+      const connect = sinon.spy(network, 'connect');
+
+      const func1 = sinon.spy((next: INext<Network>) => {
+        expect(next).to.be.instanceOf(Next);
+
+        next.next({ error });
+      });
+      const func2 = sinon.spy((next: INext<Network>) => next.next());
+
+      network.getSurrogate().registerPreHook('connect', [func1, func2], { wrapper: 'async' });
+
+      try {
+        await network.connect();
+      } catch {
+        errorThrown = true;
+      }
+      sinon.assert.calledOnce(func1);
+      sinon.assert.notCalled(func2);
+      sinon.assert.notCalled(connect);
+      expect(errorThrown).to.be.true;
+    });
+
+    it('should throw error received from Next(POST) when using ASYNC wrapper', async () => {
+      const error = new Error('fail');
+      let errorThrown = false;
+
+      const connect = sinon.spy(network, 'connect');
+
+      const func1 = sinon.spy((next: INext<Network>) => {
+        expect(next).to.be.instanceOf(Next);
+
+        next.next({ error });
+      });
+      const func2 = sinon.spy((next: INext<Network>) => next.next());
+
+      network.getSurrogate().registerPostHook('connect', [func1, func2], { wrapper: 'async' });
+
+      try {
+        await network.connect();
+      } catch {
+        errorThrown = true;
+      }
+      sinon.assert.calledOnce(connect);
+      sinon.assert.calledOnce(func1);
+      sinon.assert.notCalled(func2);
+      expect(errorThrown).to.be.true;
     });
 
     it('should throw an error on FinalNext(POST)', () => {

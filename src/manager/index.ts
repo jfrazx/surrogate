@@ -1,7 +1,6 @@
 import { HandlerContainer } from '../containers';
 import { wrapDefaults } from '@status/defaults';
 import { PRE, POST, Which } from '../which';
-import { SurrogateProxy } from '../proxy';
 import { asArray } from '@jfrazx/asarray';
 import {
   Property,
@@ -17,7 +16,7 @@ export interface EventMap<T extends object> {
 export class SurrogateEventManager<T extends object = any> {
   private readonly events: EventMap<T>;
 
-  constructor(private readonly proxy: SurrogateProxy<T>, private readonly target: T) {
+  constructor() {
     this.events = wrapDefaults<EventMap<T>, WhichContainers<T>>({
       defaultValue: {
         [POST]: [],
@@ -53,7 +52,7 @@ export class SurrogateEventManager<T extends object = any> {
     event: Property,
     type: Which,
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
-    options: SurrogateHandlerOptions<T> = {},
+    options: SurrogateHandlerOptions<T>,
   ): SurrogateEventManager<T> {
     return this.setEventHandlers(event, type, asArray(handler), options);
   }
@@ -170,13 +169,17 @@ export class SurrogateEventManager<T extends object = any> {
 
   /**
    * Deregister all events and remove target from Surrogate
-   * Returns the unwrapped object
+   * Returns an array of events that were being managed
    *
-   * @returns {T}
+   * @returns {string[]}
    * @memberof SurrogateEventManager
    */
-  dispose(): T {
-    return this.deregisterHooks().proxy.dispose(this.target);
+  clearEvents(): string[] {
+    const events = Object.keys(this.events);
+
+    this.deregisterHooks();
+
+    return events;
   }
 
   private deregisterHookFor(

@@ -17,6 +17,18 @@ import {
 } from '../src';
 
 describe('SurrogateDecorators', () => {
+  let log: sinon.SinonStub<any, void>;
+  let logError: sinon.SinonStub<any, void>;
+
+  beforeEach(() => {
+    logError = sinon.stub(console, 'error');
+    log = sinon.stub(console, 'log');
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
   describe('SurrogateDelegate', () => {
     it('should be a function', () => {
       expect(SurrogateDelegate).to.be.a('function');

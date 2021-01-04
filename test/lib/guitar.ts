@@ -2,17 +2,15 @@ import {
   POST,
   INext,
   NextFor,
-  Surrogate,
   SurrogatePre,
   SurrogatePost,
+  SurrogateMethods,
   SurrogateDelegate,
 } from '../../src';
 
-interface IGuitar {}
-export interface Guitar extends Surrogate<IGuitar> {}
+export interface Guitar extends SurrogateMethods<Guitar> {}
 
 @SurrogateDelegate()
-// @ts-ignore
 export class Guitar {
   isTuned = false;
   isStrung = false;
@@ -20,7 +18,7 @@ export class Guitar {
 
   @SurrogatePre<Guitar>([
     {
-      handler: (next) => {
+      handler: (next: INext<Guitar>) => {
         console.log('stringing guitar');
 
         next.instance.isStrung = true;
@@ -32,17 +30,17 @@ export class Guitar {
       },
     },
     {
-      handler: (next) => {
-        const { instance } = next;
+      handler: (next: INext<Guitar>, guitar: Guitar) => {
         console.log('tuning guitar');
 
-        instance.isTuned = true;
+        guitar.isTuned = true;
 
         next.next({
-          bail: instance.hasBrokenString,
+          bail: guitar.hasBrokenString,
         });
       },
       options: {
+        passInstance: true,
         runConditions: (guitar) => !guitar.isTuned,
       },
     },

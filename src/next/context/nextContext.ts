@@ -4,13 +4,14 @@ import { MethodNext } from '../nodes';
 export class NextContext<T extends object> extends ExecutionContext<T> {
   start() {
     try {
+      const { context } = this.nextNode;
+
+      this.resetContext(context);
       this.runNext();
 
       return this.returnValue;
     } catch (error) {
-      this.logError(error);
-
-      throw error;
+      this.handleError(error);
     }
   }
 
@@ -27,5 +28,11 @@ export class NextContext<T extends object> extends ExecutionContext<T> {
 
   bail(bailWith?: any) {
     this.returnValue ??= bailWith;
+  }
+
+  private handleError(error?: Error) {
+    this.logError(error);
+
+    throw error;
   }
 }

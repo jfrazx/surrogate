@@ -11,6 +11,7 @@ const defaultMethodOptions: Required<SurrogateHandlerOptions<any>> = {
   useNext: true,
   passErrors: false,
   runConditions: [],
+  resetContext: true,
   ignoreErrors: false,
   passInstance: false,
   passSurrogate: false,

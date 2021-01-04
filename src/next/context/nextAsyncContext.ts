@@ -2,16 +2,24 @@ import { ExecutionContext } from './executionContext';
 import { MethodNext } from '../nodes';
 
 export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
-  public resolver: (value: any) => void;
+  private resolver: (value: any) => void;
   private rejecter: (reason: any) => void;
 
   async start() {
     return new Promise((resolve, reject) => {
+      const { context } = this.nextNode;
+
+      this.resetContext(context);
+
       this.resolver = resolve;
       this.rejecter = reject;
 
-      this.runNext();
-    }).catch((error) => this.handleError(error));
+      try {
+        this.runNext(this.nextNode);
+      } catch (error) {
+        this.handleError(error);
+      }
+    });
   }
 
   complete(): void {

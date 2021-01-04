@@ -12,7 +12,7 @@ export class FinalNext<T extends object> extends BaseNext<T> implements INext<T>
     const { error, using } = useOptions;
 
     if (error) {
-      return this.nextError(error, ...using);
+      return this.nextError(error, using, useOptions);
     }
 
     this.controller.complete(this, using);

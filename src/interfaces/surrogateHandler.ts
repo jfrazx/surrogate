@@ -1,5 +1,5 @@
-import { INext } from '../next';
 import { SurrogateUnwrapped, Surrogate } from './surrogate';
+import { INext } from '../next';
 
 type HandlerWithoutAny = (...args: any) => any;
 type HandlerWithAll<T extends object> = (

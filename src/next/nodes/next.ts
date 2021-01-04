@@ -34,15 +34,11 @@ export class Next<T extends object> extends BaseNext<T> implements INext<T> {
     const useNextOptions = { ...nextOptionDefaults, ...nextOptions };
     const { error, using, bail } = useNextOptions;
 
-    this.didBail = bail ?? this.didBail;
-
     if (error) {
-      return this.nextError(error, ...using);
+      return this.nextError(error, using, useNextOptions);
     }
 
     if (bail) {
-      this.didBail = bail;
-
       return this.controller.bail(useNextOptions.bailWith);
     }
 

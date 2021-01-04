@@ -1,6 +1,5 @@
 export const isFunction = (value: unknown): value is Function => isType(value, 'function');
-
-export const isObject = (value: unknown): value is object => isType(value, 'object');
+export const isUndefined = (value: unknown): value is undefined => isType(value, 'undefined');
 
 const isType = (value: unknown, type: string): boolean => typeof value === type;
 

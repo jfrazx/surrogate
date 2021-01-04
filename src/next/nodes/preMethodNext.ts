@@ -31,10 +31,10 @@ export class PreMethodNext<T extends object> extends FinalNext<T> implements INe
     const useNextOptions = { ...nextOptionDefaults, ...nextOptions };
     const { error, using, bail } = useNextOptions;
 
-    this.didBail = bail ?? this.didBail;
+    this.setPrevContainerOptions();
 
     if (error) {
-      return this.nextError(error, ...using);
+      return this.nextError(error, using, useNextOptions);
     }
 
     if (bail) {
@@ -42,5 +42,13 @@ export class PreMethodNext<T extends object> extends FinalNext<T> implements INe
     }
 
     return this.controller.runOriginal(this.nextNode);
+  }
+
+  private setPrevContainerOptions() {
+    const { container } = this;
+    const { options } = container;
+    const preOptions = this.prevNode?.container.options ?? {};
+
+    container.options = { ...options, ...preOptions };
   }
 }

@@ -1,6 +1,5 @@
+import { SurrogateOptions, ISurrogateEventManager } from '../interfaces';
 import { SurrogateDecoratorOptions } from './interfaces';
-import { SurrogateEventManager } from '../manager';
-import { SurrogateOptions } from '../interfaces';
 import { wrapDefaults } from '@status/defaults';
 import { Which, POST, PRE } from '../which';
 import { SurrogateProxy } from '../proxy';
@@ -35,7 +34,7 @@ export class SurrogateClassWrapper<T extends object> implements ProxyHandler<T> 
   }
 
   private applyDecorators(
-    eventManager: SurrogateEventManager<T>,
+    eventManager: ISurrogateEventManager<T>,
     decoratorMap: DecoratedEventMap,
   ) {
     Object.entries(decoratorMap).forEach(([event, options]) => {
@@ -45,7 +44,7 @@ export class SurrogateClassWrapper<T extends object> implements ProxyHandler<T> 
         }: { [hook: string]: SurrogateDecoratorOptions<T>[] } = options as any;
 
         handlerOptions.forEach(({ handler, options }) => {
-          eventManager.registerHook(event, which, handler, options);
+          eventManager.registerHook(event as keyof T, which, handler, options);
         });
       });
     });

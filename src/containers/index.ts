@@ -10,22 +10,22 @@ import { Context } from '../context';
 
 export const containerGenerator = function* <T extends object>(
   containers: HandlerContainer<T>[],
-  finalGenerate: TailGeneration<T>,
+  tailGenerator: TailGeneration<T>,
 ) {
   for (const container of containers) {
     yield container;
   }
 
-  return finalGenerate;
+  return tailGenerator;
 };
 
 export abstract class Tail {
   static for<T extends object>(which: Which, args?: any[]): TailGeneration<T> {
     const Next = which === PRE ? PreMethodNext : FinalNext;
 
-    return this.endGeneration(Next, args);
+    return this.tailGeneration<T>(Next, args);
   }
-  private static endGeneration<T extends object>(
+  private static tailGeneration<T extends object>(
     Next: NextConstruct<T>,
     args?: any[],
   ): TailGeneration<T> {

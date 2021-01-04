@@ -1,45 +1,51 @@
 import { Execution } from './interfaces';
 import { NextNode } from '../interfaces';
+import { Context } from '../../context';
 import { isAsync } from '../../helpers';
 
 interface ExecutionConstruct<T extends object> {
-  new (originalMethod: Function, originalArgsL: any[]): Execution<T>;
+  new (
+    originalMethod: Function,
+    originalArgsL: any[],
+    shouldResetContext: boolean,
+  ): Execution<T>;
 }
 
 export abstract class ExecutionContext<T extends object> implements Execution<T> {
   protected nextNode: NextNode<T>;
   protected returnValue: any;
 
-  constructor(public originalMethod: Function, public originalArgs: any[]) {}
+  constructor(
+    public originalMethod: Function,
+    public originalArgs: any[],
+    protected shouldResetContext: boolean,
+  ) {}
 
   static for<T extends object>(
     originalMethod: Function,
     originalArgs: any[],
     hasAsync: boolean,
+    resetContext: boolean,
   ) {
     const TargetContext: ExecutionConstruct<T> =
       hasAsync || isAsync(originalMethod) ? NextAsyncContext : NextContext;
 
-    return new TargetContext(originalMethod, originalArgs);
+    return new TargetContext(originalMethod, originalArgs, resetContext);
   }
 
   protected setReturnValue(value: any) {
     this.returnValue = value;
   }
 
+  protected resetContext(context: Context<T>): void {
+    this.shouldResetContext ? context.resetContext() : context.createRetrievableContext();
+  }
+
   setNext(next: NextNode<T>) {
     this.nextNode = next;
   }
 
-  setHooks(pre: NextNode<T>, post: NextNode<T>): this {
-    pre.addNext(post);
-
-    this.addNext(pre);
-
-    return this;
-  }
-
-  protected addNext(next: NextNode<T>): this {
+  addNext(next: NextNode<T>): this {
     if (this.nextNode) {
       this.nextNode.addNext(next);
     } else {

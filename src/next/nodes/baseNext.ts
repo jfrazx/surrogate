@@ -27,7 +27,7 @@ export abstract class BaseNext<T extends object> implements INext<T> {
   protected didError: Error = null;
 
   public nextNode: NextNode<T> = null;
-  public didBail = false;
+  public prevNode: NextNode<T> = null;
 
   constructor(
     protected proxy: SurrogateProxy<T>,
@@ -35,7 +35,9 @@ export abstract class BaseNext<T extends object> implements INext<T> {
     public controller: Execution<T>,
     protected generator: ContainerGenerator<T>,
     public container: IContainer<T>,
-  ) {}
+  ) {
+    controller.addNext(this);
+  }
 
   static for<T extends object>(
     proxy: SurrogateProxy<T>,
@@ -54,7 +56,7 @@ export abstract class BaseNext<T extends object> implements INext<T> {
     return this.skipWith(times);
   }
 
-  nextError(error: Error, ...args: any[]) {
+  nextError(error: Error, using: any[], nextOptions: NextOptions) {
     const { options } = this.container;
     const useOptions = { ...defaultErrorOptions, ...options };
 
@@ -62,9 +64,9 @@ export abstract class BaseNext<T extends object> implements INext<T> {
 
     if (useOptions.ignoreErrors) {
       return this.next({
+        ...nextOptions,
+        using,
         error: null,
-        using: args,
-        bail: this.didBail,
       });
     }
 
@@ -91,6 +93,7 @@ export abstract class BaseNext<T extends object> implements INext<T> {
     }
 
     this.nextNode = next;
+    next.prevNode = this;
   }
 
   protected get useContext() {
