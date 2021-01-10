@@ -13,81 +13,42 @@ export interface EventMap<T extends object> {
   [event: string]: WhichContainers<T>;
 }
 
-export class SurrogateEventManager<T extends object = any> {
-  private readonly events: EventMap<T>;
+export class EventManager<T extends object = any> {
+  private readonly events: EventMap<T> = wrapDefaults<EventMap<T>, WhichContainers<T>>({
+    defaultValue: {
+      [POST]: [],
+      [PRE]: [],
+    },
+    setUndefined: true,
+    shallowCopy: false,
+  });
 
-  constructor() {
-    this.events = wrapDefaults<EventMap<T>, WhichContainers<T>>({
-      defaultValue: {
-        [POST]: [],
-        [PRE]: [],
-      },
-      setUndefined: true,
-      shallowCopy: false,
-    });
-  }
-
-  /**
-   * Retrieve event handlers for a particular event
-   *
-   * @param {Property} event
-   * @returns {WhichContainers}
-   * @memberof SurrogateEventManager
-   */
   getEventHandlers(event: Property): WhichContainers<T> {
     return this.events[event];
   }
 
-  /**
-   *
-   *
-   * @param {Property} event
-   * @param {Which} type
-   * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
-   * @param {SurrogateHandlerOptions<T>} [options={}]
-   * @returns {SurrogateEventManager<T>}
-   * @memberof SurrogateEventManager
-   */
   registerHook(
     event: Property,
     type: Which,
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options: SurrogateHandlerOptions<T>,
-  ): SurrogateEventManager<T> {
+  ): EventManager<T> {
     return this.setEventHandlers(event, type, asArray(handler), options);
   }
 
-  /**
-   * Register a handler to be called before the chosen method
-   *
-   * @param {Property} event
-   * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
-   * @param {SurrogateHandlerOptions<T>} [options]
-   * @returns {SurrogateEventManager}
-   * @memberof SurrogateEventManager
-   */
   registerPreHook(
     event: Property,
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options?: SurrogateHandlerOptions<T>,
-  ): SurrogateEventManager<T> {
+  ): EventManager<T> {
     return this.setEventHandlers(event, PRE, asArray(handler), options);
   }
 
-  /**
-   * * Register a handler to be called after the chosen method
-   *
-   * @param {Property} event
-   * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
-   * @param {SurrogateHandlerOptions<T>} [options]
-   * @returns {SurrogateEventManager<T>}
-   * @memberof SurrogateEventManager
-   */
   registerPostHook(
     event: Property,
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options?: SurrogateHandlerOptions<T>,
-  ): SurrogateEventManager<T> {
+  ): EventManager<T> {
     return this.setEventHandlers(event, POST, asArray(handler), options);
   }
 
@@ -96,7 +57,7 @@ export class SurrogateEventManager<T extends object = any> {
     type: Which,
     handlers: SurrogateHandler<T>[],
     options: SurrogateHandlerOptions<T> = {},
-  ): SurrogateEventManager<T> {
+  ): EventManager<T> {
     const currentContainers: HandlerContainer<T>[] = this.getEventHandlersFor(event, type);
     const containers = handlers.map((handler) => new HandlerContainer(handler, type, options));
     const allContainers = [...currentContainers, ...containers];
@@ -114,56 +75,27 @@ export class SurrogateEventManager<T extends object = any> {
     event: Property,
     type: Which,
     containers: HandlerContainer<T>[] = [],
-  ): SurrogateEventManager<T> {
+  ): EventManager<T> {
     this.getEventHandlers(event)[type] = containers;
 
     return this;
   }
 
-  /**
-   * Deregisters all handlers for all events
-   *
-   * @returns
-   * @memberof SurrogateEventManager
-   */
-  deregisterHooks(): SurrogateEventManager<T> {
+  deregisterHooks(): EventManager<T> {
     Object.keys(this.events).forEach((event) => this.deregisterHooksFor(event));
 
     return this;
   }
 
-  /**
-   * Deregister all handlers for a particular event
-   *
-   * @param {Property} event
-   * @returns {SurrogateEventManager}
-   * @memberof SurrogateEventManager
-   */
-  deregisterHooksFor(event: Property): SurrogateEventManager<T> {
+  deregisterHooksFor(event: Property): EventManager<T> {
     return this.deregisterPreHooks(event).deregisterPostHooks(event);
   }
 
-  /**
-   * Deregister a pre handler for a particular event
-   *
-   * @param {Property} event
-   * @param {SurrogateHandler} handler
-   * @returns {SurrogateEventManager}
-   * @memberof SurrogateEventManager
-   */
-  deregisterPreHook(event: Property, handler: SurrogateHandler<T>): SurrogateEventManager<T> {
+  deregisterPreHook(event: Property, handler: SurrogateHandler<T>): EventManager<T> {
     return this.deregisterHookFor(event, PRE, handler);
   }
 
-  /**
-   * Deregister a post handler for a particular event
-   *
-   * @param {Property} event
-   * @param {SurrogateHandler} handler
-   * @returns {SurrogateEventManager}
-   * @memberof SurrogateEventManager
-   */
-  deregisterPostHook(event: Property, handler: SurrogateHandler<T>): SurrogateEventManager<T> {
+  deregisterPostHook(event: Property, handler: SurrogateHandler<T>): EventManager<T> {
     return this.deregisterHookFor(event, POST, handler);
   }
 
@@ -172,7 +104,7 @@ export class SurrogateEventManager<T extends object = any> {
    * Returns an array of events that were being managed
    *
    * @returns {string[]}
-   * @memberof SurrogateEventManager
+   * @memberof EventManager
    */
   clearEvents(): string[] {
     const events = Object.keys(this.events);
@@ -186,7 +118,7 @@ export class SurrogateEventManager<T extends object = any> {
     event: Property,
     which: Which,
     handlerToRemove: SurrogateHandler<T>,
-  ): SurrogateEventManager<T> {
+  ): EventManager<T> {
     const containers = this.getEventHandlersFor(event, which);
 
     return this.setEventHandlersFor(
@@ -196,25 +128,11 @@ export class SurrogateEventManager<T extends object = any> {
     );
   }
 
-  /**
-   * Deregister all post handlers for the given event
-   *
-   * @param {Property} event
-   * @returns {SurrogateEventManager}
-   * @memberof SurrogateEventManager
-   */
-  deregisterPostHooks(event: Property): SurrogateEventManager<T> {
+  deregisterPostHooks(event: Property): EventManager<T> {
     return this.setEventHandlersFor(event, POST);
   }
 
-  /**
-   * Deregister all pre handlers for the given event
-   *
-   * @param {Property} event
-   * @returns {SurrogateEventManager}
-   * @memberof SurrogateEventManager
-   */
-  deregisterPreHooks(event: Property): SurrogateEventManager<T> {
+  deregisterPreHooks(event: Property): EventManager<T> {
     return this.setEventHandlersFor(event, PRE);
   }
 }

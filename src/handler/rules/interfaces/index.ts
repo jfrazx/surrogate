@@ -1,5 +1,5 @@
 import { NextNode } from '../../../next';
 
-export interface Rule<T extends object> {
+export interface ArgumentRule<T extends object> {
   includeArg(node: NextNode<T>, args: any[]): any[];
 }

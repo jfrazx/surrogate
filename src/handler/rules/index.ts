@@ -2,8 +2,8 @@ import { PassSurrogateRule } from './passSurrogate.rule';
 import { PassInstanceRule } from './passInstance.rule';
 import { PassErrorRule } from './passError.rule';
 import { UseNextRule } from './useNext.rule';
+import { ArgumentRule } from './interfaces';
 import { NextNode } from '../../next';
-import { Rule } from './interfaces';
 
 export abstract class ArgumentRuleRunner {
   static generateArgumentsFromRules<T extends object>(
@@ -11,7 +11,7 @@ export abstract class ArgumentRuleRunner {
     currentArguments: any[],
     error?: Error,
   ) {
-    const rules: Rule<T>[] = [
+    const rules: ArgumentRule<T>[] = [
       new PassSurrogateRule<T>(),
       new PassInstanceRule<T>(),
       new UseNextRule<T>(),

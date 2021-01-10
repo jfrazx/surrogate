@@ -1,8 +1,8 @@
-import { ISurrogateEventManager } from './surrogateEventManager';
+import { SurrogateEventManager } from './surrogateEventManager';
 
 export interface SurrogateMethods<T extends object> {
-  getSurrogate(): ISurrogateEventManager<T>;
   disposeSurrogate(): SurrogateUnwrapped<T>;
+  getSurrogate(): SurrogateEventManager<T>;
 }
 
 export type Surrogate<T extends object> = SurrogateMethods<T> & T;
