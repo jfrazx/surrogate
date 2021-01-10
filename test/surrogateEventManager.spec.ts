@@ -1,5 +1,6 @@
-import { PRE, POST, INext, Surrogate, wrapSurrogate, SurrogateEventManager } from '../src';
+import { PRE, POST, INext, Surrogate, wrapSurrogate } from '../src';
 import { WhichContainers } from '../src/interfaces';
+import { EventManager } from '../src/manager';
 import { Network } from './lib/network';
 import { expect } from 'chai';
 import sinon from 'sinon';
@@ -17,10 +18,10 @@ describe('Surrogate Event Manager', () => {
     sinon.restore();
   });
 
-  it('should retrieve an instance of SurrogateEventManager', () => {
+  it('should retrieve an instance of EventManager', () => {
     const surrogate = network.getSurrogate();
 
-    expect(surrogate).to.be.instanceOf(SurrogateEventManager);
+    expect(surrogate).to.be.instanceOf(EventManager);
   });
 
   it('should always retrieve the same event manager for the same object', () => {

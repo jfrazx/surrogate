@@ -1,7 +1,7 @@
+import { ArgumentRule } from './interfaces';
 import { NextNode } from '../../next';
-import { Rule } from './interfaces';
 
-export class PassInstanceRule<T extends object> implements Rule<T> {
+export class PassInstanceRule<T extends object> implements ArgumentRule<T> {
   includeArg(
     { container: { options }, context: { target } }: NextNode<T>,
     args: any[],

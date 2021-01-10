@@ -25,6 +25,7 @@ export abstract class Tail {
 
     return this.tailGeneration<T>(Next, args);
   }
+
   private static tailGeneration<T extends object>(
     Next: NextConstruct<T>,
     args?: any[],

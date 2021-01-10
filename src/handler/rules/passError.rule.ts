@@ -1,7 +1,7 @@
+import { ArgumentRule } from './interfaces';
 import { NextNode } from '../../next';
-import { Rule } from './interfaces';
 
-export class PassErrorRule<T extends object> implements Rule<T> {
+export class PassErrorRule<T extends object> implements ArgumentRule<T> {
   constructor(private error?: Error) {}
 
   includeArg({ container: { options } }: NextNode<T>, args: any[]): any[] {
