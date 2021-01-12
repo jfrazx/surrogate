@@ -1,4 +1,5 @@
 import { ContainerGenerator, IContainer, MethodContainer } from '../../containers';
+import { NextRule, ErrorRule, MethodRule, BailRule } from './rules';
 import { INext, NextOptions } from '../interfaces';
 import { SurrogateProxy } from '../../proxy';
 import { nextOptionDefaults } from './lib';
@@ -29,19 +30,19 @@ export class PreMethodNext<T extends object> extends FinalNext<T> implements INe
 
   next(nextOptions: NextOptions = {}): void {
     const useNextOptions = { ...nextOptionDefaults, ...nextOptions };
-    const { error, using, bail } = useNextOptions;
+    const { error, using } = useNextOptions;
 
     this.setPrevContainerOptions();
 
-    if (error) {
-      return this.nextError(error, using, useNextOptions);
-    }
+    const rules: NextRule<T>[] = [
+      new ErrorRule(error, using, useNextOptions),
+      new BailRule(useNextOptions),
+      new MethodRule(),
+    ];
 
-    if (bail) {
-      return this.controller.bail(useNextOptions.bailWith);
-    }
+    const rule = rules.find((runner) => runner.shouldRun());
 
-    return this.controller.runOriginal(this.nextNode);
+    rule.run(this);
   }
 
   private setPrevContainerOptions() {

@@ -2,16 +2,10 @@ import { Property, Surrogate, MethodWrapper, SurrogateOptions } from '../interfa
 import { containerGenerator, Tail, HandlerContainer } from '../containers';
 import { Context, BoundContext } from '../context';
 import { Next, ExecutionContext } from '../next';
+import { FetchRuleRunner } from './rules';
 import { EventManager } from '../manager';
 import { PRE, POST } from '../which';
 import { isAsync } from '../helpers';
-import {
-  BindingRule,
-  EventMangerRule,
-  UnprocessableRule,
-  FetchRuleConstruct,
-  DisposeSurrogateRule,
-} from './rules';
 
 type Target<T extends object> = WeakMap<any, EventManager<T>>;
 type Handle = (...args: any[]) => any;
@@ -31,18 +25,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     event: Property,
     receiver: Surrogate<T>,
   ): T[K] | EventManager<T> | Handle {
-    const rules: FetchRuleConstruct<T>[] = [
-      DisposeSurrogateRule,
-      EventMangerRule,
-      UnprocessableRule,
-      BindingRule,
-    ];
-
-    const rule = rules
-      .map((Rule) => new Rule(this, target, event, receiver))
-      .find((fetchRule) => fetchRule.shouldHandle());
-
-    return rule.returnableValue();
+    return FetchRuleRunner.fetchRule(this, target, event, receiver).returnableValue();
   }
 
   static wrap<T extends object>(object: T, options?: SurrogateOptions): Surrogate<T> {

@@ -6,7 +6,7 @@ import { isAsync } from '../../helpers';
 interface ExecutionConstruct<T extends object> {
   new (
     originalMethod: Function,
-    originalArgsL: any[],
+    originalArgs: any[],
     shouldResetContext: boolean,
   ): Execution<T>;
 }

@@ -22,7 +22,7 @@ class Network implements INetwork {
       .registerPreHook('disconnect', (next: INext<Network>) => next.next({ bail: true }), {
         runConditions: (network: SurrogateUnwrapped<Network>) => {
           console.log(
-            `Checking network is connected before attempting to disconnect: ${network.isConnected}`,
+            `Checking network is connected before attempting disconnect: ${network.isConnected}`,
           );
 
           return network.isConnected === false;
