@@ -1,5 +1,6 @@
 import { Property, Surrogate } from '../../../interfaces';
 import { SurrogateProxy } from '../../proxy';
+
 export interface FetchRule {
   shouldHandle(): boolean;
   returnableValue(): any;

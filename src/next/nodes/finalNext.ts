@@ -1,3 +1,4 @@
+import { ErrorRule, CompleteRule, NextRule } from './rules';
 import { INext, NextOptions } from '../interfaces';
 import { nextOptionDefaults } from './lib';
 import { BaseNext } from './baseNext';
@@ -11,10 +12,13 @@ export class FinalNext<T extends object> extends BaseNext<T> implements INext<T>
     const useOptions = { ...nextOptionDefaults, ...nextOptions };
     const { error, using } = useOptions;
 
-    if (error) {
-      return this.nextError(error, using, useOptions);
-    }
+    const rules: NextRule<T>[] = [
+      new ErrorRule(error, using, useOptions),
+      new CompleteRule(using),
+    ];
 
-    this.controller.complete(this, using);
+    const rule = rules.find((runner) => runner.shouldRun());
+
+    rule.run(this);
   }
 }

@@ -24,10 +24,9 @@ export interface NextConstruct<T extends object> {
 }
 
 export abstract class BaseNext<T extends object> implements INext<T> {
-  protected didError: Error = null;
-
   public nextNode: NextNode<T> = null;
   public prevNode: NextNode<T> = null;
+  public didError: Error = null;
 
   constructor(
     protected proxy: SurrogateProxy<T>,
@@ -73,7 +72,7 @@ export abstract class BaseNext<T extends object> implements INext<T> {
     this.generator.throw(error);
   }
 
-  protected shouldRun(): boolean {
+  shouldRun(): boolean {
     const { options } = this.container;
     const context = this.useContext;
     const instance = this.instance;

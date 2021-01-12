@@ -1,6 +1,6 @@
+import { ErrorRule, NextRule, BailRule, SkipRule, HandlerRule } from './rules';
 import { HandlerContainer, ContainerGenerator } from '../../containers';
 import { INext, NextOptions } from '../interfaces';
-import { HandlerRunner } from '../../handler';
 import { SurrogateProxy } from '../../proxy';
 import { nextOptionDefaults } from './lib';
 import { Context } from '../../context';
@@ -32,18 +32,17 @@ export class Next<T extends object> extends BaseNext<T> implements INext<T> {
 
   next(nextOptions: NextOptions = {}): void {
     const useNextOptions = { ...nextOptionDefaults, ...nextOptions };
-    const { error, using, bail } = useNextOptions;
+    const { error, using } = useNextOptions;
 
-    if (error) {
-      return this.nextError(error, using, useNextOptions);
-    }
+    const rules: NextRule<T>[] = [
+      new ErrorRule(error, using, useNextOptions),
+      new BailRule(useNextOptions),
+      new HandlerRule(this, using),
+      new SkipRule(),
+    ];
 
-    if (bail) {
-      return this.controller.bail(useNextOptions.bailWith);
-    }
+    const rule = rules.find((runner) => runner.shouldRun());
 
-    const handler = HandlerRunner.for(this);
-
-    this.shouldRun() ? handler.run(using, this.didError) : this.skip();
+    rule.run(this);
   }
 }
