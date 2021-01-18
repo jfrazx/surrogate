@@ -1,14 +1,15 @@
 import { manageDecorator, determineWhich, manageAsyncDecorator } from './manageDecorator';
-import { SurrogateDelegateOptions, SurrogateForOptions } from './interfaces';
 import { SurrogateClassWrapper } from './surrogateClassWrapper';
-import { SurrogateOptions } from '../interfaces';
 import { POST, PRE, Which } from '../which';
+import {
+  SurrogateForOptions,
+  SurrogateDelegateOptions,
+  SurrogateDecorateOptions,
+} from './interfaces';
 
-export const SurrogateDelegate = (options: SurrogateOptions = {}) => {
-  return <T extends Function>(klass: T) => {
-    return SurrogateClassWrapper.wrap(klass, options);
-  };
-};
+export const SurrogateDelegate = <T extends object>(
+  options: SurrogateDecorateOptions<T> = {},
+) => <K extends Function>(klass: K) => SurrogateClassWrapper.wrap(klass, options);
 
 export const SurrogateFor = <T extends object>(forOptions: SurrogateForOptions<T>) => {
   const { type, options } = forOptions;

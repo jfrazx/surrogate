@@ -1,13 +1,8 @@
+import { WhichContainers, SurrogateHandler, SurrogateHandlerOptions } from '../interfaces';
 import { HandlerContainer } from '../containers';
 import { wrapDefaults } from '@status/defaults';
 import { PRE, POST, Which } from '../which';
 import { asArray } from '@jfrazx/asarray';
-import {
-  Property,
-  WhichContainers,
-  SurrogateHandler,
-  SurrogateHandlerOptions,
-} from '../interfaces';
 
 export interface EventMap<T extends object> {
   [event: string]: WhichContainers<T>;
@@ -23,12 +18,12 @@ export class EventManager<T extends object = any> {
     shallowCopy: false,
   });
 
-  getEventHandlers(event: Property): WhichContainers<T> {
+  getEventHandlers(event: string): WhichContainers<T> {
     return this.events[event];
   }
 
   registerHook(
-    event: Property,
+    event: string,
     type: Which,
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options: SurrogateHandlerOptions<T>,
@@ -37,7 +32,7 @@ export class EventManager<T extends object = any> {
   }
 
   registerPreHook(
-    event: Property,
+    event: string,
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options?: SurrogateHandlerOptions<T>,
   ): EventManager<T> {
@@ -45,7 +40,7 @@ export class EventManager<T extends object = any> {
   }
 
   registerPostHook(
-    event: Property,
+    event: string,
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options?: SurrogateHandlerOptions<T>,
   ): EventManager<T> {
@@ -53,7 +48,7 @@ export class EventManager<T extends object = any> {
   }
 
   private setEventHandlers(
-    event: Property,
+    event: string,
     type: Which,
     handlers: SurrogateHandler<T>[],
     options: SurrogateHandlerOptions<T> = {},
@@ -67,12 +62,12 @@ export class EventManager<T extends object = any> {
     return this;
   }
 
-  private getEventHandlersFor(event: Property, which: Which): HandlerContainer<T>[] {
+  private getEventHandlersFor(event: string, which: Which): HandlerContainer<T>[] {
     return this.getEventHandlers(event)[which];
   }
 
   private setEventHandlersFor(
-    event: Property,
+    event: string,
     type: Which,
     containers: HandlerContainer<T>[] = [],
   ): EventManager<T> {
@@ -87,15 +82,15 @@ export class EventManager<T extends object = any> {
     return this;
   }
 
-  deregisterHooksFor(event: Property): EventManager<T> {
+  deregisterHooksFor(event: string): EventManager<T> {
     return this.deregisterPreHooks(event).deregisterPostHooks(event);
   }
 
-  deregisterPreHook(event: Property, handler: SurrogateHandler<T>): EventManager<T> {
+  deregisterPreHook(event: string, handler: SurrogateHandler<T>): EventManager<T> {
     return this.deregisterHookFor(event, PRE, handler);
   }
 
-  deregisterPostHook(event: Property, handler: SurrogateHandler<T>): EventManager<T> {
+  deregisterPostHook(event: string, handler: SurrogateHandler<T>): EventManager<T> {
     return this.deregisterHookFor(event, POST, handler);
   }
 
@@ -115,7 +110,7 @@ export class EventManager<T extends object = any> {
   }
 
   private deregisterHookFor(
-    event: Property,
+    event: string,
     which: Which,
     handlerToRemove: SurrogateHandler<T>,
   ): EventManager<T> {
@@ -128,11 +123,11 @@ export class EventManager<T extends object = any> {
     );
   }
 
-  deregisterPostHooks(event: Property): EventManager<T> {
+  deregisterPostHooks(event: string): EventManager<T> {
     return this.setEventHandlersFor(event, POST);
   }
 
-  deregisterPreHooks(event: Property): EventManager<T> {
+  deregisterPreHooks(event: string): EventManager<T> {
     return this.setEventHandlersFor(event, PRE);
   }
 }

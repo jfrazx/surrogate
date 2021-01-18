@@ -2,6 +2,7 @@ import { SurrogateDecoratorOptions, SurrogateDelegateOptions } from './interface
 import { SurrogateHandlerOptions, MethodWrapper } from '../interfaces';
 import { SurrogateClassWrapper } from './surrogateClassWrapper';
 import { Which, Whichever, PRE, POST, BOTH } from '../which';
+import { Constructor } from './interfaces';
 import { asArray } from '@jfrazx/asarray';
 import { isFunction } from '../helpers';
 
@@ -12,7 +13,12 @@ export const manageDecorator = <T extends object>(
   const decoratorOptions = organizeOptions<T>(options);
 
   return (target: T, event: keyof T) => {
-    SurrogateClassWrapper.addDecorators(target.constructor, type, event, decoratorOptions);
+    SurrogateClassWrapper.addDecorators(
+      target.constructor as Constructor<T>,
+      type,
+      event,
+      decoratorOptions,
+    );
   };
 };
 

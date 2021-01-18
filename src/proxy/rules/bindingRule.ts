@@ -1,4 +1,4 @@
-import { Property, Surrogate } from '../../interfaces';
+import { Surrogate } from '../../interfaces';
 import { SurrogateProxy } from '../proxy';
 import { FetchRule } from './interfaces';
 
@@ -6,7 +6,7 @@ export class BindingRule<T extends object> implements FetchRule {
   constructor(
     private readonly proxy: SurrogateProxy<T>,
     private readonly target: T,
-    private readonly event: Property,
+    private readonly event: string,
     private readonly receiver: Surrogate<T>,
   ) {}
 

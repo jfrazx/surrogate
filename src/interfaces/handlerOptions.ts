@@ -17,14 +17,14 @@ export type RunCondition<T extends object> = (instance: SurrogateUnwrapped<T>) =
 
 export interface SurrogateHandlerOptions<T extends object> {
   /**
-   * Pass next object to the Surrogate Method
+   * @description Pass Next object to the Surrogate Method
    *
    * @default true
    */
   useNext?: boolean;
 
   /**
-   * If an error has been passed via next() and ignored, should the error be passed
+   * @description If an error has been passed via next() and ignored, should the error be passed
    * to the next handler
    *
    * @default false
@@ -32,14 +32,14 @@ export interface SurrogateHandlerOptions<T extends object> {
   passErrors?: boolean;
 
   /**
-   * Should errors be thrown or ignored when passed via next()?
+   * @description Should errors be thrown or ignored when passed via next()?
    *
    * @default false
    */
   ignoreErrors?: boolean;
 
   /**
-   * Pass the unwrapped instance to pre and post handlers
+   * @description Pass the unwrapped instance to pre and post handlers
    *
    * @default false
    *
@@ -49,7 +49,7 @@ export interface SurrogateHandlerOptions<T extends object> {
   passInstance?: boolean;
 
   /**
-   * Pass the Surrogate wrapped instance to pre and post handlers
+   * @description Pass the Surrogate wrapped instance to pre and post handlers
    *
    * @default false
    */
@@ -75,7 +75,7 @@ export interface SurrogateHandlerOptions<T extends object> {
   resetContext?: boolean;
 
   /**
-   * Specifies the method context wrapper to utilize
+   * @description Specifies the method context wrapper to utilize
    *
    * @options
    *  - none
@@ -86,7 +86,7 @@ export interface SurrogateHandlerOptions<T extends object> {
   wrapper?: MethodWrappers;
 
   /**
-   * Conditions to determine if a handler should be executed
+   * @description Conditions to determine if a handler should be executed
    */
   runConditions?: RunCondition<T> | RunCondition<T>[];
 }

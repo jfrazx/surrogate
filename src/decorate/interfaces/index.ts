@@ -1,5 +1,11 @@
-import { SurrogateHandlerOptions, SurrogateHandler } from '../../interfaces';
+import { SurrogateHandlerOptions, SurrogateHandler, SurrogateOptions } from '../../interfaces';
 import { Whichever } from '../../which';
+
+export type Constructor<T> = { new (...args: any[]): T };
+
+export interface SurrogateDecorateOptions<T extends object> extends SurrogateOptions {
+  inherit?: Constructor<T>;
+}
 
 export interface SurrogateDecoratorOptions<T extends object> {
   handler: SurrogateHandler<T> | SurrogateHandler<T>[];

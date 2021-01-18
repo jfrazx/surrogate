@@ -1,4 +1,4 @@
-import { Property, Surrogate, MethodWrapper, SurrogateOptions } from '../interfaces';
+import { Surrogate, MethodWrapper, SurrogateOptions } from '../interfaces';
 import { containerGenerator, Tail, HandlerContainer } from '../containers';
 import { Context, BoundContext } from '../context';
 import { Next, ExecutionContext } from '../next';
@@ -22,7 +22,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
 
   get<K extends keyof T>(
     target: T,
-    event: Property,
+    event: string,
     receiver: Surrogate<T>,
   ): T[K] | EventManager<T> | Handle {
     return FetchRuleRunner.fetchRule(this, target, event, receiver).returnableValue();
@@ -32,7 +32,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return new Proxy(object, new SurrogateProxy(object, options)) as Surrogate<T>;
   }
 
-  bindHandler(event: Property, target: T, receiver: Surrogate<T>) {
+  bindHandler(event: string, target: T, receiver: Surrogate<T>) {
     const func = Reflect.get(target, event);
 
     if (!this.isHandlerBound(func)) {

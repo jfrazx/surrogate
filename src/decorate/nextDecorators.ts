@@ -1,8 +1,14 @@
 import { manageDecorator, determineWhich } from './manageDecorator';
-import { MethodWrapper, PropertyDecorator } from '../interfaces';
 import { NextForOptions, NextHookOptions } from './interfaces';
+import { MethodWrapper } from '../interfaces';
 import { POST, PRE, Which } from '../which';
 import { asArray } from '@jfrazx/asarray';
+
+type PropertyDecorator<T extends object> = (
+  target: T,
+  property: string,
+  descriptor: PropertyDescriptor,
+) => void;
 
 export const NextFor = <T extends object>(
   nextOptions: NextForOptions<T>,

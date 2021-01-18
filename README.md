@@ -27,13 +27,13 @@ an instance of Surrogate Event Manager that will allow management of pre and pos
 
 ### SurrogateEventManager Methods
 
-registerHook(event: Property, type: Which, handler: SurrogateHandler, options?: SurrogateHandlerOptions): SurrogateEventManager  
-registerPreHook(event: Property, handler: SurrogateHandler, options?: SurrogateHandlerOptions): SurrogateEventManager  
-registerPostHook(event: Property, handler: SurrogateHandler, options?: SurrogateHandlerOptions): SurrogateEventManager  
-deregisterPreHooks(event: Property): SurrogateEventManager  
-deregisterPostHooks(event: Property): SurrogateEventManager  
+registerHook(event: string, type: Which, handler: SurrogateHandler, options?: SurrogateHandlerOptions): SurrogateEventManager  
+registerPreHook(event: string, handler: SurrogateHandler, options?: SurrogateHandlerOptions): SurrogateEventManager  
+registerPostHook(event: string, handler: SurrogateHandler, options?: SurrogateHandlerOptions): SurrogateEventManager  
+deregisterPreHooks(event: string): SurrogateEventManager  
+deregisterPostHooks(event: string): SurrogateEventManager  
 deregisterHooks(): SurrogateEventManager  
-getEventHandlers(event: Property): WhichContainers
+getEventHandlers(event: string): WhichContainers
 
 SurrogateHandler is any function that accepts a `Next` object which is used to control flow through pre and post hooks.
 

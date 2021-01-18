@@ -1,4 +1,4 @@
-import { Property, Surrogate, SurrogateContext, SurrogateHandlerOptions } from '../interfaces';
+import { Surrogate, SurrogateContext, SurrogateHandlerOptions } from '../interfaces';
 
 export type BoundContext<T extends object> = () => Context<T>;
 
@@ -6,7 +6,7 @@ export class Context<T extends object> {
   constructor(
     public target: T,
     public receiver: Surrogate<T>,
-    public event: Property,
+    public event: string,
     public original: Function,
   ) {}
 

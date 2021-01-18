@@ -1,10 +1,12 @@
 import { SurrogateOptions, SurrogateEventManager } from '../interfaces';
-import { SurrogateDecoratorOptions } from './interfaces';
 import { wrapDefaults } from '@status/defaults';
 import { Which, POST, PRE } from '../which';
 import { SurrogateProxy } from '../proxy';
-
-type Constructor<T> = { new (...args: any[]): T };
+import {
+  Constructor,
+  SurrogateDecorateOptions,
+  SurrogateDecoratorOptions,
+} from './interfaces';
 
 interface DecoratedEventMap {
   [key: string]: DecoratorContainer;
@@ -15,17 +17,18 @@ interface DecoratorContainer {
   [POST]: SurrogateDecoratorOptions<any>[];
 }
 
-export class SurrogateClassWrapper<T extends object> implements ProxyHandler<T> {
-  private static decoratorMap = new Map<object, DecoratedEventMap>();
+export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T> {
+  static decoratorMap = new Map<Function, DecoratedEventMap>();
 
-  constructor(private options: SurrogateOptions = {}) {}
+  constructor(private options: SurrogateDecorateOptions<T>) {}
 
-  construct(Target: T, args: any[]) {
-    const decoratorMap = SurrogateClassWrapper.retrieveTargetDecoratorMap(Target);
+  construct(Klass: T, args: any[], Target: any) {
+    const decoratorMap = SurrogateClassWrapper.retrieveTargetDecoratorMap(Klass);
     const wrappedInstance = SurrogateProxy.wrap(
-      new (Target as Constructor<T>)(...args),
+      Reflect.construct(Klass, args, Target),
       this.options,
     );
+
     const eventManager = wrappedInstance.getSurrogate();
 
     this.applyDecorators(eventManager, decoratorMap);
@@ -50,12 +53,12 @@ export class SurrogateClassWrapper<T extends object> implements ProxyHandler<T> 
     });
   }
 
-  static wrap<T extends object>(klass: T, options: SurrogateOptions = {}): T {
+  static wrap<T extends Function>(klass: T, options: SurrogateOptions): T {
     return new Proxy(klass, new SurrogateClassWrapper(options));
   }
 
   static addDecorators<T extends object>(
-    klass: object,
+    klass: Constructor<T>,
     type: Which,
     event: keyof T,
     surrogateDecoratorOptions: SurrogateDecoratorOptions<any>[],
@@ -67,7 +70,7 @@ export class SurrogateClassWrapper<T extends object> implements ProxyHandler<T> 
     return this.decoratorMap.set(klass, decoratorMap);
   }
 
-  private static retrieveTargetDecoratorMap(klass: object) {
+  private static retrieveTargetDecoratorMap<T extends Function>(klass: T) {
     return (
       this.decoratorMap.get(klass) ??
       wrapDefaults({
