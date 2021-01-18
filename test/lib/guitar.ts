@@ -19,7 +19,7 @@ export class Guitar {
   @SurrogatePre<Guitar>([
     {
       handler: (next: INext<Guitar>) => {
-        console.log('stringing guitar');
+        console.log('stringing instrument');
 
         next.instance.isStrung = true;
 
@@ -31,7 +31,7 @@ export class Guitar {
     },
     {
       handler: (next: INext<Guitar>, guitar: Guitar) => {
-        console.log('tuning guitar');
+        console.log('tuning instrument');
 
         guitar.isTuned = true;
 
@@ -53,7 +53,7 @@ export class Guitar {
     },
   })
   play() {
-    console.log('playing guitar');
+    console.log('playing instrument');
   }
 
   @NextFor<Guitar>({

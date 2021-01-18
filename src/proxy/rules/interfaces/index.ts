@@ -1,4 +1,4 @@
-import { Property, Surrogate } from '../../../interfaces';
+import { Surrogate } from '../../../interfaces';
 import { SurrogateProxy } from '../../proxy';
 
 export interface FetchRule {
@@ -7,12 +7,7 @@ export interface FetchRule {
 }
 
 export interface FetchRuleConstruct<T extends object> {
-  new (
-    proxy: SurrogateProxy<T>,
-    target: T,
-    event: Property,
-    receiver: Surrogate<T>,
-  ): FetchRule;
+  new (proxy: SurrogateProxy<T>, target: T, event: string, receiver: Surrogate<T>): FetchRule;
 }
 
 export enum InternalMethods {

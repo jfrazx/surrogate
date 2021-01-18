@@ -1,5 +1,4 @@
 import { isFunction, isUndefined } from '../../helpers';
-import { Property } from '../../interfaces';
 import { SurrogateProxy } from '../proxy';
 import { FetchRule } from './interfaces';
 import { PRE, POST } from '../../which';
@@ -8,7 +7,7 @@ export class UnprocessableRule<T extends object> implements FetchRule {
   constructor(
     private readonly proxy: SurrogateProxy<T>,
     private readonly target: T,
-    private readonly event: Property,
+    private readonly event: string,
   ) {}
 
   shouldHandle(): boolean {

@@ -1,8 +1,8 @@
 import { DisposeSurrogateRule } from './disposeSurrogateRule';
 import { FetchRuleConstruct, FetchRule } from './interfaces';
 import { UnprocessableRule } from './unprocessableRule';
-import { Surrogate, Property } from '../../interfaces';
 import { EventMangerRule } from './eventMangerRule';
+import { Surrogate } from '../../interfaces';
 import { BindingRule } from './bindingRule';
 import { SurrogateProxy } from '../proxy';
 
@@ -10,7 +10,7 @@ export abstract class FetchRuleRunner {
   static fetchRule<T extends object>(
     proxy: SurrogateProxy<T>,
     target: T,
-    event: Property,
+    event: string,
     receiver: Surrogate<T>,
   ): FetchRule {
     const rules: FetchRuleConstruct<T>[] = [

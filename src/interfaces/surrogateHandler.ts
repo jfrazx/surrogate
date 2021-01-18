@@ -1,7 +1,7 @@
 import { SurrogateUnwrapped, Surrogate } from './surrogate';
 import { INext } from '../next';
 
-type HandlerWithoutAny = (...args: any) => any;
+type HandlerWithoutAny = (...args: any[]) => any;
 type HandlerWithAll<T extends object> = (
   next: INext<T>,
   instance: SurrogateUnwrapped<T>,
@@ -77,7 +77,7 @@ type HandlerWithInstanceSurrogateError<T extends object> = (
 ) => any;
 
 /**
- * Possible Surrogate handler types
+ * @description Surrogate handler types
  */
 export type SurrogateHandler<T extends object> =
   | HandlerWithAll<T>
