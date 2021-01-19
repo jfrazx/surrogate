@@ -6,7 +6,7 @@ export class HandlerRule<T extends object> implements NextRule<T> {
   constructor(private readonly node: NextNode<T>, private readonly using: any[]) {}
 
   shouldRun(): boolean {
-    return this.node.shouldRun();
+    return this.node.shouldRun(this.using);
   }
 
   run(node: NextNode<T>): void {

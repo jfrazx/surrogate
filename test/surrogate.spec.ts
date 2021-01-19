@@ -1,15 +1,27 @@
 import { wrapSurrogate, Surrogate, INext } from '../src';
+import FakeTimers from '@sinonjs/fake-timers';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 
 describe('SurrogateProxy', () => {
   let network: Surrogate<Network>;
+  let clock: FakeTimers.InstalledClock;
+  let log: sinon.SinonStub<any, void>;
+  let logError: sinon.SinonStub<any, void>;
+
+  before(() => {
+    clock = FakeTimers.install();
+  });
+
+  after(() => {
+    clock.uninstall();
+  });
 
   beforeEach(() => {
     network = wrapSurrogate(new Network());
-    sinon.stub(console, 'error');
-    sinon.stub(console, 'log');
+    logError = sinon.stub(console, 'error');
+    log = sinon.stub(console, 'log');
   });
 
   afterEach(() => {
@@ -80,7 +92,8 @@ describe('SurrogateProxy', () => {
       const nextHandler = sinon.spy((next: INext<Network>) => next.next());
 
       network.getSurrogate().registerPreHook('connect', nextHandler);
-      const connect = network.connect;
+
+      const { connect } = network;
 
       connect();
       connect();
@@ -88,6 +101,61 @@ describe('SurrogateProxy', () => {
       connect();
 
       sinon.assert.callCount(nextHandler, 4);
+    });
+
+    it('should wait for next to be called before continuing', async () => {
+      const returnValue = 'ContinueTestResult';
+
+      class ContinueTest {
+        handler(next: INext<ContinueTest>) {
+          setTimeout(() => next.next(), 1000);
+
+          clock.tick(1000);
+        }
+
+        async method() {
+          return returnValue;
+        }
+      }
+
+      const test = wrapSurrogate(new ContinueTest());
+
+      test.getSurrogate().registerPreHook('method', test.handler);
+
+      const start = Date.now();
+
+      const result = await test.method();
+
+      const end = Date.now();
+
+      expect(result).to.equal(returnValue);
+      expect(end - start).to.be.gte(1000);
+    });
+
+    it('should determine to ignore next when missing the option and no parameters', () => {
+      const returnValue = 'NoNextParams';
+      const handler1Log = 'Log 1 was called';
+      const handler1 = sinon.spy(() => console.log(handler1Log));
+      const handler2Log = 'Log 2 was called';
+      const handler2 = sinon.spy(() => console.log(handler2Log));
+
+      class NoNextTest {
+        method() {
+          return returnValue;
+        }
+      }
+
+      const test = wrapSurrogate(new NoNextTest());
+
+      test.getSurrogate().registerPreHook('method', [handler1, handler2]);
+
+      const result = test.method();
+
+      expect(result).to.equal(returnValue);
+      sinon.assert.calledWith(log, handler1Log);
+      sinon.assert.calledWith(log, handler2Log);
+      sinon.assert.called(handler1);
+      sinon.assert.called(handler2);
     });
   });
 });

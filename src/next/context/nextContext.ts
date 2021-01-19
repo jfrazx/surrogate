@@ -21,13 +21,14 @@ export class NextContext<T extends object> extends ExecutionContext<T> {
     const { container, context } = node;
     const { handler, originalArgs } = container;
 
-    this.returnValue = handler.apply(context.target, originalArgs);
+    const result = handler.apply(context.target, originalArgs);
 
+    this.setReturnValue(result);
     this.runNext(node.nextNode);
   }
 
   bail(bailWith?: any) {
-    this.returnValue ??= bailWith;
+    this.setReturnValue(bailWith);
   }
 
   private handleError(error?: Error) {

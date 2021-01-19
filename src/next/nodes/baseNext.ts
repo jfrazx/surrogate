@@ -1,16 +1,10 @@
+import { SurrogateUnwrapped, Surrogate } from '../../interfaces';
 import { IContainer, ContainerGenerator, TailGeneration } from '../../containers';
-import { SurrogateHandlerOptions, SurrogateUnwrapped } from '../../interfaces';
 import { INext, NextOptions, NextNode } from '../interfaces';
 import { SurrogateProxy } from '../../proxy';
 import { asArray } from '@jfrazx/asarray';
 import { Context } from '../../context';
 import { Execution } from '../context';
-
-const defaultErrorOptions: SurrogateHandlerOptions<any> = {
-  passErrors: false,
-  ignoreErrors: false,
-  passInstance: false,
-};
 
 export interface NextConstruct<T extends object> {
   new (
@@ -57,11 +51,10 @@ export abstract class BaseNext<T extends object> implements INext<T> {
 
   nextError(error: Error, using: any[], nextOptions: NextOptions) {
     const { options } = this.container;
-    const useOptions = { ...defaultErrorOptions, ...options };
 
     this.didError = error;
 
-    if (useOptions.ignoreErrors) {
+    if (options.ignoreErrors) {
       return this.next({
         ...nextOptions,
         using,
@@ -72,18 +65,23 @@ export abstract class BaseNext<T extends object> implements INext<T> {
     this.generator.throw(error);
   }
 
-  shouldRun(): boolean {
+  shouldRun(using: any[]): boolean {
+    const didError = Boolean(this.prevNode?.didError);
     const { options } = this.container;
     const context = this.useContext;
     const instance = this.instance;
 
     return asArray(options.runConditions).every((condition) =>
-      condition.call(context, instance),
+      condition.call(context, instance, { didError, arguments: using }),
     );
   }
 
   get instance(): SurrogateUnwrapped<T> {
     return this.context.target as SurrogateUnwrapped<T>;
+  }
+
+  get surrogate() {
+    return this.context.target as Surrogate<T>;
   }
 
   addNext(next: NextNode<T>) {

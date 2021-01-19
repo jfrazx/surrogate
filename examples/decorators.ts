@@ -9,12 +9,13 @@ export class Animal {
 
   @SurrogatePre<Animal>([
     {
-      handler: (next: INext<Animal>) => {
-        const { instance: animal } = next;
-
+      handler: (next: INext<Animal>, animal: Animal) => {
         next.next({
           bail: animal.isSleeping,
         });
+      },
+      options: {
+        passInstance: true,
       },
     },
   ])

@@ -34,7 +34,7 @@ export abstract class ExecutionContext<T extends object> implements Execution<T>
   }
 
   protected setReturnValue(value: any) {
-    this.returnValue = value;
+    this.returnValue ??= value;
   }
 
   protected resetContext(context: Context<T>): void {
@@ -70,7 +70,7 @@ export abstract class ExecutionContext<T extends object> implements Execution<T>
   abstract start(): any;
   abstract bail(bailWith?: any): any;
   abstract runOriginal(node: NextNode<T>): void;
-  abstract complete(node: NextNode<T>, passedArgs: any[]): void;
+  abstract complete(): void;
 }
 
 import { NextAsyncContext } from './nextAsyncContext';

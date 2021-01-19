@@ -13,7 +13,15 @@ export enum MethodWrapper {
   Async = 'async',
 }
 
-export type RunCondition<T extends object> = (instance: SurrogateUnwrapped<T>) => boolean;
+export interface RunConditionParameters {
+  didError: boolean;
+  arguments: any[];
+}
+
+export type RunCondition<T extends object> = (
+  instance: SurrogateUnwrapped<T>,
+  parameters: RunConditionParameters,
+) => boolean;
 
 export interface SurrogateHandlerOptions<T extends object> {
   /**
