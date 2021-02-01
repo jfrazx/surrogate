@@ -12,10 +12,7 @@ export class FinalNext<T extends object> extends BaseNext<T> implements INext<T>
     const useOptions = { ...nextOptionDefaults, ...nextOptions };
     const { error, using } = useOptions;
 
-    const rules: NextRule<T>[] = [
-      new ErrorRule(error, using, useOptions),
-      new CompleteRule(using),
-    ];
+    const rules: NextRule<T>[] = [new ErrorRule(error, using, useOptions), new CompleteRule()];
 
     const rule = rules.find((runner) => runner.shouldRun());
 

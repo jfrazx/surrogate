@@ -16,6 +16,7 @@ export enum MethodWrapper {
 export interface RunConditionParameters {
   didError: boolean;
   arguments: any[];
+  event: string;
 }
 
 export type RunCondition<T extends object> = (
@@ -64,7 +65,7 @@ export interface SurrogateHandlerOptions<T extends object> {
   passSurrogate?: boolean;
 
   /**
-   * Specifies the context in which to call a handler
+   * @description Specifies the context in which to call a handler
    *
    * @options
    *  - instance

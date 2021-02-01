@@ -1,6 +1,6 @@
-import { SurrogateUnwrapped, Surrogate } from '../../interfaces';
 import { IContainer, ContainerGenerator, TailGeneration } from '../../containers';
 import { INext, NextOptions, NextNode } from '../interfaces';
+import { SurrogateUnwrapped } from '../../interfaces';
 import { SurrogateProxy } from '../../proxy';
 import { asArray } from '@jfrazx/asarray';
 import { Context } from '../../context';
@@ -69,10 +69,11 @@ export abstract class BaseNext<T extends object> implements INext<T> {
     const didError = Boolean(this.prevNode?.didError);
     const { options } = this.container;
     const context = this.useContext;
+    const { event } = this.context;
     const instance = this.instance;
 
     return asArray(options.runConditions).every((condition) =>
-      condition.call(context, instance, { didError, arguments: using }),
+      condition.call(context, instance, { didError, arguments: using, event }),
     );
   }
 
@@ -81,7 +82,7 @@ export abstract class BaseNext<T extends object> implements INext<T> {
   }
 
   get surrogate() {
-    return this.context.target as Surrogate<T>;
+    return this.context.receiver;
   }
 
   addNext(next: NextNode<T>) {
