@@ -1,17 +1,17 @@
 import { ErrorRule, NextRule, BailRule, SkipRule, HandlerRule } from './rules';
 import { HandlerContainer, ContainerGenerator } from '../../containers';
 import { INext, NextOptions } from '../interfaces';
+import { ContextController } from '../context';
 import { SurrogateProxy } from '../../proxy';
 import { nextOptionDefaults } from './lib';
 import { Context } from '../../context';
-import { Execution } from '../context';
 import { BaseNext } from './baseNext';
 
 export class Next<T extends object> extends BaseNext<T> implements INext<T> {
   constructor(
     proxy: SurrogateProxy<T>,
     context: Context<T>,
-    executionContext: Execution<T>,
+    executionContext: ContextController<T>,
     iterator: ContainerGenerator<T>,
     public container: HandlerContainer<T>,
   ) {

@@ -1,4 +1,4 @@
-import { Execution } from './interfaces';
+import { ContextController } from './interfaces';
 import { NextNode } from '../interfaces';
 import { Context } from '../../context';
 import { isAsync } from '../../helpers';
@@ -8,10 +8,10 @@ interface ExecutionConstruct<T extends object> {
     originalMethod: Function,
     originalArgs: any[],
     shouldResetContext: boolean,
-  ): Execution<T>;
+  ): ContextController<T>;
 }
 
-export abstract class ExecutionContext<T extends object> implements Execution<T> {
+export abstract class ExecutionContext<T extends object> implements ContextController<T> {
   protected nextNode: NextNode<T>;
   protected returnValue: any;
 

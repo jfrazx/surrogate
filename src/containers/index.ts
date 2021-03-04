@@ -1,5 +1,5 @@
 import { ContainerGenerator, TailGeneration } from './interfaces';
-import { Execution, NextConstruct } from '../next';
+import { ContextController, NextConstruct } from '../next';
 import { HandlerContainer } from './handler';
 import { SurrogateProxy } from '../proxy';
 import { FinalNext } from '../next/nodes';
@@ -33,7 +33,7 @@ export abstract class Tail {
     return (
       proxy: SurrogateProxy<T>,
       context: Context<T>,
-      controller: Execution<T>,
+      controller: ContextController<T>,
       generator: ContainerGenerator<T>,
     ) => new Next(proxy, context, controller, generator, new EmptyContainer(), args);
   }

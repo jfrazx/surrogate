@@ -1,6 +1,6 @@
 import { NextNode } from '../../interfaces';
 
-export interface Execution<T extends object> {
+export interface ContextController<T extends object> {
   start(): any;
   complete(): void;
   originalArgs: any[];

@@ -1,18 +1,18 @@
 import { ContainerGenerator, IContainer, MethodContainer } from '../../containers';
 import { NextRule, ErrorRule, MethodRule, BailRule } from './rules';
 import { INext, NextOptions } from '../interfaces';
+import { ContextController } from '../context';
 import { SurrogateProxy } from '../../proxy';
 import { nextOptionDefaults } from './lib';
 import { MethodNext } from './methodNext';
 import { FinalNext } from './finalNext';
 import { Context } from '../../context';
-import { Execution } from '../context';
 
 export class PreMethodNext<T extends object> extends FinalNext<T> implements INext<T> {
   constructor(
     proxy: SurrogateProxy<T>,
     context: Context<T>,
-    controller: Execution<T>,
+    controller: ContextController<T>,
     generator: ContainerGenerator<T>,
     container: IContainer<T>,
     args: any[],

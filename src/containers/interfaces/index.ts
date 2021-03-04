@@ -1,5 +1,5 @@
 import { SurrogateHandlerOptions, SurrogateHandler } from '../../interfaces';
-import { NextNode, Execution } from '../../next';
+import { NextNode, ContextController } from '../../next';
 import { HandlerContainer } from '../handler';
 import { SurrogateProxy } from '../../proxy';
 import { WhichMethod } from '../../which';
@@ -19,7 +19,7 @@ export interface ContainerGeneratorResults<T extends object> {
 export type TailGeneration<T extends object> = (
   proxy: SurrogateProxy<T>,
   context: Context<T>,
-  controller: Execution<T>,
+  controller: ContextController<T>,
   generator: ContainerGenerator<T>,
 ) => NextNode<T>;
 

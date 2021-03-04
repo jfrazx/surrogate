@@ -1,16 +1,16 @@
 import { IContainer, ContainerGenerator, TailGeneration } from '../../containers';
 import { INext, NextOptions, NextNode } from '../interfaces';
 import { SurrogateUnwrapped } from '../../interfaces';
+import { ContextController } from '../context';
 import { SurrogateProxy } from '../../proxy';
 import { asArray } from '@jfrazx/asarray';
 import { Context } from '../../context';
-import { Execution } from '../context';
 
 export interface NextConstruct<T extends object> {
   new (
     proxy: SurrogateProxy<T>,
     context: Context<T>,
-    controller: Execution<T>,
+    controller: ContextController<T>,
     generator: ContainerGenerator<T>,
     container: IContainer<T>,
     args?: any[],
@@ -25,7 +25,7 @@ export abstract class BaseNext<T extends object> implements INext<T> {
   constructor(
     protected proxy: SurrogateProxy<T>,
     public context: Context<T>,
-    public controller: Execution<T>,
+    public controller: ContextController<T>,
     protected generator: ContainerGenerator<T>,
     public container: IContainer<T>,
   ) {
@@ -35,7 +35,7 @@ export abstract class BaseNext<T extends object> implements INext<T> {
   static for<T extends object>(
     proxy: SurrogateProxy<T>,
     context: Context<T>,
-    controller: Execution<T>,
+    controller: ContextController<T>,
     generator: ContainerGenerator<T>,
   ): NextNode<T> {
     const { value, done } = generator.next();

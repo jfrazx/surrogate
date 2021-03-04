@@ -24,7 +24,7 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
 
   construct(Klass: T, args: any[], Target: any) {
     const decoratorMap = SurrogateClassWrapper.retrieveTargetDecoratorMap(Klass);
-    const wrappedInstance = SurrogateProxy.wrap(
+    const wrappedInstance = SurrogateProxy.wrap<T>(
       Reflect.construct(Klass, args, Target),
       this.options,
     );
