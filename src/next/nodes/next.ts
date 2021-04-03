@@ -6,6 +6,7 @@ import { SurrogateProxy } from '../../proxy';
 import { nextOptionDefaults } from './lib';
 import { Context } from '../../context';
 import { BaseNext } from './baseNext';
+import { Which } from '../../which';
 
 export class Next<T extends object> extends BaseNext<T> implements INext<T> {
   constructor(
@@ -14,10 +15,11 @@ export class Next<T extends object> extends BaseNext<T> implements INext<T> {
     executionContext: ContextController<T>,
     iterator: ContainerGenerator<T>,
     public container: HandlerContainer<T>,
+    hookType: Which,
   ) {
-    super(proxy, context, executionContext, iterator, container);
+    super(proxy, context, executionContext, iterator, container, hookType);
 
-    this.nextNode = Next.for(proxy, context, executionContext, iterator);
+    this.nextNode = Next.for(proxy, context, executionContext, iterator, hookType);
   }
 
   skipWith(times = 1, ...args: any[]): void {

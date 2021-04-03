@@ -5,11 +5,13 @@ import { NextOptions } from './nextOptions';
 import { Context } from '../../context';
 
 export interface INext<T extends object> {
+  action: string;
+  hookType: string;
   surrogate: Surrogate<T>;
-  skip(times?: number): void;
   instance: SurrogateUnwrapped<T>;
-  next({ error, using }?: NextOptions): void;
-  skipWith(times?: number, ...args: any[]): void;
+  skip(skipAmount?: number): void;
+  next(nextOptions?: NextOptions): void;
+  skipWith(skipAmount?: number, ...args: any[]): void;
 }
 
 export interface NextNode<T extends object> extends INext<T> {

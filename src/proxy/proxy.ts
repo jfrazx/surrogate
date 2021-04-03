@@ -53,8 +53,14 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
 
     const executionContext = ExecutionContext.for<T>(original, args, hasAsync, resetContext);
 
-    Next.for(this, context, executionContext, containerGenerator(pre, Tail.for(PRE, args)));
-    Next.for(this, context, executionContext, containerGenerator(post, Tail.for(POST)));
+    Next.for(
+      this,
+      context,
+      executionContext,
+      containerGenerator(pre, Tail.for(PRE, args)),
+      PRE,
+    );
+    Next.for(this, context, executionContext, containerGenerator(post, Tail.for(POST)), POST);
 
     return executionContext.start();
   }

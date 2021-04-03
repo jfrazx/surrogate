@@ -23,11 +23,12 @@ export abstract class Tail {
   static for<T extends object>(which: Which, args?: any[]): TailGeneration<T> {
     const Next = which === PRE ? PreMethodNext : FinalNext;
 
-    return this.tailGeneration<T>(Next, args);
+    return this.tailGeneration<T>(Next, which, args);
   }
 
   private static tailGeneration<T extends object>(
     Next: NextConstruct<T>,
+    hookType: Which,
     args?: any[],
   ): TailGeneration<T> {
     return (
@@ -35,7 +36,7 @@ export abstract class Tail {
       context: Context<T>,
       controller: ContextController<T>,
       generator: ContainerGenerator<T>,
-    ) => new Next(proxy, context, controller, generator, new EmptyContainer(), args);
+    ) => new Next(proxy, context, controller, generator, new EmptyContainer(), hookType, args);
   }
 }
 

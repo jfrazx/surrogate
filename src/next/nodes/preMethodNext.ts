@@ -7,6 +7,7 @@ import { nextOptionDefaults } from './lib';
 import { MethodNext } from './methodNext';
 import { FinalNext } from './finalNext';
 import { Context } from '../../context';
+import { Which } from '../../which';
 
 export class PreMethodNext<T extends object> extends FinalNext<T> implements INext<T> {
   constructor(
@@ -15,9 +16,10 @@ export class PreMethodNext<T extends object> extends FinalNext<T> implements INe
     controller: ContextController<T>,
     generator: ContainerGenerator<T>,
     container: IContainer<T>,
+    hookType: Which,
     args: any[],
   ) {
-    super(proxy, context, controller, generator, container);
+    super(proxy, context, controller, generator, container, hookType);
 
     this.nextNode = new MethodNext(
       proxy,
@@ -25,6 +27,7 @@ export class PreMethodNext<T extends object> extends FinalNext<T> implements INe
       controller,
       generator,
       new MethodContainer(context.original, args),
+      hookType,
     );
   }
 

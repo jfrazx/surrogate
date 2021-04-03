@@ -37,26 +37,30 @@ export const NextFor = <T extends object>(
  * }
  * @returns {PropertyDecorator<T>}
  */
-export const NextAsyncPre = <T extends object>({
-  action,
-  options = {},
-}: NextHookOptions<T>): PropertyDecorator<T> => {
-  return NextFor({
-    action,
-    type: PRE,
-    options: { ...options, wrapper: MethodWrapper.Async },
-  });
+export const NextAsyncPre = <T extends object>(
+  asyncOptions: NextHookOptions<T> | NextHookOptions<T>[],
+): PropertyDecorator<T> => {
+  return nextAsyncHelper(asyncOptions, PRE);
 };
 
-export const NextAsyncPost = <T extends object>({
-  action,
-  options = {},
-}: NextHookOptions<T>): PropertyDecorator<T> => {
-  return NextFor({
-    action,
-    type: POST,
-    options: { ...options, wrapper: MethodWrapper.Async },
-  });
+export const NextAsyncPost = <T extends object>(
+  asyncOptions: NextHookOptions<T> | NextHookOptions<T>[],
+): PropertyDecorator<T> => {
+  return nextAsyncHelper(asyncOptions, POST);
+};
+
+const nextAsyncHelper = <T extends object>(
+  asyncOptions: NextHookOptions<T> | NextHookOptions<T>[],
+  type: Which,
+): PropertyDecorator<T> => {
+  return (target: T, event: string, descriptor: PropertyDescriptor): void =>
+    asArray(asyncOptions).forEach(({ action, options }) =>
+      NextFor({
+        action,
+        type,
+        options: { ...options, wrapper: MethodWrapper.Async },
+      })(target, event, descriptor),
+    );
 };
 
 export const NextPre = <T extends object>(

@@ -87,11 +87,11 @@ export class EventManager<T extends object = any> {
   }
 
   deregisterPreHook(event: string, handler: SurrogateHandler<T>): EventManager<T> {
-    return this.deregisterHookFor(event, PRE, handler);
+    return this.deregisterhookType(event, PRE, handler);
   }
 
   deregisterPostHook(event: string, handler: SurrogateHandler<T>): EventManager<T> {
-    return this.deregisterHookFor(event, POST, handler);
+    return this.deregisterhookType(event, POST, handler);
   }
 
   /**
@@ -109,7 +109,7 @@ export class EventManager<T extends object = any> {
     return events;
   }
 
-  private deregisterHookFor(
+  private deregisterhookType(
     event: string,
     which: Which,
     handlerToRemove: SurrogateHandler<T>,

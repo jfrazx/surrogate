@@ -1,5 +1,10 @@
-import { SurrogateHandlerOptions, SurrogateHandler, SurrogateOptions } from '../../interfaces';
 import { Whichever } from '../../which';
+import {
+  SurrogateHandler,
+  SurrogateOptions,
+  SurrogateUnwrapped,
+  SurrogateHandlerOptions,
+} from '../../interfaces';
 
 export type Constructor<T> = { new (...args: any[]): T };
 
@@ -24,7 +29,7 @@ export interface SurrogateForOptions<T extends object> {
 }
 
 export interface NextHookOptions<T extends object> {
-  action: keyof T | (keyof T)[];
+  action: keyof SurrogateUnwrapped<T> | (keyof SurrogateUnwrapped<T>)[];
   options?: SurrogateHandlerOptions<T>;
 }
 

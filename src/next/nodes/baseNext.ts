@@ -1,9 +1,10 @@
 import { IContainer, ContainerGenerator, TailGeneration } from '../../containers';
+import { SurrogateUnwrapped, HookType } from '../../interfaces';
 import { INext, NextOptions, NextNode } from '../interfaces';
-import { SurrogateUnwrapped } from '../../interfaces';
 import { ContextController } from '../context';
 import { SurrogateProxy } from '../../proxy';
 import { asArray } from '@jfrazx/asarray';
+import { Which, PRE } from '../../which';
 import { Context } from '../../context';
 
 export interface NextConstruct<T extends object> {
@@ -13,6 +14,7 @@ export interface NextConstruct<T extends object> {
     controller: ContextController<T>,
     generator: ContainerGenerator<T>,
     container: IContainer<T>,
+    hookFor: Which,
     args?: any[],
   ): NextNode<T>;
 }
@@ -28,6 +30,7 @@ export abstract class BaseNext<T extends object> implements INext<T> {
     public controller: ContextController<T>,
     protected generator: ContainerGenerator<T>,
     public container: IContainer<T>,
+    public hookFor: Which,
   ) {
     controller.addNext(this);
   }
@@ -37,12 +40,13 @@ export abstract class BaseNext<T extends object> implements INext<T> {
     context: Context<T>,
     controller: ContextController<T>,
     generator: ContainerGenerator<T>,
+    hookType: Which,
   ): NextNode<T> {
     const { value, done } = generator.next();
 
     return done
-      ? (value as TailGeneration<T>)(proxy, context, controller, generator)
-      : new Next(proxy, context, controller, generator, value as any);
+      ? (value as TailGeneration<T>)(proxy, context, controller, generator, hookType)
+      : new Next(proxy, context, controller, generator, value as any, hookType);
   }
 
   skip(times: number = 1): void {
@@ -83,6 +87,14 @@ export abstract class BaseNext<T extends object> implements INext<T> {
 
   get surrogate() {
     return this.context.receiver;
+  }
+
+  get action() {
+    return this.context.event;
+  }
+
+  get hookType() {
+    return this.hookFor === PRE ? HookType.PRE : HookType.POST;
   }
 
   addNext(next: NextNode<T>) {

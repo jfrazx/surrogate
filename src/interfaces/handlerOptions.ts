@@ -13,6 +13,12 @@ export enum MethodWrapper {
   Async = 'async',
 }
 
+export enum HookType {
+  PRE = 'pre',
+  POST = 'post',
+  BOTH = 'both',
+}
+
 export interface RunConditionParameters {
   didError: boolean;
   arguments: any[];
