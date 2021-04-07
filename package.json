@@ -1,7 +1,7 @@
 {
   "name": "surrogate",
-  "version": "1.0.0",
-  "description": "Method hooking using ES2015 Proxy",
+  "version": "1.1.1",
+  "description": "Object method hooks made easy",
   "main": "build/index.js",
   "keywords": [
     "hooks",
@@ -36,7 +36,6 @@
     "prepush": "npm run coverage:test",
     "prepublish": "npm run build",
     "publish": "npx semantic-release",
-    "postinstall": "npm run build",
     "semantic-release": "semantic-release",
     "semantic:cli": "semantic-release-cli"
   },
@@ -90,5 +89,9 @@
       "ts-node/register/transpile-only",
       "source-map-support/register"
     ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jfrazx/surrogate.git"
   }
 }
