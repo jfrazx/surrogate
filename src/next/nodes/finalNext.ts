@@ -3,7 +3,7 @@ import { INext, NextOptions } from '../interfaces';
 import { nextOptionDefaults } from './lib';
 import { BaseNext } from './baseNext';
 
-export class FinalNext<T extends object> extends BaseNext<T> implements INext<T> {
+export class FinalNext<T extends object> extends BaseNext<T> implements INext {
   skipWith(_times?: number, ...args: any[]): void {
     return this.next({ using: args });
   }

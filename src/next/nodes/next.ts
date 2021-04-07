@@ -8,7 +8,7 @@ import { Context } from '../../context';
 import { BaseNext } from './baseNext';
 import { Which } from '../../which';
 
-export class Next<T extends object> extends BaseNext<T> implements INext<T> {
+export class Next<T extends object> extends BaseNext<T> implements INext {
   constructor(
     proxy: SurrogateProxy<T>,
     context: Context<T>,

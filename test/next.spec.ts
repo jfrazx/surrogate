@@ -1,4 +1,4 @@
-import { wrapSurrogate, Surrogate, INext, SurrogateContext } from '../src';
+import { wrapSurrogate, Surrogate, NextHandler, SurrogateContext } from '../src';
 import { FinalNext, PreMethodNext, Next } from '../src/next';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
@@ -7,10 +7,8 @@ import { expect } from 'chai';
 describe('Next', () => {
   let network: Surrogate<Network>;
   let log: sinon.SinonStub<any, void>;
-  let logError: sinon.SinonStub<any, void>;
 
   beforeEach(() => {
-    logError = sinon.stub(console, 'error');
     network = wrapSurrogate(new Network());
     log = sinon.stub(console, 'log');
   });
@@ -21,13 +19,13 @@ describe('Next', () => {
 
   describe('General', () => {
     it('should pass Next objects to the callbacks', () => {
-      const func1 = sinon.spy(function (next: INext<Network>) {
+      const func1 = sinon.spy(function ({ next }: NextHandler<Network>) {
         expect(next).to.be.instanceOf(Next);
 
         next.next();
       });
 
-      const func2 = sinon.spy((next: INext<Network>) => {
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => {
         expect(next).to.be.instanceOf(FinalNext);
 
         next.next();
@@ -44,7 +42,7 @@ describe('Next', () => {
     it('should call handlers with the proxied (unwrapped) object as context', () => {
       network
         .getSurrogate()
-        .registerPreHook('connect', function (this: Network, next: INext<Network>) {
+        .registerPreHook('connect', function (this: Network, { next }: NextHandler<Network>) {
           expect(this).to.be.instanceOf(Network);
           expect(this).to.not.equal(network);
           next.next();
@@ -56,7 +54,7 @@ describe('Next', () => {
     it('should call handlers with the surrogate (wrapped) object as context', () => {
       network.getSurrogate().registerPreHook(
         'connect',
-        function (this: Network, next: INext<Network>) {
+        function (this: Network, { next }: NextHandler<Network>) {
           expect(this).to.be.instanceOf(Network);
           expect(this).to.equal(network);
           next.next();
@@ -74,7 +72,7 @@ describe('Next', () => {
 
       network.getSurrogate().registerPreHook(
         'connect',
-        function (this: Network, next: INext<Network>) {
+        function (this: Network, { next }: NextHandler<Network>) {
           expect(this).to.be.instanceOf(Network);
           expect(this).to.equal(otherNetwork);
           next.next();
@@ -89,8 +87,8 @@ describe('Next', () => {
 
     it('should pass arguments from one handler to the next', () => {
       network.getSurrogate().registerPreHook('connect', [
-        (next: INext<Network>) => next.next({ using: [1, 2, 3] }),
-        (next: INext<Network>, arg1: number, arg2: number, arg3: number) => {
+        ({ next }: NextHandler<Network>) => next.next({ using: [1, 2, 3] }),
+        ({ next, receivedArgs: [arg1, arg2, arg3] }: NextHandler<Network>) => {
           expect(arg1).to.be.a('number');
           expect(arg2).to.be.a('number');
           expect(arg3).to.be.a('number');
@@ -103,13 +101,68 @@ describe('Next', () => {
 
       network.connect();
     });
+
+    it('should pass the original arguments', () => {
+      const serverName = 'server name';
+
+      network.getSurrogate().registerPreHook('checkServer', [
+        ({ originalArgs }: NextHandler<Network>) => {
+          expect(originalArgs).to.be.an('array');
+          expect(originalArgs[0]).to.equal(serverName);
+        },
+      ]);
+
+      network.checkServer(serverName);
+    });
+
+    it('should pass the current target method', () => {
+      const serverName = 'server name';
+
+      network.getSurrogate().registerPreHook('checkServer', [
+        ({ action }: NextHandler<Network>) => {
+          expect(action).to.be.an('string');
+          expect(action).to.equal('checkServer');
+        },
+      ]);
+
+      network.checkServer(serverName);
+    });
+
+    it('should pass the current hook', () => {
+      const serverName = 'server name';
+
+      network
+        .getSurrogate()
+        .registerPreHook(
+          'checkServer',
+          [
+            ({ hookType }: NextHandler<Network>) => {
+              expect(hookType).to.be.a('string');
+              expect(hookType).to.equal('pre');
+            },
+          ],
+          { useNext: false },
+        )
+        .registerPostHook(
+          'checkServer',
+          ({ hookType }: NextHandler<Network>) => {
+            expect(hookType).to.be.a('string');
+            expect(hookType).to.equal('post');
+          },
+          { useNext: false },
+        );
+
+      const name = network.checkServer(serverName);
+
+      expect(name).to.equal(serverName);
+    });
   });
 
   describe('Skip', () => {
     it('should skip a single handler', () => {
-      const func1 = sinon.spy((next: INext<Network>) => next.skip());
-      const func2 = sinon.spy((next: INext<Network>) => next.next());
-      const func3 = sinon.spy((next: INext<Network>) => next.next());
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.skip());
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func3 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network.getSurrogate().registerPreHook('connect', [func1, func2, func3]);
       network.connect();
@@ -121,10 +174,10 @@ describe('Next', () => {
     });
 
     it('should skip multiple handlers', () => {
-      const func1 = sinon.spy((next: INext<Network>) => next.skip(2));
-      const func2 = sinon.spy((next: INext<Network>) => next.next());
-      const func3 = sinon.spy((next: INext<Network>) => next.next());
-      const func4 = sinon.spy((next: INext<Network>) => next.next());
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.skip(2));
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func3 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func4 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network.getSurrogate().registerPreHook('connect', [func1, func2, func3, func4]);
       network.connect();
@@ -137,10 +190,10 @@ describe('Next', () => {
     });
 
     it('should skip multiple handlers when called multiple times', () => {
-      const func1 = sinon.spy((next: INext<Network>) => next.skip(2));
-      const func2 = sinon.spy((next: INext<Network>) => next.next());
-      const func3 = sinon.spy((next: INext<Network>) => next.next());
-      const func4 = sinon.spy((next: INext<Network>) => next.next());
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.skip(2));
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func3 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func4 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network.getSurrogate().registerPreHook('connect', [func1, func2, func3, func4]);
       network.connect();
@@ -154,11 +207,11 @@ describe('Next', () => {
     });
 
     it('should skip and the resume the next chain', () => {
-      const func1 = sinon.spy((next: INext<Network>) => next.next());
-      const func2 = sinon.spy((next: INext<Network>) => next.skip(2));
-      const func3 = sinon.spy((next: INext<Network>) => next.next());
-      const func4 = sinon.spy((next: INext<Network>) => next.next());
-      const func5 = sinon.spy((next: INext<Network>) => next.next());
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.skip(2));
+      const func3 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func4 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func5 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network.getSurrogate().registerPreHook('connect', [func1, func2, func3, func4, func5]);
       network.connect();
@@ -172,10 +225,10 @@ describe('Next', () => {
     });
 
     it('should not skip the calling method', () => {
-      const func1 = sinon.spy((next: INext<Network>) => next.next());
-      const func2 = sinon.spy((next: INext<Network>) => next.skip(20));
-      const func3 = sinon.spy((next: INext<Network>) => next.next());
-      const func4 = sinon.spy((next: INext<Network>) => next.next());
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.skip(20));
+      const func3 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func4 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network.getSurrogate().registerPreHook('connect', [func1, func2, func3, func4]);
 
@@ -189,16 +242,16 @@ describe('Next', () => {
     });
 
     it('should not skip post handlers when skipping pre handlers', () => {
-      const func1 = sinon.spy((next: INext<Network>) => next.next());
-      const func2 = sinon.spy((next: INext<Network>) => next.skip(20));
-      const func3 = sinon.spy((next: INext<Network>) => next.next());
-      const func4 = sinon.spy((next: INext<Network>) => next.next());
-      const func5 = sinon.spy((next: INext<Network>) => next.next());
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.skip(20));
+      const func3 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func4 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func5 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
-      const func6 = sinon.spy((next: INext<Network>) => next.next());
-      const func7 = sinon.spy((next: INext<Network>) => next.next());
-      const func8 = sinon.spy((next: INext<Network>) => next.next());
-      const func9 = sinon.spy((next: INext<Network>) => next.next());
+      const func6 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func7 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func8 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func9 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network
         .getSurrogate()
@@ -220,16 +273,16 @@ describe('Next', () => {
     });
 
     it('should skip pre and post handlers', () => {
-      const func1 = sinon.spy((next: INext<Network>) => next.next());
-      const func2 = sinon.spy((next: INext<Network>) => next.skip(20));
-      const func3 = sinon.spy((next: INext<Network>) => next.next());
-      const func4 = sinon.spy((next: INext<Network>) => next.next());
-      const func5 = sinon.spy((next: INext<Network>) => next.next());
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.skip(20));
+      const func3 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func4 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func5 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
-      const func6 = sinon.spy((next: INext<Network>) => next.next());
-      const func7 = sinon.spy((next: INext<Network>) => next.skip());
-      const func8 = sinon.spy((next: INext<Network>) => next.next());
-      const func9 = sinon.spy((next: INext<Network>) => next.next());
+      const func6 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func7 = sinon.spy(({ next }: NextHandler<Network>) => next.skip());
+      const func8 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func9 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network
         .getSurrogate()
@@ -255,12 +308,12 @@ describe('Next', () => {
     it('should throw error received from Next(PRE)', () => {
       const error = new Error('fail');
 
-      const func1 = sinon.spy((next: INext<Network>) => {
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => {
         expect(next).to.be.instanceOf(Next);
 
         next.next({ error });
       });
-      const func2 = sinon.spy((next: INext<Network>) => next.next());
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network.getSurrogate().registerPreHook('connect', [func1, func2]);
 
@@ -272,8 +325,8 @@ describe('Next', () => {
     it('should throw an error on FinalNext(PRE)', () => {
       const error = new Error('fail');
 
-      const func1 = sinon.spy((next: INext<Network>) => next.next());
-      const func2 = sinon.spy((next: INext<Network>) => {
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => {
         expect(next).to.be.instanceOf(FinalNext);
         expect(next).to.be.instanceOf(PreMethodNext);
 
@@ -290,24 +343,20 @@ describe('Next', () => {
     it('should ignore error received from Next(PRE)', () => {
       const error = new Error('fail');
 
-      const func1 = sinon.spy((next: INext<Network>) => {
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => {
         expect(next).to.be.instanceOf(Next);
 
         next.next({ error });
       });
-      const func2 = sinon.spy(
-        (passedError: Error, next: INext<Network>, instance: Network) => {
-          expect(passedError).to.equal(error);
-          expect(instance).to.be.undefined;
+      const func2 = sinon.spy(({ next, error: passedError }: NextHandler<Network>) => {
+        expect(passedError).to.equal(error);
 
-          next.next();
-        },
-      );
-
-      network.getSurrogate().registerPreHook('connect', [func1, func2], {
-        passErrors: true,
-        ignoreErrors: true,
+        next.next();
       });
+
+      network
+        .getSurrogate()
+        .registerPreHook('connect', [func1, func2], { ignoreErrors: true });
 
       network.connect();
 
@@ -318,12 +367,12 @@ describe('Next', () => {
     it('should throw error received from Next(POST)', () => {
       const error = new Error('fail');
 
-      const func1 = sinon.spy((next: INext<Network>) => {
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => {
         expect(next).to.be.instanceOf(Next);
 
         next.next({ error });
       });
-      const func2 = sinon.spy((next: INext<Network>) => next.next());
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network.getSurrogate().registerPostHook('connect', [func1, func2]);
 
@@ -338,12 +387,12 @@ describe('Next', () => {
 
       const connect = sinon.spy(network, 'connect');
 
-      const func1 = sinon.spy((next: INext<Network>) => {
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => {
         expect(next).to.be.instanceOf(Next);
 
         next.next({ error });
       });
-      const func2 = sinon.spy((next: INext<Network>) => next.next());
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network.getSurrogate().registerPreHook('connect', [func1, func2], { wrapper: 'async' });
 
@@ -364,12 +413,12 @@ describe('Next', () => {
 
       const connect = sinon.spy(network, 'connect');
 
-      const func1 = sinon.spy((next: INext<Network>) => {
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => {
         expect(next).to.be.instanceOf(Next);
 
         next.next({ error });
       });
-      const func2 = sinon.spy((next: INext<Network>) => next.next());
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network.getSurrogate().registerPostHook('connect', [func1, func2], { wrapper: 'async' });
 
@@ -387,8 +436,8 @@ describe('Next', () => {
     it('should throw an error on FinalNext(POST)', () => {
       const error = new Error('fail');
 
-      const func1 = sinon.spy((next: INext<Network>) => next.next());
-      const func2 = sinon.spy((next: INext<Network>) => {
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => {
         expect(next).to.be.instanceOf(FinalNext);
 
         next.next({ error });
@@ -404,24 +453,22 @@ describe('Next', () => {
     it('should ignore error received from Next(POST)', () => {
       const error = new Error('fail');
 
-      const func1 = sinon.spy((next: INext<Network>) => {
+      const func1 = sinon.spy(({ next }: NextHandler<Network>) => {
         expect(next).to.be.instanceOf(Next);
 
         next.next({ error });
       });
       const func2 = sinon.spy(
-        (passedError: Error, next: INext<Network>, instance: Network) => {
+        ({ next, instance, error: passedError }: NextHandler<Network>) => {
           expect(passedError).to.equal(error);
-          expect(instance).to.equal(next.instance);
+          expect(instance).to.equal(network.bypassSurrogate());
 
           next.next();
         },
       );
 
       network.getSurrogate().registerPostHook('connect', [func1, func2], {
-        passErrors: true,
         ignoreErrors: true,
-        passInstance: true,
       });
 
       network.connect();

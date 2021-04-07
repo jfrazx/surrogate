@@ -13,14 +13,9 @@ export class UnprocessableRule<T extends object> implements FetchRule {
   shouldHandle(): boolean {
     const original = Reflect.get(this.target, this.event);
     const manager = this.proxy.targets.get(this.target);
+    const { [PRE]: pre, [POST]: post } = manager?.getEventHandlers(this.event) ?? {};
 
-    if (!isFunction(original) || isUndefined(manager)) {
-      return true;
-    }
-
-    const { [PRE]: pre, [POST]: post } = manager.getEventHandlers(this.event);
-
-    return !Boolean(pre.length + post.length);
+    return !isFunction(original) || isUndefined(manager) || !Boolean(pre.length + post.length);
   }
 
   returnableValue() {

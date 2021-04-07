@@ -3,10 +3,10 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import {
   BOTH,
-  INext,
   NextFor,
   NextPre,
   NextPost,
+  NextHandler,
   SurrogateFor,
   NextAsyncPre,
   SurrogatePre,
@@ -20,10 +20,8 @@ import {
 
 describe('SurrogateDecorators', () => {
   let log: sinon.SinonStub<any, void>;
-  let logError: sinon.SinonStub<any, void>;
 
   beforeEach(() => {
-    logError = sinon.stub(console, 'error');
     log = sinon.stub(console, 'log');
   });
 
@@ -82,7 +80,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should pre decorate a synchronous method', () => {
-      const handler: SurrogateHandler<Test> = sinon.spy((next: INext<Test>) =>
+      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextHandler<Test>) =>
         next.next(),
       ) as any;
       const results = 'SurrogatePre';
@@ -110,7 +108,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should post decorate a synchronous method', () => {
-      const handler: SurrogateHandler<Test> = sinon.spy((next: INext<Test>) =>
+      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextHandler<Test>) =>
         next.next(),
       ) as any;
       const results = 'SurrogatePost';
@@ -138,7 +136,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should post decorate an async method', async () => {
-      const handler: SurrogateHandler<Test> = sinon.spy((next: INext<Test>) =>
+      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextHandler<Test>) =>
         next.next(),
       ) as any;
       const results = 'SurrogateAsyncPost';
@@ -166,7 +164,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should pre decorate an async method', async () => {
-      const handler: SurrogateHandler<Test> = sinon.spy((next: INext<Test>) =>
+      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextHandler<Test>) =>
         next.next(),
       ) as any;
       const results = 'SurrogateAsyncPre';
@@ -188,7 +186,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should pre decorate an async method and bail', async () => {
-      const handler: SurrogateHandler<Test> = sinon.spy((next: INext<Test>) =>
+      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextHandler<Test>) =>
         next.next({
           bail: true,
         }),
@@ -212,7 +210,7 @@ describe('SurrogateDecorators', () => {
 
     it('should pre decorate an async method and bail with', async () => {
       const results = 'SurrogateAsyncPreBailWith';
-      const handler: SurrogateHandler<Test> = sinon.spy((next: INext<Test>) =>
+      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextHandler<Test>) =>
         next.next({
           bail: true,
           bailWith: results,
@@ -255,7 +253,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should pre decorate an async method without using next passing instance', async () => {
-      const handler: SurrogateHandler<Test> = sinon.spy(async (instance) => {
+      const handler: SurrogateHandler<Test> = sinon.spy(async ({ instance }) => {
         expect(instance).to.not.equal(test);
         expect(instance).to.be.instanceOf(Test);
 
@@ -265,7 +263,7 @@ describe('SurrogateDecorators', () => {
 
       @SurrogateDelegate()
       class Test {
-        @SurrogateAsyncPre<Test>({ handler, options: { useNext: false, passInstance: true } })
+        @SurrogateAsyncPre<Test>({ handler, options: { useNext: false } })
         async method() {
           return results;
         }
@@ -281,7 +279,7 @@ describe('SurrogateDecorators', () => {
 
     it('should pre decorate an async method without using next passing surrogate', async () => {
       const results = 'SurrogateAsyncPreWithoutNextWithSurrogate';
-      const handler: SurrogateHandler<Test> = sinon.spy(async (surrogate) => {
+      const handler: SurrogateHandler<Test> = sinon.spy(async ({ surrogate }) => {
         expect(surrogate).to.equal(test);
         expect(surrogate).to.be.instanceOf(Test);
 
@@ -290,7 +288,7 @@ describe('SurrogateDecorators', () => {
 
       @SurrogateDelegate()
       class Test {
-        @SurrogateAsyncPre<Test>({ handler, options: { useNext: false, passSurrogate: true } })
+        @SurrogateAsyncPre<Test>({ handler, options: { useNext: false } })
         async method() {
           return results;
         }
@@ -306,7 +304,7 @@ describe('SurrogateDecorators', () => {
 
     it('should pre decorate an async method without using next passing instance and surrogate', async () => {
       const results = 'SurrogateAsyncPreWithoutNextWithInstanceAndSurrogate';
-      const handler: SurrogateHandler<Test> = sinon.spy(async (instance, surrogate) => {
+      const handler: SurrogateHandler<Test> = sinon.spy(async ({ instance, surrogate }) => {
         expect(surrogate).to.equal(test);
         expect(instance).to.not.equal(test);
         expect(surrogate).to.be.instanceOf(Test);
@@ -319,7 +317,7 @@ describe('SurrogateDecorators', () => {
       class Test {
         @SurrogateAsyncPre<Test>({
           handler,
-          options: { useNext: false, passSurrogate: true, passInstance: true },
+          options: { useNext: false },
         })
         async method() {
           return results;
@@ -561,7 +559,7 @@ describe('SurrogateDecorators', () => {
         @NextAsyncPost<NextAsyncPostTest>({
           action: ['testMethod1', 'testMethod2', 'testMethod3'],
         })
-        protected nextHandler(next: INext<NextAsyncPostTest>) {
+        protected nextHandler({ next }: NextHandler<NextAsyncPostTest>) {
           console.log(`Next handler called`);
 
           next.next();
@@ -635,7 +633,7 @@ describe('SurrogateDecorators', () => {
         @NextAsyncPre<NextAsyncPreTest>({
           action: ['testMethod1', 'testMethod2', 'testMethod3'],
         })
-        protected nextHandler(next: INext<NextAsyncPreTest>) {
+        protected nextHandler({ next }: NextHandler<NextAsyncPreTest>) {
           console.log(`Next handler called`);
 
           next.next();

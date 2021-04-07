@@ -13,4 +13,5 @@ export interface FetchRuleConstruct<T extends object> {
 export enum InternalMethods {
   EventManager = 'getSurrogate',
   Dispose = 'disposeSurrogate',
+  Bypass = 'bypassSurrogate',
 }

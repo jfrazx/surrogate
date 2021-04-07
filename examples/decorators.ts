@@ -1,4 +1,10 @@
-import { SurrogateDelegate, SurrogatePre, INext, NextPost, SurrogateMethods } from '../build';
+import {
+  NextPost,
+  NextHandler,
+  SurrogatePre,
+  SurrogateMethods,
+  SurrogateDelegate,
+} from '../build';
 
 export interface Animal extends SurrogateMethods<Animal> {}
 
@@ -9,13 +15,10 @@ export class Animal {
 
   @SurrogatePre<Animal>([
     {
-      handler: (next: INext<Animal>, animal: Animal) => {
+      handler: ({ next, instance: animal }: NextHandler<Animal>) => {
         next.next({
           bail: animal.isSleeping,
         });
-      },
-      options: {
-        passInstance: true,
       },
     },
   ])
@@ -29,7 +32,7 @@ export class Animal {
       runConditions: (animal) => animal.mayBeFed,
     },
   })
-  feed(next: INext<Animal>) {
+  feed({ next }: NextHandler<Animal>) {
     console.log('Feeding animal');
 
     const animalBitesHand = Math.random() < 0.2;

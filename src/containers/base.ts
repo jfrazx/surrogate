@@ -9,13 +9,10 @@ import {
 
 const defaultMethodOptions: Required<SurrogateHandlerOptions<any>> = {
   useNext: true,
-  passErrors: false,
   runConditions: [],
   resetContext: true,
   ignoreErrors: false,
-  passInstance: false,
-  passSurrogate: false,
-  wrapper: MethodWrapper.None,
+  wrapper: MethodWrapper.Sync,
   useContext: SurrogateContext.Instance,
 };
 
