@@ -1,5 +1,5 @@
-import { MethodWrapper } from '../interfaces';
-import { ArgumentRuleRunner } from './rules';
+import { MethodWrapper, SurrogateHandler } from '../interfaces';
+import { NextHandlerProvider } from './nextHandlerProvider';
 import { asArray } from '@jfrazx/asarray';
 import { NextNode } from '../next';
 
@@ -22,35 +22,51 @@ export abstract class HandlerRunner<T extends object> {
     const { useNext } = options;
 
     const useContext = context.determineContext(options);
-    const useArgs = ArgumentRuleRunner.generateArgumentsFromRules(this.node, args, error);
+    const nextHandler = new NextHandlerProvider(this.node, args, error);
 
     const runner = useNext && handler.length ? this.runWithNext : this.runWithoutNext;
 
-    runner.call(this, handler, useContext, useArgs);
+    runner.call(this, handler as SurrogateHandler<T>, useContext, nextHandler);
   }
 
-  protected runWithNext(handler: Function, context: any, args: any[]): void {
-    handler.apply(context, args);
+  protected runWithNext(
+    handler: SurrogateHandler<T>,
+    context: any,
+    nextHandler: NextHandlerProvider<T>,
+  ): void {
+    handler.call(context, nextHandler);
   }
 
-  protected abstract runWithoutNext(handler: Function, context: any, args: any[]): void;
+  protected abstract runWithoutNext(
+    handler: SurrogateHandler<T>,
+    context: any,
+    nextHandler: NextHandlerProvider<T>,
+  ): void;
 }
 
 class AsyncHandlerRunner<T extends object> extends HandlerRunner<T> {
-  protected runWithoutNext(handler: Function, context: any, args: any[]): void {
+  protected runWithoutNext(
+    handler: Function,
+    context: any,
+    nextHandler: NextHandlerProvider<T>,
+  ): void {
     const { nextNode } = this.node;
 
     handler
-      .apply(context, args)
+      .call(context, nextHandler)
       .then((result: any) => nextNode.next({ using: asArray(result) }));
   }
 }
 
 class SyncHandlerRunner<T extends object> extends HandlerRunner<T> {
-  protected runWithoutNext(handler: Function, context: any, args: any[]): void {
+  protected runWithoutNext(
+    handler: SurrogateHandler<T>,
+    context: any,
+    nextHandler: NextHandlerProvider<T>,
+  ): void {
     const { nextNode } = this.node;
 
-    const result = handler.apply(context, args);
+    const result = handler.call(context, nextHandler);
 
     nextNode.next({ using: asArray(result) });
   }

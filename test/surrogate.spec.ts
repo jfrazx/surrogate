@@ -1,4 +1,4 @@
-import { wrapSurrogate, Surrogate, INext } from '../src';
+import { wrapSurrogate, Surrogate, NextHandler } from '../src';
 import FakeTimers from '@sinonjs/fake-timers';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
@@ -36,7 +36,7 @@ describe('SurrogateProxy', () => {
 
   describe('Run', () => {
     it('should run twice', () => {
-      const nextHandler = sinon.spy((next: INext<Network>) => next.next());
+      const nextHandler = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network.getSurrogate().registerPreHook('connect', nextHandler);
       network.connect();
@@ -49,7 +49,7 @@ describe('SurrogateProxy', () => {
     });
 
     it('should run twice without resetting context', () => {
-      const nextHandler = sinon.spy((next: INext<Network>) => next.next());
+      const nextHandler = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network.getSurrogate().registerPreHook('connect', nextHandler, {
         resetContext: false,
@@ -64,7 +64,7 @@ describe('SurrogateProxy', () => {
     });
 
     it('should run twice without resetting context and dispose', () => {
-      const nextHandler = sinon.spy((next: INext<Network>) => next.next());
+      const nextHandler = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network.getSurrogate().registerPreHook('connect', nextHandler, {
         resetContext: false,
@@ -88,8 +88,28 @@ describe('SurrogateProxy', () => {
       sinon.assert.calledTwice(nextHandler);
     });
 
+    it('should run target method bypassing handlers', () => {
+      const nextHandler = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const network = new Network();
+      const connect = network.connect;
+
+      const wrappedNetwork = wrapSurrogate(network);
+
+      wrappedNetwork.getSurrogate().registerPreHook('connect', nextHandler, {
+        resetContext: false,
+      });
+
+      const bypassedConnect = wrappedNetwork.bypassSurrogate().connect;
+
+      expect(connect).to.equal(bypassedConnect);
+
+      wrappedNetwork.bypassSurrogate().connect();
+
+      sinon.assert.notCalled(nextHandler);
+    });
+
     it('should run detached', () => {
-      const nextHandler = sinon.spy((next: INext<Network>) => next.next());
+      const nextHandler = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
       network.getSurrogate().registerPreHook('connect', nextHandler);
 
@@ -107,7 +127,7 @@ describe('SurrogateProxy', () => {
       const returnValue = 'ContinueTestResult';
 
       class ContinueTest {
-        handler(next: INext<ContinueTest>) {
+        handler({ next }: NextHandler<ContinueTest>) {
           setTimeout(() => next.next(), 1000);
 
           clock.tick(1000);

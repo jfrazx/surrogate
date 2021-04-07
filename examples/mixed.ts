@@ -1,10 +1,15 @@
-import { SurrogateDelegate, INext, SurrogateMethods, SurrogateUnwrapped } from '../build';
+import {
+  NextHandler,
+  SurrogateMethods,
+  SurrogateDelegate,
+  SurrogateUnwrapped,
+} from '../build';
 
 interface INetwork {
   isEnabled: boolean;
   isDisabled: boolean;
   isConnected: boolean;
-  preConnectionCheck(next: INext<Network>): void;
+  preConnectionCheck({ next }: NextHandler<Network>): void;
 }
 
 interface Network extends SurrogateMethods<Network> {}
@@ -19,15 +24,19 @@ class Network implements INetwork {
   init() {
     this.getSurrogate()
       .registerPreHook('connect', this.preConnectionCheck)
-      .registerPreHook('disconnect', (next: INext<Network>) => next.next({ bail: true }), {
-        runConditions: (network: SurrogateUnwrapped<Network>) => {
-          console.log(
-            `Checking network is connected before attempting disconnect: ${network.isConnected}`,
-          );
+      .registerPreHook(
+        'disconnect',
+        ({ next }: NextHandler<Network>) => next.next({ bail: true }),
+        {
+          runConditions: (network: SurrogateUnwrapped<Network>) => {
+            console.log(
+              `Checking network is connected before attempting disconnect: ${network.isConnected}`,
+            );
 
-          return network.isConnected === false;
+            return network.isConnected === false;
+          },
         },
-      });
+      );
   }
 
   get isEnabled(): boolean {
@@ -62,7 +71,7 @@ class Network implements INetwork {
     this.connected = false;
   }
 
-  preConnectionCheck(next: INext<Network>) {
+  preConnectionCheck({ next }: NextHandler<Network>) {
     console.info(
       `Checking connected: (${this.isConnected}) and disabled: (${this.isDisabled}) status`,
     );

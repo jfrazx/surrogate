@@ -1,4 +1,4 @@
-import { wrapSurrogate, Surrogate, INext } from '../src';
+import { wrapSurrogate, Surrogate, NextHandler } from '../src';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
@@ -17,8 +17,10 @@ describe('Bail', () => {
   });
 
   it('should exit early with bail skipping handlers', () => {
-    const nextHandler = sinon.spy((next: INext<Network>) => next.next({ bail: true }));
-    const nextHandler2 = sinon.spy((next: INext<Network>) => next.next());
+    const nextHandler = sinon.spy(({ next }: NextHandler<Network>) =>
+      next.next({ bail: true }),
+    );
+    const nextHandler2 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
     network
       .getSurrogate()
@@ -37,8 +39,10 @@ describe('Bail', () => {
   });
 
   it('should exit early with bail skipping main method', () => {
-    const nextHandler = sinon.spy((next: INext<Network>) => next.next());
-    const nextHandler2 = sinon.spy((next: INext<Network>) => next.next({ bail: true }));
+    const nextHandler = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+    const nextHandler2 = sinon.spy(({ next }: NextHandler<Network>) =>
+      next.next({ bail: true }),
+    );
 
     network
       .getSurrogate()
@@ -57,8 +61,8 @@ describe('Bail', () => {
   });
 
   it('should ignore errors and exit early with bail skipping main method', () => {
-    const nextHandler = sinon.spy((next: INext<Network>) => next.next());
-    const nextHandler2 = sinon.spy((next: INext<Network>) =>
+    const nextHandler = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+    const nextHandler2 = sinon.spy(({ next }: NextHandler<Network>) =>
       next.next({ bail: true, error: new Error('ignore') }),
     );
 
@@ -77,8 +81,8 @@ describe('Bail', () => {
   });
 
   it('should ignore errors and exit early with bailWith skipping main method ', () => {
-    const nextHandler = sinon.spy((next: INext<Network>) => next.next());
-    const nextHandler2 = sinon.spy((next: INext<Network>) =>
+    const nextHandler = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+    const nextHandler2 = sinon.spy(({ next }: NextHandler<Network>) =>
       next.next({ bail: true, error: new Error('ignore'), bailWith: 'bail' }),
     );
 

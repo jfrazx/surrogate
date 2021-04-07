@@ -1,4 +1,4 @@
-import { INext } from '../../src';
+import { NextHandler } from '../../src';
 
 export class Network {
   private enabled: boolean = true;
@@ -32,13 +32,17 @@ export class Network {
     this.connected = true;
   }
 
+  checkServer(name: string) {
+    return name;
+  }
+
   disconnect(): void {
     console.log('disconnecting from somewhere...');
 
     this.connected = false;
   }
 
-  preConnectHandler(next: INext<this>) {
+  preConnectHandler({ next }: NextHandler<this>) {
     next.next({
       bail: this.isConnected || this.isDisabled,
     });

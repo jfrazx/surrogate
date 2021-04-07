@@ -9,7 +9,7 @@ import { FinalNext } from './finalNext';
 import { Context } from '../../context';
 import { Which } from '../../which';
 
-export class PreMethodNext<T extends object> extends FinalNext<T> implements INext<T> {
+export class PreMethodNext<T extends object> extends FinalNext<T> implements INext {
   constructor(
     proxy: SurrogateProxy<T>,
     context: Context<T>,

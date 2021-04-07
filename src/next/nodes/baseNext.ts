@@ -19,7 +19,7 @@ export interface NextConstruct<T extends object> {
   ): NextNode<T>;
 }
 
-export abstract class BaseNext<T extends object> implements INext<T> {
+export abstract class BaseNext<T extends object> implements INext {
   public nextNode: NextNode<T> = null;
   public prevNode: NextNode<T> = null;
   public didError: Error = null;
@@ -77,20 +77,12 @@ export abstract class BaseNext<T extends object> implements INext<T> {
     const instance = this.instance;
 
     return asArray(options.runConditions).every((condition) =>
-      condition.call(context, instance, { didError, arguments: using, event }),
+      condition.call(context, instance, { didError, receivedArgs: using, action: event }),
     );
   }
 
   get instance(): SurrogateUnwrapped<T> {
     return this.context.target as SurrogateUnwrapped<T>;
-  }
-
-  get surrogate() {
-    return this.context.receiver;
-  }
-
-  get action() {
-    return this.context.event;
   }
 
   get hookType() {

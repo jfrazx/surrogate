@@ -4,6 +4,7 @@ export { wrapSurrogate } from './proxy';
 export * from './decorate';
 export {
   Surrogate,
+  NextHandler,
   MethodWrapper,
   SurrogateContext,
   SurrogateHandler,

@@ -1,5 +1,11 @@
-import { SurrogateDelegate, NextAsyncPre, SurrogateMethods, NextFor, BOTH } from '../build';
-import { INext } from '../build/next/interfaces/next';
+import {
+  BOTH,
+  NextFor,
+  NextHandler,
+  NextAsyncPre,
+  SurrogateMethods,
+  SurrogateDelegate,
+} from '../build';
 
 interface ServiceBase extends SurrogateMethods<ServiceBase> {}
 
@@ -22,6 +28,7 @@ class ServiceBase {
           return !this.isInitialized;
         },
         resetContext: Math.random() > 0.5,
+        useNext: false,
       },
     },
   ])
@@ -34,16 +41,21 @@ class ServiceBase {
     type: BOTH,
     action: ['find', 'findOne', 'aggregate'],
   })
-  protected recordTelemetry(next: INext<ServiceBase>, ...args: any[]) {
-    console.log(`recording telemetry ${next.hookType.toString()} ${next.action}`);
+  protected recordTelemetry({
+    originalArgs,
+    hookType,
+    action,
+    next,
+  }: NextHandler<ServiceBase>) {
+    console.log(`recording telemetry ${hookType} ${action}`);
 
     telemetry?.trackEvent({
-      name: `${next.action} Query`,
+      name: `${action} Query`,
       properties: {
         isEnabled: this.serviceIsEnabled,
-        type: next.hookType,
+        type: hookType,
         time: Date.now(),
-        args,
+        originalArgs,
       },
     });
 

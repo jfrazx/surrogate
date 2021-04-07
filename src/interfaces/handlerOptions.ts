@@ -1,7 +1,8 @@
-import { SurrogateUnwrapped } from './surrogate';
+import { SurrogateUnwrapped, Surrogate } from './surrogate';
+import { INext } from '../next';
 
 export type SurrogateContexts = 'instance' | 'surrogate';
-export type MethodWrappers = 'none' | 'async';
+export type MethodWrappers = 'sync' | 'async';
 
 export enum SurrogateContext {
   Instance = 'instance',
@@ -9,7 +10,7 @@ export enum SurrogateContext {
 }
 
 export enum MethodWrapper {
-  None = 'none',
+  Sync = 'sync',
   Async = 'async',
 }
 
@@ -19,10 +20,21 @@ export enum HookType {
   BOTH = 'both',
 }
 
+export interface NextHandler<T extends object> {
+  instance: SurrogateUnwrapped<T>;
+  surrogate: Surrogate<T>;
+  originalArgs: any[];
+  receivedArgs: any[];
+  hookType: string;
+  action: string;
+  error?: Error;
+  next: INext;
+}
+
 export interface RunConditionParameters {
+  receivedArgs: any[];
   didError: boolean;
-  arguments: any[];
-  event: string;
+  action: string;
 }
 
 export type RunCondition<T extends object> = (
@@ -39,36 +51,11 @@ export interface SurrogateHandlerOptions<T extends object> {
   useNext?: boolean;
 
   /**
-   * @description If an error has been passed via next() and ignored, should the error be passed
-   * to the next handler
-   *
-   * @default false
-   */
-  passErrors?: boolean;
-
-  /**
    * @description Should errors be thrown or ignored when passed via next()?
    *
    * @default false
    */
   ignoreErrors?: boolean;
-
-  /**
-   * @description Pass the unwrapped instance to pre and post handlers
-   *
-   * @default false
-   *
-   * @note
-   *    Handlers are called in the context (or receiver) of the instance, and the instance is attached to the NEXT object
-   */
-  passInstance?: boolean;
-
-  /**
-   * @description Pass the Surrogate wrapped instance to pre and post handlers
-   *
-   * @default false
-   */
-  passSurrogate?: boolean;
 
   /**
    * @description Specifies the context in which to call a handler
