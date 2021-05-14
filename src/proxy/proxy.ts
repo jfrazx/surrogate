@@ -1,4 +1,3 @@
-import { Surrogate, MethodWrapper, SurrogateOptions } from '../interfaces';
 import { containerGenerator, Tail, HandlerContainer } from '../containers';
 import { Next, ExecutionContext } from '../next';
 import { isAsync, isFunction } from '../helpers';
@@ -6,6 +5,12 @@ import { FetchRuleRunner } from './rules';
 import { EventManager } from '../manager';
 import { PRE, POST } from '../which';
 import { Context } from '../context';
+import {
+  Surrogate,
+  MethodWrapper,
+  SurrogateOptions,
+  SurrogateGlobalOptions,
+} from '../interfaces';
 
 type Target<T extends object> = WeakMap<any, EventManager<T>>;
 
@@ -13,10 +18,10 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   private readonly targets: Target<T> = new WeakMap();
   private static instance: SurrogateProxy<any>;
 
-  constructor(target: T, { useSingleton = true }: SurrogateOptions) {
+  constructor(target: T, { useSingleton = true, ...globalOptions }: SurrogateOptions) {
     const instance = this.useInstance(useSingleton);
 
-    return instance.setTarget(target);
+    return instance.setTarget(target, globalOptions);
   }
 
   get<K extends keyof T>(
@@ -71,7 +76,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
 
   private initializeContextOptions(handlers: HandlerContainer<T>[]) {
     const hasAsync = handlers.some(
-      ({ handler, options }) => isAsync(handler) || options?.wrapper === MethodWrapper.Async,
+      ({ handler, options }) => isAsync(handler) || options.wrapper === MethodWrapper.Async,
     );
 
     return {
@@ -86,9 +91,9 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return target;
   }
 
-  private setTarget(target: T): SurrogateProxy<T> {
+  private setTarget(target: T, globalOptions: SurrogateGlobalOptions): SurrogateProxy<T> {
     if (!this.targets.has(target)) {
-      this.targets.set(target, new EventManager());
+      this.targets.set(target, new EventManager(globalOptions));
     }
 
     return this;

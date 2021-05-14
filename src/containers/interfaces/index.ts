@@ -1,13 +1,14 @@
-import { SurrogateHandlerOptions, SurrogateHandler } from '../../interfaces';
 import { NextNode, ContextController } from '../../next';
+import { SurrogateHandler } from '../../interfaces';
 import { WhichMethod, Which } from '../../which';
+import { OptionsHandler } from '../../options';
 import { HandlerContainer } from '../handler';
 import { SurrogateProxy } from '../../proxy';
 import { Context } from '../../context';
 
 export interface IContainer<T extends object> {
   type: WhichMethod;
-  options: SurrogateHandlerOptions<T>;
+  options: OptionsHandler<T>;
   handler: SurrogateHandler<T> | Function;
 }
 

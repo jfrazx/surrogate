@@ -26,7 +26,7 @@ export class PreMethodNext<T extends object> extends FinalNext<T> implements INe
       context,
       controller,
       generator,
-      new MethodContainer(context.original, args),
+      new MethodContainer(context.original, args, container.options),
       hookType,
     );
   }
@@ -53,6 +53,6 @@ export class PreMethodNext<T extends object> extends FinalNext<T> implements INe
     const { options } = container;
     const preOptions = this.prevNode?.container.options ?? {};
 
-    container.options = { ...options, ...preOptions };
+    container.options = options.replace(preOptions);
   }
 }

@@ -4,6 +4,8 @@ import { INext } from '../next';
 export type SurrogateContexts = 'instance' | 'surrogate';
 export type MethodWrappers = 'sync' | 'async';
 
+export type Contexts = SurrogateContexts | typeof Object | typeof Function | Object;
+
 export enum SurrogateContext {
   Instance = 'instance',
   Surrogate = 'surrogate',
@@ -69,7 +71,7 @@ export interface SurrogateHandlerOptions<T extends object> {
    *
    * @default instance
    */
-  useContext?: SurrogateContexts | typeof Object | typeof Function | Object;
+  useContext?: Contexts;
 
   /**
    * @description Specifies the method context wrapper to utilize
