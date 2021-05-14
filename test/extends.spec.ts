@@ -21,14 +21,12 @@ class BassGuitar extends Guitar {
 
 describe('Inheritance', () => {
   let log: sinon.SinonStub<any, void>;
-  let logError: sinon.SinonStub<any, void>;
 
   afterEach(() => {
     sinon.restore();
   });
 
   beforeEach(() => {
-    logError = sinon.stub(console, 'error');
     log = sinon.stub(console, 'log');
   });
 

@@ -31,15 +31,17 @@ export interface NextHandler<T extends object> {
   next: INext;
 }
 
-export interface RunConditionParameters {
+export interface RunConditionParameters<T extends object> {
+  instance: SurrogateUnwrapped<T>;
+  originalArgs: any[];
   receivedArgs: any[];
   didError: boolean;
   action: string;
+  error?: Error;
 }
 
 export type RunCondition<T extends object> = (
-  instance: SurrogateUnwrapped<T>,
-  parameters: RunConditionParameters,
+  parameters: RunConditionParameters<T>,
 ) => boolean;
 
 export interface SurrogateHandlerOptions<T extends object> {
@@ -68,13 +70,6 @@ export interface SurrogateHandlerOptions<T extends object> {
    * @default instance
    */
   useContext?: SurrogateContexts | typeof Object | typeof Function | Object;
-
-  /**
-   * @description Determines if the original method should be restored after running
-   *
-   * @default true
-   */
-  resetContext?: boolean;
 
   /**
    * @description Specifies the method context wrapper to utilize

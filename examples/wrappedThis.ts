@@ -1,4 +1,4 @@
-import { wrapSurrogate, NextHandler, SurrogateMethods, SurrogateUnwrapped } from '../build';
+import { wrapSurrogate, NextHandler, SurrogateMethods } from '../build';
 
 interface INetwork {
   isEnabled: boolean;
@@ -22,7 +22,7 @@ class Network implements INetwork {
         'disconnect',
         ({ next }: NextHandler<Network>) => next.next({ bail: true }),
         {
-          runConditions: (network: SurrogateUnwrapped<Network>) => {
+          runConditions: ({ instance: network }) => {
             console.log(
               `Checking network is connected before attempting disconnect: ${network.isConnected}`,
             );

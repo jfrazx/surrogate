@@ -1,17 +1,16 @@
 import { Surrogate, MethodWrapper, SurrogateOptions } from '../interfaces';
 import { containerGenerator, Tail, HandlerContainer } from '../containers';
-import { Context, BoundContext } from '../context';
 import { Next, ExecutionContext } from '../next';
+import { isAsync, isFunction } from '../helpers';
 import { FetchRuleRunner } from './rules';
 import { EventManager } from '../manager';
 import { PRE, POST } from '../which';
-import { isAsync } from '../helpers';
+import { Context } from '../context';
 
 type Target<T extends object> = WeakMap<any, EventManager<T>>;
-type Handle = (...args: any[]) => any;
 
 export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
-  targets: Target<T> = new WeakMap();
+  private readonly targets: Target<T> = new WeakMap();
   private static instance: SurrogateProxy<any>;
 
   constructor(target: T, { useSingleton = true }: SurrogateOptions) {
@@ -24,34 +23,39 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     target: T,
     event: string,
     receiver: Surrogate<T>,
-  ): T[K] | EventManager<T> | Handle {
+  ): T[K] | EventManager<T> {
     return FetchRuleRunner.fetchRule(this, target, event, receiver).returnableValue();
   }
 
+  getEventManager(target: T) {
+    return this.targets.get(target);
+  }
+
   static wrap<T extends object>(object: T, options?: SurrogateOptions): Surrogate<T> {
-    return new Proxy(object, new SurrogateProxy(object, options)) as Surrogate<T>;
+    return this.hasTarget(object)
+      ? (object as Surrogate<T>)
+      : (new Proxy(object, new SurrogateProxy(object, options)) as Surrogate<T>);
+  }
+
+  static hasTarget<T extends object>(target: T): target is Surrogate<T> {
+    return ['getSurrogate', 'disposeSurrogate'].every((key) =>
+      isFunction(target[key as keyof T]),
+    );
   }
 
   bindHandler(event: string, target: T, receiver: Surrogate<T>) {
     const func = Reflect.get(target, event);
+    const context = new Context(target, receiver, event, func);
 
-    if (!this.isHandlerBound(func)) {
-      const context = Context.isAlreadyContextBound<T>(func)
-        ? func()
-        : new Context(target, receiver, event, func);
-
-      Reflect.set(target, event, this.surrogateHandler.bind(this, context));
-    }
-
-    return Reflect.get(target, event);
+    return this.surrogateHandler.bind(this, context);
   }
 
   private surrogateHandler(context: Context<T>, ...args: any[]): any {
     const { target, event, original } = context;
-    const { [PRE]: pre, [POST]: post } = this.targets.get(target).getEventHandlers(event);
-    const { hasAsync, resetContext } = this.initializeContextOptions([...pre, ...post]);
+    const { [PRE]: pre, [POST]: post } = this.getEventManager(target).getEventHandlers(event);
+    const { hasAsync } = this.initializeContextOptions([...pre, ...post]);
 
-    const executionContext = ExecutionContext.for<T>(original, args, hasAsync, resetContext);
+    const executionContext = ExecutionContext.for<T>(original, args, hasAsync);
 
     Next.for(
       this,
@@ -69,26 +73,14 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     const hasAsync = handlers.some(
       ({ handler, options }) => isAsync(handler) || options?.wrapper === MethodWrapper.Async,
     );
-    const resetContext = handlers.every(({ options }) => options?.resetContext);
 
     return {
       hasAsync,
-      resetContext,
     };
   }
 
-  private isHandlerBound(func: Function): boolean {
-    return /bound\ssurrogateHandler/.test(func.name);
-  }
-
   dispose(target: T) {
-    this.targets
-      .get(target)
-      .clearEvents()
-      .map<BoundContext<T>>((event) => Reflect.get(target, event))
-      .filter((boundContext) => Context.isAlreadyContextBound<T>(boundContext))
-      .forEach((boundContext) => boundContext().resetContext());
-
+    this.getEventManager(target).clearEvents();
     this.targets.delete(target);
 
     return target;

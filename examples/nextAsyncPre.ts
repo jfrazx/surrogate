@@ -21,13 +21,12 @@ class ServiceBase {
 
   @NextAsyncPre<ServiceBase>([
     {
-      action: ['find', 'findOne', 'aggregate'],
+      action: ['find', 'findOne', 'aggregate', 'superDuperFind'] as any,
       options: {
-        runConditions: function (this: ServiceBase) {
-          console.log(`checking run conditions`, this);
+        runConditions: function (this: ServiceBase, params) {
+          console.log(`checking run conditions`, this, params);
           return !this.isInitialized;
         },
-        resetContext: Math.random() > 0.5,
         useNext: false,
       },
     },
@@ -85,6 +84,10 @@ class ExtendedService extends ServiceBase {
     await super.find(query);
     console.log(`extended finding many :: isInitialized: ${this.isInitialized}`);
   }
+
+  superDuperFind() {
+    console.log('super duper finding');
+  }
 }
 
 const serviceBase = new ServiceBase();
@@ -98,4 +101,5 @@ serviceBase
   .then(() => extendedService.find({ age: 1 }))
   .then(() => extendedService.aggregate())
   .then(() => serviceBase.find())
-  .then(() => extendedService.aggregate());
+  .then(() => extendedService.aggregate())
+  .then(() => extendedService.superDuperFind());

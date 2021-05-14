@@ -72,9 +72,9 @@ SurrogateHandler is any function that accepts a `NextHandler` object which can b
 
 | Method   | Member Of | Parameters                            | Default Value | Description                                                                                  |
 | -------- | :-------: | ------------------------------------- | ------------- | -------------------------------------------------------------------------------------------- |
-| skip     |   next    | (skipAmount?: number)                 | 1             | Method that will skip the next 'skipAmount' handlers                                         |
-| skipWith |   next    | (skipAmount?: number, ...args: any[]) | 1             | Same as `skip` but will accept any number of arguments, passing to the next executed handler |
-| next     |   next    | (nextOptions?: NextOptions)           | n/a           | Calling next may advance to the next hook.                                                   |
+| skip     |   INext   | (skipAmount?: number)                 | 1             | Method that will skip the next 'skipAmount' handlers                                         |
+| skipWith |   INext   | (skipAmount?: number, ...args: any[]) | 1             | Same as `skip` but will accept any number of arguments, passing to the next executed handler |
+| next     |   INext   | (nextOptions?: NextOptions)           | n/a           | Calling next may advance to the next hook.                                                   |
 
 #### Next Options
 
@@ -89,28 +89,24 @@ SurrogateHandler is any function that accepts a `NextHandler` object which can b
 
 When registering a hook you may provide any of the following options.
 
-| Property       | Type                           | Default Value | Description                                                                                                                                                                                                                           |
-| -------------- | ------------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| useNext?       | boolean                        | true          | `true` indicates usage of the `INext` object to control flow, otherwise Surrogate makes a determination when to advance                                                                                                               |
-| ignoreErrors?  | boolean                        | false         | If true and an Error is passed Surrogate will not throw.                                                                                                                                                                              |
-| useContext?    | any                            | T             | The context in which to call surrogate handlers.                                                                                                                                                                                      |
-| resetContext?  | boolean                        | true          | Upon completion of all hooks in the chain the original method will be restored if true, otherwise the bound handler will remain for the current instance. If set to false you may need to call `disposeSurrogate` for memory cleanup. |
-| wrapper?       | MethodWrappers                 | sync          | Tells Surrogate if it is managing synchronous or asynchronous methods.                                                                                                                                                                |
-| runConditions? | RunCondition \| RunCondition[] | n/a           | Conditions to determine if a handler should be executed.                                                                                                                                                                              |
+| Property       | Type                           | Default Value | Description                                                                                                             |
+| -------------- | ------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| useNext?       | boolean                        | true          | `true` indicates usage of the `INext` object to control flow, otherwise Surrogate makes a determination when to advance |
+| ignoreErrors?  | boolean                        | false         | If true and an Error is passed Surrogate will not throw.                                                                |
+| useContext?    | any                            | T             | The context in which to call surrogate handlers.                                                                        |
+| wrapper?       | MethodWrappers                 | sync          | Tells Surrogate if it is managing synchronous or asynchronous methods.                                                  |
+| runConditions? | RunCondition \| RunCondition[] | n/a           | Conditions to determine if a handler should be executed.                                                                |
 
 #### RunCondition
 
-A RunCondition is a function that returns a boolean indicating if the current handler should be executed(`true`) or skipped(`false`). All run conditions are executed synchronously and all conditions must be true for the handler to execute.
-
-| Parameter  | Type                   | Description                                                                          |
-| ---------- | ---------------------- | ------------------------------------------------------------------------------------ |
-| instance   | T                      | The current unwrapped instance                                                       |
-| parameters | RunConditionParameters | An object containing additional information useful for determining handler execution |
+A RunCondition is a function that receives `RunConditionParameters` and returns a boolean indicating if the current handler should be executed(`true`) or skipped(`false`). All run conditions are executed synchronously and all conditions must be true for the handler to execute.
 
 | Property          | Member Of              | Type    | Description                                        |
 | ----------------- | ---------------------- | ------- | -------------------------------------------------- |
 | action            | RunConditionParameters | string  | The current target method.                         |
+| instance          | RunConditionParameters | T       | The current unwrapped instance                     |
 | didError          | RunConditionParameters | boolean | Indicates if the previous handler passed an Error. |
+| error?            | RunConditionParameters | Error   | An error object, if passed                         |
 | receivedArguments | RunConditionParameters | any[]   | Arguments received from the previous handler.      |
 
 ---
