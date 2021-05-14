@@ -22,7 +22,7 @@ export class Next<T extends object> extends BaseNext<T> implements INext {
     this.nextNode = Next.for(proxy, context, executionContext, iterator, hookType);
   }
 
-  skipWith(times = 1, ...args: any[]): void {
+  skipWith(times: number, ...args: any[]): void {
     if (times > 0) {
       this.controller.setNext(this.nextNode);
 

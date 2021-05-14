@@ -30,9 +30,10 @@ Check [examples](./examples) for expanded samples.
 
 ### Wrap Surrogate Options
 
-| Option       | Type    | Default Value | Description                                 |
-| ------------ | ------- | :-----------: | ------------------------------------------- |
-| useSingleton | boolean |     true      | Informs Surrogate to operate as a Singleton |
+| Option        | Type    | Default Value | Description                                                                                 |
+| ------------- | ------- | :-----------: | ------------------------------------------------------------------------------------------- |
+| useSingleton? | boolean |     true      | Informs Surrogate to operate as a Singleton                                                 |
+| useContext?   | any     |       T       | The context in which to call surrogate handlers. Handler specific contexts take precedence. |
 
 ### Surrogate Methods
 
@@ -70,11 +71,11 @@ SurrogateHandler is any function that accepts a `NextHandler` object which can b
 | surrogate    | Surrogate | Provides handler access to surrogate wrapped instance.   |
 | next         | INext     | Object that provides flow control capabilities           |
 
-| Method   | Member Of | Parameters                            | Default Value | Description                                                                                  |
-| -------- | :-------: | ------------------------------------- | ------------- | -------------------------------------------------------------------------------------------- |
-| skip     |   INext   | (skipAmount?: number)                 | 1             | Method that will skip the next 'skipAmount' handlers                                         |
-| skipWith |   INext   | (skipAmount?: number, ...args: any[]) | 1             | Same as `skip` but will accept any number of arguments, passing to the next executed handler |
-| next     |   INext   | (nextOptions?: NextOptions)           | n/a           | Calling next may advance to the next hook.                                                   |
+| Method   | Member Of | Parameters                           | Default Value | Description                                                                                  |
+| -------- | :-------: | ------------------------------------ | ------------- | -------------------------------------------------------------------------------------------- |
+| skip     |   INext   | (skipAmount?: number)                | 1             | Method that will skip the next 'skipAmount' handlers                                         |
+| skipWith |   INext   | (skipAmount: number, ...args: any[]) | 1             | Same as `skip` but will accept any number of arguments, passing to the next executed handler |
+| next     |   INext   | (nextOptions?: NextOptions)          | n/a           | Calling next may advance to the next hook.                                                   |
 
 #### Next Options
 

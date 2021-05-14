@@ -1,8 +1,14 @@
-import { WhichContainers, SurrogateHandler, SurrogateHandlerOptions } from '../interfaces';
 import { HandlerContainer } from '../containers';
 import { wrapDefaults } from '@status/defaults';
 import { PRE, POST, Which } from '../which';
+import { OptionsHandler } from '../options';
 import { asArray } from '@jfrazx/asarray';
+import {
+  WhichContainers,
+  SurrogateHandler,
+  SurrogateGlobalOptions,
+  SurrogateHandlerOptions,
+} from '../interfaces';
 
 export interface EventMap<T extends object> {
   [event: string]: WhichContainers<T>;
@@ -17,6 +23,8 @@ export class EventManager<T extends object = any> {
     setUndefined: true,
     shallowCopy: false,
   });
+
+  constructor(private globalOptions: SurrogateGlobalOptions) {}
 
   getEventHandlers(event: string): WhichContainers<T> {
     return this.events[event];
@@ -54,7 +62,14 @@ export class EventManager<T extends object = any> {
     options: SurrogateHandlerOptions<T> = {},
   ): EventManager<T> {
     const currentContainers: HandlerContainer<T>[] = this.getEventHandlersFor(event, type);
-    const containers = handlers.map((handler) => new HandlerContainer(handler, type, options));
+    const containers = handlers.map(
+      (handler) =>
+        new HandlerContainer(
+          handler,
+          type,
+          new OptionsHandler({ handler: options, global: this.globalOptions }),
+        ),
+    );
     const allContainers = [...currentContainers, ...containers];
 
     this.setEventHandlersFor(event, type, allContainers);
