@@ -22,12 +22,7 @@ describe('Bail', () => {
     );
     const nextHandler2 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
-    network
-      .getSurrogate()
-      .registerPreHook('connect', nextHandler, {
-        resetContext: false,
-      })
-      .registerPreHook('connect', nextHandler2);
+    network.getSurrogate().registerPreHook('connect', [nextHandler, nextHandler2]);
 
     const connect = sinon.spy(network.connect);
 
@@ -44,12 +39,7 @@ describe('Bail', () => {
       next.next({ bail: true }),
     );
 
-    network
-      .getSurrogate()
-      .registerPreHook('connect', nextHandler, {
-        resetContext: false,
-      })
-      .registerPreHook('connect', nextHandler2);
+    network.getSurrogate().registerPreHook('connect', [nextHandler, nextHandler2]);
 
     const connect = sinon.spy(network.connect);
 

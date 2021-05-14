@@ -13,6 +13,6 @@ export class EventMangerRule<T extends object> implements FetchRule {
   }
 
   returnableValue() {
-    return () => this.proxy.targets.get(this.target);
+    return () => this.proxy.getEventManager(this.target);
   }
 }

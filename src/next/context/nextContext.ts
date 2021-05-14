@@ -4,9 +4,6 @@ import { MethodNext } from '../nodes';
 export class NextContext<T extends object> extends ExecutionContext<T> {
   start() {
     try {
-      const { context } = this.nextNode;
-
-      this.resetContext(context);
       this.runNext();
 
       return this.returnValue;

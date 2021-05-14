@@ -11,6 +11,7 @@ describe('Next', () => {
   beforeEach(() => {
     network = wrapSurrogate(new Network());
     log = sinon.stub(console, 'log');
+    sinon.stub(console, 'error');
   });
 
   afterEach(() => {

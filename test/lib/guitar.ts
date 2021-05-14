@@ -18,15 +18,15 @@ export class Guitar {
 
   @SurrogatePre<Guitar>([
     {
-      handler: ({ next }: NextHandler<Guitar>) => {
+      handler: ({ next, instance }: NextHandler<Guitar>) => {
         console.log('stringing instrument');
 
-        next.instance.isStrung = true;
+        instance.isStrung = true;
 
         next.next();
       },
       options: {
-        runConditions: [(guitar) => !guitar.isStrung],
+        runConditions: [({ instance: guitar }) => !guitar.isStrung],
       },
     },
     {
@@ -40,7 +40,7 @@ export class Guitar {
         });
       },
       options: {
-        runConditions: (guitar) => !guitar.isTuned,
+        runConditions: ({ instance: guitar }) => !guitar.isTuned,
       },
     },
   ])
@@ -59,11 +59,10 @@ export class Guitar {
     type: POST,
     action: ['play'],
     options: {
-      runConditions: (guitar) => guitar.hasBrokenString,
+      runConditions: ({ instance: guitar }) => guitar.hasBrokenString,
     },
   })
-  postPlay({ next }: NextHandler<this>) {
-    const { instance } = next;
+  postPlay({ next, instance }: NextHandler<this>) {
     console.log('fixing broken string');
 
     instance.hasBrokenString = false;

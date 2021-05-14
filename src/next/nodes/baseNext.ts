@@ -71,13 +71,21 @@ export abstract class BaseNext<T extends object> implements INext {
 
   shouldRun(using: any[]): boolean {
     const didError = Boolean(this.prevNode?.didError);
+    const { originalArgs } = this.controller;
     const { options } = this.container;
     const context = this.useContext;
     const { event } = this.context;
     const instance = this.instance;
 
     return asArray(options.runConditions).every((condition) =>
-      condition.call(context, instance, { didError, receivedArgs: using, action: event }),
+      condition.call(context, {
+        didError,
+        instance,
+        originalArgs,
+        action: event,
+        receivedArgs: using,
+        error: this.prevNode?.didError,
+      }),
     );
   }
 

@@ -7,10 +7,6 @@ export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
 
   async start() {
     return new Promise((resolve, reject) => {
-      const { context } = this.nextNode;
-
-      this.resetContext(context);
-
       this.resolver = resolve;
       this.rejecter = reject;
 

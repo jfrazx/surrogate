@@ -29,7 +29,7 @@ export class Animal {
   @NextPost<Animal>({
     action: ['pet'],
     options: {
-      runConditions: (animal) => animal.mayBeFed,
+      runConditions: ({ instance: animal }) => animal.mayBeFed,
     },
   })
   feed({ next }: NextHandler<Animal>) {

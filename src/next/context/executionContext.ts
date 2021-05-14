@@ -1,44 +1,30 @@
 import { ContextController } from './interfaces';
 import { NextNode } from '../interfaces';
-import { Context } from '../../context';
 import { isAsync } from '../../helpers';
 
 interface ExecutionConstruct<T extends object> {
-  new (
-    originalMethod: Function,
-    originalArgs: any[],
-    shouldResetContext: boolean,
-  ): ContextController<T>;
+  new (originalMethod: Function, originalArgs: any[]): ContextController<T>;
 }
 
 export abstract class ExecutionContext<T extends object> implements ContextController<T> {
   protected nextNode: NextNode<T>;
   protected returnValue: any;
 
-  constructor(
-    public originalMethod: Function,
-    public originalArgs: any[],
-    protected shouldResetContext: boolean,
-  ) {}
+  constructor(public originalMethod: Function, public originalArgs: any[]) {}
 
   static for<T extends object>(
     originalMethod: Function,
     originalArgs: any[],
     hasAsync: boolean,
-    resetContext: boolean,
   ) {
     const TargetContext: ExecutionConstruct<T> =
       hasAsync || isAsync(originalMethod) ? NextAsyncContext : NextContext;
 
-    return new TargetContext(originalMethod, originalArgs, resetContext);
+    return new TargetContext(originalMethod, originalArgs);
   }
 
   protected setReturnValue(value: any) {
     this.returnValue ??= value;
-  }
-
-  protected resetContext(context: Context<T>): void {
-    this.shouldResetContext ? context.resetContext() : context.createRetrievableContext();
   }
 
   setNext(next: NextNode<T>) {
@@ -46,11 +32,7 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
   }
 
   addNext(next: NextNode<T>): this {
-    if (this.nextNode) {
-      this.nextNode.addNext(next);
-    } else {
-      this.nextNode = next;
-    }
+    this.nextNode ? this.nextNode.addNext(next) : this.setNext(next);
 
     return this;
   }
