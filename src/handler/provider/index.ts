@@ -1,6 +1,6 @@
-import { NextNode } from '../next/interfaces/next';
-import { NextHandler } from '../interfaces';
-import { Context } from '../context';
+import { NextNode } from '../../next/interfaces/next';
+import { NextHandler } from '../../interfaces';
+import { Context } from '../../context';
 
 export class NextHandlerProvider<T extends object> implements NextHandler<T> {
   private readonly context: Context<T>;

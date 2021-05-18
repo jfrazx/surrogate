@@ -1,4 +1,4 @@
-import { Surrogate, SurrogateContext, SurrogateHandlerOptions } from '../interfaces';
+import { Surrogate, SurrogateContext, SurrogateHandlerOptions, Contexts } from '../interfaces';
 
 export class Context<T extends object> {
   constructor(
@@ -8,7 +8,7 @@ export class Context<T extends object> {
     public original: Function,
   ) {}
 
-  determineContext(options: SurrogateHandlerOptions<T>): any {
+  determineContext(options: SurrogateHandlerOptions<T>): Contexts {
     const { useContext } = options;
 
     return this.useInstance(useContext)

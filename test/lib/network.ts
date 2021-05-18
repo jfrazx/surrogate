@@ -36,6 +36,10 @@ export class Network {
     return name;
   }
 
+  async checkServerAsync(name: string) {
+    return name;
+  }
+
   disconnect(): void {
     console.log('disconnecting from somewhere...');
 
