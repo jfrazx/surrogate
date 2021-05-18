@@ -19,7 +19,7 @@ describe('Next', () => {
   });
 
   describe('General', () => {
-    it('should pass Next objects to the callbacks', () => {
+    it('should pass NextHandler objects to the callbacks', () => {
       const func1 = sinon.spy(function ({ next }: NextHandler<Network>) {
         expect(next).to.be.instanceOf(Next);
 
@@ -42,14 +42,13 @@ describe('Next', () => {
 
     it('should pass arguments from one handler to the next', () => {
       network.getSurrogate().registerPreHook('connect', [
-        ({ next }: NextHandler<Network>) => next.next({ using: [1, 2, 3] }),
-        ({ next, receivedArgs: [arg1, arg2, arg3] }: NextHandler<Network>) => {
-          expect(arg1).to.be.a('number');
-          expect(arg2).to.be.a('number');
-          expect(arg3).to.be.a('number');
-          expect(arg1).to.equal(1);
-          expect(arg2).to.equal(2);
-          expect(arg3).to.equal(3);
+        ({ next }: NextHandler<Network>) => next.next({ using: [0, 1, 2, 3] }),
+        ({ next, receivedArgs }: NextHandler<Network>) => {
+          receivedArgs.forEach((value, index) => {
+            expect(value).to.be.a('number');
+            expect(value).to.equal(index);
+          });
+
           next.next();
         },
       ]);
@@ -68,6 +67,48 @@ describe('Next', () => {
       ]);
 
       network.checkServer(serverName);
+    });
+
+    it('should not pass any arguments', () => {
+      const serverName = 'server name no args';
+
+      network.getSurrogate().registerPreHook(
+        'checkServer',
+        [
+          (...values) => {
+            expect(values).to.have.lengthOf(0);
+          },
+        ],
+        {
+          noArgs: true,
+        },
+      );
+
+      const result = network.checkServer(serverName);
+
+      expect(result).to.equal(serverName);
+    });
+
+    it('should not pass any arguments when async', async () => {
+      const serverName = 'server name no args async';
+
+      network.getSurrogate().registerPreHook(
+        'checkServerAsync',
+        [
+          async (...values) => {
+            expect(values).to.have.lengthOf(0);
+          },
+        ],
+        {
+          noArgs: true,
+          useNext: false,
+          wrapper: 'async',
+        },
+      );
+
+      const result = await network.checkServerAsync(serverName);
+
+      expect(result).to.equal(serverName);
     });
 
     it('should pass the current target method', () => {

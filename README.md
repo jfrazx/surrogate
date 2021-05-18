@@ -93,6 +93,7 @@ When registering a hook you may provide any of the following options.
 | Property       | Type                           | Default Value | Description                                                                                                             |
 | -------------- | ------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | useNext?       | boolean                        | true          | `true` indicates usage of the `INext` object to control flow, otherwise Surrogate makes a determination when to advance |
+| noArgs?        | boolean                        | false         | Specify that `NextHandler` should NOT be passed to a handler                                                            |
 | ignoreErrors?  | boolean                        | false         | If true and an Error is passed Surrogate will not throw.                                                                |
 | useContext?    | any                            | T             | The context in which to call surrogate handlers.                                                                        |
 | wrapper?       | MethodWrappers                 | sync          | Tells Surrogate if it is managing synchronous or asynchronous methods.                                                  |

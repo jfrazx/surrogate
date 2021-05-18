@@ -55,6 +55,13 @@ export interface SurrogateHandlerOptions<T extends object> {
   useNext?: boolean;
 
   /**
+   * @description Specify that nothing should be passed to handler
+   *
+   * @default false
+   */
+  noArgs?: boolean;
+
+  /**
    * @description Should errors be thrown or ignored when passed via next()?
    *
    * @default false

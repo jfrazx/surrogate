@@ -8,6 +8,7 @@ interface GlobalHandlerOptions<T extends object> {
 
 const defaultMethodOptions: Required<SurrogateHandlerOptions<any>> = {
   useNext: true,
+  noArgs: false,
   runConditions: [],
   ignoreErrors: false,
   wrapper: MethodWrapper.Sync,
