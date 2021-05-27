@@ -3,7 +3,8 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "baseUrl": "./",
-    "outDir": "../build-examples"
+    "outDir": "../build-examples",
+    "skipLibCheck": true
   },
   "include": ["**/*.ts"]
 }
