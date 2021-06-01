@@ -8,14 +8,15 @@ import {
   SurrogateDecorateOptions,
 } from './interfaces';
 
-export const SurrogateDelegate = <T extends object>(
-  options: SurrogateDecorateOptions<T> = {},
-) => <K extends Function>(klass: K) => SurrogateClassWrapper.wrap(klass, options);
+export const SurrogateDelegate =
+  <T extends object>(options: SurrogateDecorateOptions<T> = {}) =>
+  <K extends Function>(klass: K) =>
+    SurrogateClassWrapper.wrap(klass, options);
 
 export const SurrogateFor = <T extends object>(
   forOptions: SurrogateForOptions<T> | SurrogateForOptions<T>[],
 ) => {
-  return (target: T, event: keyof T) => {
+  return (target: T, event: keyof T | string) => {
     asArray(forOptions).forEach((forOption) => {
       const { type, options } = forOption;
       const which: Which[] = determineWhich(type);
@@ -63,7 +64,7 @@ const surrogateAsyncHelper = <T extends object>(
   type: Which,
   asyncOptions: SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[],
 ) => {
-  return (target: T, event: keyof T) => {
+  return (target: T, event: keyof T | string) => {
     asArray(asyncOptions).forEach((options) => {
       manageAsyncDecorator(type, options)(target, event);
     });

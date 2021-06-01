@@ -12,11 +12,11 @@ export const manageDecorator = <T extends object>(
 ) => {
   const decoratorOptions = organizeOptions<T>(options);
 
-  return (target: T, event: keyof T) => {
+  return (target: T, event: keyof T | string) => {
     SurrogateClassWrapper.addDecorators(
       target.constructor as Constructor<T>,
       type,
-      event,
+      event as string,
       decoratorOptions,
     );
   };

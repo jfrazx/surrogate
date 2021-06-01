@@ -29,7 +29,7 @@ export interface SurrogateForOptions<T extends object> {
 }
 
 export interface NextHookOptions<T extends object> {
-  action: keyof SurrogateUnwrapped<T> | (keyof SurrogateUnwrapped<T>)[];
+  action: keyof SurrogateUnwrapped<T> | (keyof SurrogateUnwrapped<T>)[] | string | string[];
   options?: SurrogateHandlerOptions<T>;
 }
 

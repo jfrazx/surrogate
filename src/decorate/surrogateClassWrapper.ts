@@ -42,9 +42,8 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
   ) {
     Object.entries(decoratorMap).forEach(([event, options]) => {
       Object.getOwnPropertySymbols(options).forEach((which: any) => {
-        const {
-          [which]: handlerOptions,
-        }: { [hook: string]: SurrogateDecoratorOptions<T>[] } = options as any;
+        const { [which]: handlerOptions }: { [hook: string]: SurrogateDecoratorOptions<T>[] } =
+          options as any;
 
         handlerOptions.forEach(({ handler, options }) => {
           eventManager.registerHook(event as keyof T, which, handler, options);
@@ -60,12 +59,12 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
   static addDecorators<T extends object>(
     klass: Constructor<T>,
     type: Which,
-    event: keyof T,
+    event: string,
     surrogateDecoratorOptions: SurrogateDecoratorOptions<any>[],
   ) {
     const decoratorMap = this.retrieveTargetDecoratorMap(klass);
 
-    decoratorMap[event as string][type].push(...surrogateDecoratorOptions);
+    decoratorMap[event][type].push(...surrogateDecoratorOptions);
 
     return this.decoratorMap.set(klass, decoratorMap);
   }
