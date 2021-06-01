@@ -20,7 +20,7 @@ export class NextContext<T extends object> extends ExecutionContext<T> {
     const { container, context } = node;
     const { handler, originalArgs } = container;
 
-    const result = handler.apply(context.target, originalArgs);
+    const result = handler.apply(context.receiver, originalArgs);
 
     this.setReturnValue(result);
     this.runNext(node.nextNode);

@@ -234,8 +234,8 @@ describe('Next', () => {
         method(instance: GlobalContextTest) {
           expect(
             this,
-            'GlobalContextTest method "this" is not equal to passed instance',
-          ).to.equal(instance);
+            'GlobalContextTest method "this" is equal to passed instance',
+          ).not.to.equal(instance);
         }
       }
 
@@ -264,8 +264,8 @@ describe('Next', () => {
         method(instance: GlobalContextTest) {
           expect(
             this,
-            'GlobalContextTest method "this" is not equal to passed instance',
-          ).to.equal(instance);
+            'GlobalContextTest method "this" is equal to passed instance',
+          ).not.to.equal(instance);
         }
       }
 
