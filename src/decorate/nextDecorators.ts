@@ -53,6 +53,16 @@ export const NextAsyncPost = <T extends object>(
   return nextAsyncHelper(asyncOptions, POST);
 };
 
+export const NextAsyncForBoth = <T extends object>(
+  nextOptions: NextHookOptions<T> | NextHookOptions<T>[],
+): PropertyDecorator<T> => {
+  const which: Which[] = [PRE, POST];
+
+  return (target: T, event: string, descriptor: PropertyDescriptor): void => {
+    which.forEach((type) => nextAsyncHelper(nextOptions, type)(target, event, descriptor));
+  };
+};
+
 const nextAsyncHelper = <T extends object>(
   asyncOptions: NextHookOptions<T> | NextHookOptions<T>[],
   type: Which,
@@ -68,22 +78,32 @@ const nextAsyncHelper = <T extends object>(
 };
 
 export const NextPre = <T extends object>(
-  nextOptions: NextHookOptions<T>,
+  nextOptions: NextHookOptions<T> | NextHookOptions<T>[],
 ): PropertyDecorator<T> => {
   return nextHelper<T>(nextOptions, PRE);
 };
 export const NextPost = <T extends object>(
-  nextOptions: NextHookOptions<T>,
+  nextOptions: NextHookOptions<T> | NextHookOptions<T>[],
 ): PropertyDecorator<T> => {
   return nextHelper<T>(nextOptions, POST);
 };
 
+export const NextForBoth = <T extends object>(
+  nextOptions: NextHookOptions<T> | NextHookOptions<T>[],
+): PropertyDecorator<T> => {
+  const which: Which[] = [PRE, POST];
+
+  return (target: T, event: string, descriptor: PropertyDescriptor): void => {
+    which.forEach((type) => nextHelper(nextOptions, type)(target, event, descriptor));
+  };
+};
+
 const nextHelper = <T extends object>(
-  asyncOptions: NextHookOptions<T> | NextHookOptions<T>[],
+  hookOptions: NextHookOptions<T> | NextHookOptions<T>[],
   type: Which,
 ): PropertyDecorator<T> => {
   return (target: T, event: string, descriptor: PropertyDescriptor): void =>
-    asArray(asyncOptions).forEach(({ action, options }) =>
+    asArray(hookOptions).forEach(({ action, options }) =>
       NextFor({
         action,
         type,
