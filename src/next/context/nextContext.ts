@@ -6,13 +6,15 @@ export class NextContext<T extends object> extends ExecutionContext<T> {
     try {
       this.runNext();
 
-      return this.returnValue;
+      return this.complete();
     } catch (error) {
       this.handleError(error);
     }
   }
 
-  complete() {}
+  complete() {
+    return this.returnValue;
+  }
 
   runOriginal(node: MethodNext<T>) {
     const { container, context } = node;

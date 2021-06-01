@@ -152,6 +152,34 @@ describe('Next', () => {
 
       expect(name).to.equal(serverName);
     });
+
+    it('should pass the result', () => {
+      const serverName = 'server name result';
+
+      network
+        .getSurrogate()
+        .registerPreHook(
+          'checkServer',
+          [
+            ({ result }: NextHandler<Network>) => {
+              expect(result).to.be.undefined;
+            },
+          ],
+          { useNext: false },
+        )
+        .registerPostHook(
+          'checkServer',
+          ({ result }: NextHandler<Network>) => {
+            expect(result).to.be.a('string');
+            expect(result).to.equal(serverName);
+          },
+          { useNext: false },
+        );
+
+      const name = network.checkServer(serverName);
+
+      expect(name).to.equal(serverName);
+    });
   });
 
   describe('HandlerContext', () => {

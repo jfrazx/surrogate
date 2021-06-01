@@ -30,6 +30,7 @@ export interface NextHandler<T extends object> {
   hookType: string;
   action: string;
   error?: Error;
+  result: any;
   next: INext;
 }
 

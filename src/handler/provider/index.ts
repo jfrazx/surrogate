@@ -36,4 +36,8 @@ export class NextHandlerProvider<T extends object> implements NextHandler<T> {
   get next() {
     return this.node.nextNode;
   }
+
+  get result() {
+    return this.node.controller.returnValue;
+  }
 }

@@ -8,7 +8,7 @@ interface ExecutionConstruct<T extends object> {
 
 export abstract class ExecutionContext<T extends object> implements ContextController<T> {
   protected nextNode: NextNode<T>;
-  protected returnValue: any;
+  returnValue: any;
 
   constructor(public originalMethod: Function, public originalArgs: any[]) {}
 

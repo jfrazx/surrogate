@@ -3,6 +3,7 @@ import { NextNode } from '../../interfaces';
 export interface ContextController<T extends object> {
   start(): any;
   complete(): void;
+  returnValue: any;
   originalArgs: any[];
   bail(bailWith: any): any;
   originalMethod: Function;
