@@ -53,7 +53,7 @@ export const NextAsyncPost = <T extends object>(
   return nextAsyncHelper(asyncOptions, POST);
 };
 
-export const NextAsyncForBoth = <T extends object>(
+export const NextAsyncPreAndPost = <T extends object>(
   nextOptions: NextHookOptions<T> | NextHookOptions<T>[],
 ): PropertyDecorator<T> => {
   const which: Which[] = [PRE, POST];
@@ -88,7 +88,7 @@ export const NextPost = <T extends object>(
   return nextHelper<T>(nextOptions, POST);
 };
 
-export const NextForBoth = <T extends object>(
+export const NextPreAndPost = <T extends object>(
   nextOptions: NextHookOptions<T> | NextHookOptions<T>[],
 ): PropertyDecorator<T> => {
   const which: Which[] = [PRE, POST];

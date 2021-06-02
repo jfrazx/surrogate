@@ -1,6 +1,6 @@
 import { manageDecorator, determineWhich, manageAsyncDecorator } from './manageDecorator';
 import { SurrogateClassWrapper } from './surrogateClassWrapper';
-import { POST, PRE, Which } from '../which';
+import { POST, PRE, Which, BOTH } from '../which';
 import { asArray } from '@jfrazx/asarray';
 import {
   SurrogateForOptions,
@@ -26,6 +26,19 @@ export const SurrogateFor = <T extends object>(
   };
 };
 
+export const SurrogatePreAndPost = <T extends object>(
+  forOptions: SurrogateForOptions<T> | SurrogateForOptions<T>[],
+) => {
+  return (target: T, event: keyof T | string) => {
+    asArray(forOptions).forEach((forOptions) =>
+      SurrogateFor({
+        ...forOptions,
+        type: BOTH,
+      })(target, event),
+    );
+  };
+};
+
 export const SurrogatePre = <T extends object>(
   preOptions: SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[],
 ) => {
@@ -42,7 +55,7 @@ export const SurrogatePost = <T extends object>(
 ) => {
   const forOptions = asArray(postOptions).map<SurrogateForOptions<T>>((options) => ({
     options,
-    type: PRE,
+    type: POST,
   }));
 
   return SurrogateFor(forOptions);
