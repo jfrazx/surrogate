@@ -8,10 +8,6 @@ describe('SurrogateProxy', () => {
   let clock: sinon.SinonFakeTimers;
   let network: Surrogate<Network>;
 
-  before(() => {
-    clock = sinon.useFakeTimers();
-  });
-
   after(() => {
     clock.restore();
   });
@@ -19,6 +15,7 @@ describe('SurrogateProxy', () => {
   beforeEach(() => {
     network = wrapSurrogate(new Network());
     log = sinon.stub(console, 'log');
+    clock = sinon.useFakeTimers();
   });
 
   afterEach(() => {
@@ -125,7 +122,7 @@ describe('SurrogateProxy', () => {
         handler({ next }: NextHandler<ContinueTest>) {
           setTimeout(() => next.next(), 1000);
 
-          clock.tick(1000);
+          clock.tick(1050);
         }
 
         async method() {

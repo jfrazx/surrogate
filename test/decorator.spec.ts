@@ -1,21 +1,21 @@
+import { BugReport, logReporter } from './lib/reportable';
 import { Guitar } from './lib/guitar';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import {
-  BOTH,
-  NextFor,
   NextPre,
   NextPost,
   NextHandler,
-  SurrogateFor,
   NextAsyncPre,
   SurrogatePre,
   NextAsyncPost,
   SurrogatePost,
+  NextPreAndPost,
   SurrogateHandler,
   SurrogateAsyncPre,
   SurrogateDelegate,
   SurrogateAsyncPost,
+  SurrogatePreAndPost,
 } from '../src';
 
 describe('SurrogateDecorators', () => {
@@ -35,23 +35,20 @@ describe('SurrogateDecorators', () => {
     });
   });
 
-  describe('SurrogateFor', () => {
+  describe('SurrogatePreAndPost', () => {
     it('should be a function', () => {
-      expect(SurrogateFor).to.be.a('function');
+      expect(SurrogatePreAndPost).to.be.a('function');
     });
 
     it('should decorate for BOTH pre and post methods', () => {
-      const value = 'SurrogateForTest';
+      const value = 'SurrogatePreAndPostTest';
 
-      @SurrogateDelegate<SurrogateForTest>()
-      class SurrogateForTest {
-        @SurrogateFor<SurrogateForTest>({
-          type: BOTH,
+      @SurrogateDelegate<SurrogatePreAndPostTest>()
+      class SurrogatePreAndPostTest {
+        @SurrogatePreAndPost<SurrogatePreAndPostTest>({
+          handler: () => console.log(`Next handler called`),
           options: {
-            handler: () => console.log(`Next handler called`),
-            options: {
-              useNext: false,
-            },
+            useNext: false,
           },
         })
         testMethod() {
@@ -59,7 +56,7 @@ describe('SurrogateDecorators', () => {
         }
       }
 
-      const test = new SurrogateForTest();
+      const test = new SurrogatePreAndPostTest();
 
       const result = test.testMethod();
 
@@ -333,9 +330,9 @@ describe('SurrogateDecorators', () => {
     });
   });
 
-  describe('NextFor', () => {
+  describe('NextPreAndPost', () => {
     it('should be a function', () => {
-      expect(NextFor).to.be.a('function');
+      expect(NextPreAndPost).to.be.a('function');
     });
 
     it('should decorate as Next for BOTH pre and post methods', () => {
@@ -343,9 +340,8 @@ describe('SurrogateDecorators', () => {
 
       @SurrogateDelegate<NextForTest>()
       class NextForTest {
-        @NextFor<NextForTest>({
+        @NextPreAndPost<NextForTest>({
           action: 'testMethod',
-          type: BOTH,
           options: {
             useNext: false,
           },
@@ -663,6 +659,25 @@ describe('SurrogateDecorators', () => {
       expect(result3).to.equal(value + '3');
 
       sinon.assert.calledThrice(log);
+    });
+  });
+
+  describe('AdditionalDecorators', () => {
+    it('should provide hooks for classes with additional decorators', () => {
+      const report = new BugReport('This is a test report');
+      const message = `report to http://www.example.com`;
+
+      const reported = {
+        action: 'report',
+        hookType: 'pre',
+        title: 'This is a test report',
+        reportType: 'report',
+      };
+
+      report.report();
+
+      sinon.assert.calledOnce(logReporter);
+      [message, reported].forEach((logged) => sinon.assert.calledWith(log, logged));
     });
   });
 });
