@@ -1,5 +1,5 @@
+import { NextForOptions, NextDecoratorOptions } from './interfaces';
 import { manageDecorator, determineWhich } from './manageDecorator';
-import { NextForOptions, NextHookOptions } from './interfaces';
 import { MethodWrapper } from '../interfaces';
 import { POST, PRE, Which } from '../which';
 import { asArray } from '@jfrazx/asarray';
@@ -35,26 +35,37 @@ export const NextFor = <T extends object>(
  * @decorator
  * @export
  * @template T
- * @param {NextHookOptions<T>} {
+ * @param {NextDecoratorOptions<T>} {
  *   action,
  *   options = {},
  * }
  * @returns {PropertyDecorator<T>}
  */
 export const NextAsyncPre = <T extends object>(
-  asyncOptions: NextHookOptions<T> | NextHookOptions<T>[],
+  asyncOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
 ): PropertyDecorator<T> => {
   return nextAsyncHelper(asyncOptions, PRE);
 };
 
+/**
+ *
+ * @decorator
+ * @export
+ * @template T
+ * @param {NextDecoratorOptions<T>} {
+ *   action,
+ *   options = {},
+ * }
+ * @returns {PropertyDecorator<T>}
+ */
 export const NextAsyncPost = <T extends object>(
-  asyncOptions: NextHookOptions<T> | NextHookOptions<T>[],
+  asyncOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
 ): PropertyDecorator<T> => {
   return nextAsyncHelper(asyncOptions, POST);
 };
 
 export const NextAsyncPreAndPost = <T extends object>(
-  nextOptions: NextHookOptions<T> | NextHookOptions<T>[],
+  nextOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
 ): PropertyDecorator<T> => {
   const which: Which[] = [PRE, POST];
 
@@ -64,7 +75,7 @@ export const NextAsyncPreAndPost = <T extends object>(
 };
 
 const nextAsyncHelper = <T extends object>(
-  asyncOptions: NextHookOptions<T> | NextHookOptions<T>[],
+  asyncOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
   type: Which,
 ): PropertyDecorator<T> => {
   return (target: T, event: string, descriptor: PropertyDescriptor): void =>
@@ -78,18 +89,19 @@ const nextAsyncHelper = <T extends object>(
 };
 
 export const NextPre = <T extends object>(
-  nextOptions: NextHookOptions<T> | NextHookOptions<T>[],
+  nextOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
 ): PropertyDecorator<T> => {
   return nextHelper<T>(nextOptions, PRE);
 };
+
 export const NextPost = <T extends object>(
-  nextOptions: NextHookOptions<T> | NextHookOptions<T>[],
+  nextOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
 ): PropertyDecorator<T> => {
   return nextHelper<T>(nextOptions, POST);
 };
 
 export const NextPreAndPost = <T extends object>(
-  nextOptions: NextHookOptions<T> | NextHookOptions<T>[],
+  nextOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
 ): PropertyDecorator<T> => {
   const which: Which[] = [PRE, POST];
 
@@ -99,7 +111,7 @@ export const NextPreAndPost = <T extends object>(
 };
 
 const nextHelper = <T extends object>(
-  hookOptions: NextHookOptions<T> | NextHookOptions<T>[],
+  hookOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
   type: Which,
 ): PropertyDecorator<T> => {
   return (target: T, event: string, descriptor: PropertyDescriptor): void =>

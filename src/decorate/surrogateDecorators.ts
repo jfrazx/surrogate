@@ -27,12 +27,12 @@ export const SurrogateFor = <T extends object>(
 };
 
 export const SurrogatePreAndPost = <T extends object>(
-  forOptions: SurrogateForOptions<T> | SurrogateForOptions<T>[],
+  forOptions: SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[],
 ) => {
   return (target: T, event: keyof T | string) => {
-    asArray(forOptions).forEach((forOptions) =>
+    asArray(forOptions).forEach((options) =>
       SurrogateFor({
-        ...forOptions,
+        options,
         type: BOTH,
       })(target, event),
     );

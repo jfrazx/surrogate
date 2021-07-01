@@ -28,14 +28,14 @@ guitar.getSurrogate().registerPreHook('play', ({ next }: NextHandler<Guitar>) =>
 
 Check [examples](./examples) for expanded samples.
 
-### Wrap Surrogate Options
+### SurrogateOptions
 
 | Option        | Type    | Default Value | Description                                                                                 |
 | ------------- | ------- | :-----------: | ------------------------------------------------------------------------------------------- |
 | useSingleton? | boolean |     true      | Informs Surrogate to operate as a Singleton                                                 |
 | useContext?   | any     |       T       | The context in which to call surrogate handlers. Handler specific contexts take precedence. |
 
-### Surrogate Methods
+### SurrogateMethods
 
 After wrapping your instance with Surrogate new methods are available, `getSurrogate`, which, when called will return an instance of Surrogate Event Manager that allows management of pre and post methods and `disposeSurrogate` which will restore all methods, deregister hooks and remove the current instance from Surrogate management.
 
@@ -45,7 +45,7 @@ After wrapping your instance with Surrogate new methods are available, `getSurro
 | disposeSurrogate |    n/a     | T                     | Cleans current instance of Surrogate handlers          |
 | bypassSurrogate  |    n/a     | T                     | Allows calling target methods without running handlers |
 
-### SurrogateEventManager Methods
+### SurrogateEventManager
 
 | Method              | Parameters                                                                    | Returns               | Description                                  |
 | ------------------- | ----------------------------------------------------------------------------- | --------------------- | -------------------------------------------- |
@@ -79,12 +79,12 @@ SurrogateHandler is any function that accepts a `NextHandler` object which can b
 
 #### Next Options
 
-| Property  | Type    | Description                                                                                       |
-| --------- | ------- | ------------------------------------------------------------------------------------------------- |
-| error?    | Error   | Passing an Error may result in the error being thrown, depending on supplied handler options      |
-| using?    | any[]   | An array of values to pass to the next handler                                                    |
-| bail?     | boolean | Indicates all subsequent handler executions should stop immediately. Target method is not called. |
-| bailWith? | any     | If bailing, the supplied value should be returned                                                 |
+| Property  | Type    | Description                                                                                                             |
+| --------- | ------- | ----------------------------------------------------------------------------------------------------------------------- |
+| error?    | Error   | Passing an Error may result in the error being thrown, depending on supplied handler options                            |
+| using?    | any[]   | An array of values to pass to the next handler                                                                          |
+| bail?     | boolean | Indicates all subsequent handler executions should stop immediately. Target method is not called if bailing in pre hook |
+| bailWith? | any     | If bailing, the supplied value should be returned                                                                       |
 
 ### SurrogateHandlerOptions
 
@@ -124,7 +124,30 @@ import { SurrogateDelegate } from 'surrogate';
 class Guitar {}
 ```
 
-`SurrogateDelegate` registers your class and will automatically wrap instances of the class with Surrogate.
+`SurrogateDelegate` registers your class and will automatically wrap instances of that class with Surrogate.  
+It supports all options from [`SurrogateOptions`](###SurrogateOptions) as well as option `locateWith` which may be provided to assist Surrogate in
+locating method decorators for a particular class. Should only be necessary if multiple class decorators are utilized.
+
+```typescript
+import { SurrogateDelegate } from 'surrogate';
+
+@SurrogateDelegate({
+  locateWith: Guitar,
+})
+@MyOtherClassDecorator()
+class Guitar {}
+```
+
+If you wish to use `Surrogate` [methods](###SurrogateMethods) on your class instance you must extend `SurrogateMethods` interface.
+
+```typescript
+import { SurrogateDelegate, SurrogateMethods } from 'surrogate';
+
+export interface Guitar extends SurrogateMethods<Guitar> {}
+
+@SurrogateDelegate()
+export class Guitar {}
+```
 
 Registering hooks:
 
@@ -148,6 +171,70 @@ class Guitar {
   })
   play() {
     console.log(`playing guitar`);
+  }
+}
+```
+
+### SurrogateDecoratorOptions
+
+All `Surrogate[Async](Pre|Post)` decorators accept `SurrogateDecoratorOptions` or an array of options and must decorate the intended hooked method.
+
+|  Option  | Type                                                  | Default Value | Description                                                                       |
+| :------: | ----------------------------------------------------- | :-----------: | --------------------------------------------------------------------------------- |
+| handler  | [SurrogateHandler](##SurrogateEventManager)           |      n/a      | This function or array of functions will run before or after the decorated method |
+| options? | [SurrogateHandlerOptions](###SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior                                     |
+
+### NextDecoratorOptions
+
+All `Next[Async](Pre|Post)` decorators accept `NextDecoratorOptions` or an array of options. Any method decorated with Next\* will be registered as a Surrogate handler. Therefore, you must supply the target method the Next\* method will run with.
+
+|  Option  | Type                                                  | Default Value | Description                                   |
+| :------: | ----------------------------------------------------- | :-----------: | --------------------------------------------- |
+|  action  | keyof T \| string \| (keyof T \| string )[]           |      n/a      | Name of the target decorated method           |
+| options? | [SurrogateHandlerOptions](###SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior |
+
+```typescript
+@SurrogateDelegate({
+  locateWith: Account,
+})
+@Table({
+  timestamps: true,
+})
+class Account extends Model<Account> {
+  @NextAsyncPreAndPost<Account>({
+    action: ['update', 'save'],
+    options: {
+      useNext: false,
+    },
+  })
+  protected async logActions({
+    instance: model,
+    originalArgs,
+    hookType,
+    action,
+  }: NextHandler<Account>) {
+    const keys = (model.changed() || []) as (keyof Account)[];
+    const changes = keys.reduce(
+      (changed, key) => ({
+        ...changed,
+        [key]: {
+          current: model.getDataValue(key),
+          previous: model.previous(key),
+        },
+      }),
+      {},
+    );
+
+    telemetry.trackEvent({
+      name: `${hookType}|${action}|Logging`,
+      properties: {
+        action,
+        changes,
+        hookType,
+        model: model.toJSON(),
+        arguments: originalArgs,
+      },
+    });
   }
 }
 ```

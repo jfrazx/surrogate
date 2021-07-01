@@ -9,7 +9,7 @@ import {
 export type Constructor<T> = { new (...args: any[]): T };
 
 export interface SurrogateDecorateOptions<T extends object> extends SurrogateOptions {
-  inherit?: Constructor<T>;
+  locateWith?: Constructor<T>;
 }
 
 export interface SurrogateDecoratorOptions<T extends object> {
@@ -28,11 +28,11 @@ export interface SurrogateForOptions<T extends object> {
   options: SurrogateDelegateOptions<T>;
 }
 
-export interface NextHookOptions<T extends object> {
+export interface NextDecoratorOptions<T extends object> {
   action: keyof SurrogateUnwrapped<T> | (keyof SurrogateUnwrapped<T>)[] | string | string[];
   options?: SurrogateHandlerOptions<T>;
 }
 
-export interface NextForOptions<T extends object> extends NextHookOptions<T> {
+export interface NextForOptions<T extends object> extends NextDecoratorOptions<T> {
   type: Whichever;
 }

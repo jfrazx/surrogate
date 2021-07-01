@@ -36,9 +36,9 @@
     "precommit": "npm run coverage:test && npm run coverage:check",
     "prepush": "npm run coverage:test",
     "prepublish": "npm run build",
-    "publish": "npx semantic-release",
     "semantic-release": "semantic-release",
-    "semantic:cli": "semantic-release-cli"
+    "semantic:cli": "semantic-release-cli",
+    "mocha": "mocha"
   },
   "author": "jfrazx",
   "license": "MIT",
