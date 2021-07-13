@@ -1,6 +1,6 @@
-import { SurrogateHandler, NextHandler } from '../../interfaces';
-import { HandlerRule } from './interfaces';
-import { NextNode } from '../../next';
+import { SurrogateHandler, NextHandler } from '../../../interfaces';
+import { HandlerRule } from '../interfaces';
+import { NextNode } from '../../../next';
 
 export abstract class HandlerBaseRule<T extends object> implements HandlerRule<T> {
   constructor(protected node: NextNode<T>) {}
@@ -28,5 +28,5 @@ export abstract class HandlerBaseRule<T extends object> implements HandlerRule<T
   }
 
   abstract run(nextHandler?: NextHandler<T>): any;
-  abstract shouldRun(): boolean;
+  abstract shouldHandle(): boolean;
 }

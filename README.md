@@ -61,21 +61,34 @@ SurrogateHandler is any function that accepts a `NextHandler` object which can b
 
 `NextHandler` is passed to all hook handlers. It can supply the unwrapped or surrogate wrapped instance to the current handler. An `INext` object provides functionality to skip hooks or continue to the next hook for execution.
 
-| Property     | Type      | Description                                              |
-| ------------ | --------- | -------------------------------------------------------- |
-| action       | string    | Provides the current action or method target.            |
-| hookType     | string    | Provides the current hook type as a string.              |
-| originalArgs | any[]     | Array of arguments passed to the original called method. |
-| receivedArgs | any[]     | Array of arguments passed from the last handler.         |
-| instance     | T         | Provides handler access to the unwrapped instance.       |
-| surrogate    | Surrogate | Provides handler access to surrogate wrapped instance.   |
-| next         | INext     | Object that provides flow control capabilities           |
+| Property     | Type        | Description                                              |
+| ------------ | ----------- | -------------------------------------------------------- |
+| action       | string      | Provides the current action or method target.            |
+| hookType     | string      | Provides the current hook type as a string.              |
+| originalArgs | any[]       | Array of arguments passed to the original called method. |
+| receivedArgs | any[]       | Array of arguments passed from the last handler.         |
+| instance     | T           | Provides handler access to the unwrapped instance.       |
+| surrogate    | Surrogate   | Provides handler access to surrogate wrapped instance.   |
+| next         | INext       | Object that provides flow control capabilities           |
+| timeTracker  | TimeTracker | Provides access to the current time tracker              |
+
+#### TimeTracker
+
+| Method              |  Member Of  | Parameters | Return Value | Description                                         |
+| ------------------- | :---------: | :--------: | :----------: | --------------------------------------------------- |
+| geStartTime         | TimeTracker |    none    |    number    | Returns the start time of the current pipeline.     |
+| getTotalDuration    | TimeTracker |    none    |    number    | Returns the total duration of the current pipeline. |
+| getHookStartTime    | TimeTracker |    none    |    number    | Returns the start time of the current hook.         |
+| getLastRunDuration  | TimeTracker |    none    |    number    | Returns the duration of the last hook.              |
+| getTimeSinceLastRun | TimeTracker |    none    |    number    | Returns the duration since the last hook completed. |
+
+#### INext
 
 | Method   | Member Of | Parameters                           | Default Value | Description                                                                                  |
-| -------- | :-------: | ------------------------------------ | ------------- | -------------------------------------------------------------------------------------------- |
-| skip     |   INext   | (skipAmount?: number)                | 1             | Method that will skip the next 'skipAmount' handlers                                         |
-| skipWith |   INext   | (skipAmount: number, ...args: any[]) | 1             | Same as `skip` but will accept any number of arguments, passing to the next executed handler |
-| next     |   INext   | (nextOptions?: NextOptions)          | n/a           | Calling next may advance to the next hook.                                                   |
+| -------- | :-------: | ------------------------------------ | :-----------: | -------------------------------------------------------------------------------------------- |
+| skip     |   INext   | (skipAmount?: number)                |       1       | Method that will skip the next 'skipAmount' handlers                                         |
+| skipWith |   INext   | (skipAmount: number, ...args: any[]) |      []       | Same as `skip` but will accept any number of arguments, passing to the next executed handler |
+| next     |   INext   | (nextOptions?: NextOptions)          |      n/a      | Calling next may advance to the next hook.                                                   |
 
 #### Next Options
 
@@ -210,6 +223,7 @@ class Account extends Model<Account> {
   protected async logActions({
     instance: model,
     originalArgs,
+    timeTracker,
     hookType,
     action,
   }: NextHandler<Account>) {
@@ -233,6 +247,9 @@ class Account extends Model<Account> {
         hookType,
         model: model.toJSON(),
         arguments: originalArgs,
+      },
+      measurements: {
+        lastRunDuration: timeTracker.getDurationSinceLastRun(),
       },
     });
   }

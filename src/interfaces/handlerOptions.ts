@@ -1,4 +1,5 @@
 import { SurrogateUnwrapped, Surrogate } from './surrogate';
+import { TimeTracker } from '../timeTracker';
 import { INext } from '../next';
 
 export type SurrogateContexts = 'instance' | 'surrogate';
@@ -24,6 +25,7 @@ export enum HookType {
 
 export interface NextHandler<T extends object> {
   instance: SurrogateUnwrapped<T>;
+  timeTracker: TimeTracker;
   surrogate: Surrogate<T>;
   originalArgs: any[];
   receivedArgs: any[];

@@ -40,4 +40,8 @@ export class NextHandlerProvider<T extends object> implements NextHandler<T> {
   get result() {
     return this.node.controller.returnValue;
   }
+
+  get timeTracker() {
+    return this.node.controller.timeTracker;
+  }
 }

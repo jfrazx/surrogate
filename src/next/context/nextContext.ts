@@ -30,7 +30,7 @@ export class NextContext<T extends object> extends ExecutionContext<T> {
     this.setReturnValue(bailWith);
   }
 
-  private handleError(error?: Error) {
+  handleError(error?: Error): never {
     this.logError(error);
 
     throw error;

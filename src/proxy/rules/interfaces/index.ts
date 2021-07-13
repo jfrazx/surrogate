@@ -1,8 +1,7 @@
-import { Surrogate } from '../../../interfaces';
+import { Surrogate, ShouldHandle } from '../../../interfaces';
 import { SurrogateProxy } from '../../proxy';
 
-export interface FetchRule {
-  shouldHandle(): boolean;
+export interface FetchRule extends ShouldHandle {
   returnableValue(): any;
 }
 
