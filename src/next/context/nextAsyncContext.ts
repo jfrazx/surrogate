@@ -36,7 +36,7 @@ export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
     }
   }
 
-  private handleError(error?: Error) {
+  handleError(error?: Error) {
     this.logError(error);
     this.rejecter(error);
   }

@@ -6,7 +6,7 @@ export class SyncHandlerWithArgsRule<T extends object> extends HandlerBaseRule<T
     return this.handler.call(this.context, nextHandler);
   }
 
-  shouldRun(): boolean {
+  shouldHandle(): boolean {
     return this.shouldRunWithArgs();
   }
 }

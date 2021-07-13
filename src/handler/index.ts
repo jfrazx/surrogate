@@ -15,6 +15,7 @@ export abstract class HandlerRunner<T extends object, R extends HandlerConstruct
   protected abstract argsHandlers: R[];
 
   constructor(protected node: NextNode<T>) {}
+
   static for<T extends object>(node: NextNode<T>) {
     const {
       container: { options },
@@ -27,8 +28,11 @@ export abstract class HandlerRunner<T extends object, R extends HandlerConstruct
 
   run(args: any[], error?: Error) {
     const nextHandler = new NextHandlerProvider(this.node, args, error);
+    const { timeTracker } = this.node.controller;
 
     const runner = this.shouldRunWithNext() ? this.runWithNext : this.runWithoutNext;
+
+    timeTracker.setHookStart();
 
     runner.call(this, nextHandler);
   }
@@ -36,7 +40,7 @@ export abstract class HandlerRunner<T extends object, R extends HandlerConstruct
   protected findRule() {
     return this.argsHandlers
       .map((Rule) => new Rule(this.node))
-      .find((rule) => rule.shouldRun());
+      .find((rule) => rule.shouldHandle());
   }
 
   protected runWithNext(nextHandler: NextHandlerProvider<T>): void {
@@ -68,7 +72,9 @@ class AsyncHandlerRunner<T extends object> extends HandlerRunner<
     const { nextNode } = this.node;
     const handlerPromise = this.findRule().run(nextHandler);
 
-    handlerPromise.then((result: any) => nextNode.next({ using: asArray(result) }));
+    handlerPromise
+      .then((result: any) => nextNode.next({ using: asArray(result) }))
+      .catch((error: Error) => nextNode.next({ error }));
   }
 }
 

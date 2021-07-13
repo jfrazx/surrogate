@@ -66,7 +66,7 @@ export abstract class BaseNext<T extends object> implements INext {
       });
     }
 
-    this.generator.throw(error);
+    this.controller.handleError(error);
   }
 
   shouldRun(using: any[]): boolean {
