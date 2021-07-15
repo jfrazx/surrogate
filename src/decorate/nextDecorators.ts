@@ -10,6 +10,14 @@ type PropertyDecorator<T extends object> = (
   descriptor: PropertyDescriptor,
 ) => void;
 
+/**
+ * Designate decorated methods as next handler. Handler type must be assigned
+ *
+ * @export
+ * @template T
+ * @param {(NextForOptions<T> | NextForOptions<T>[])} nextOptions
+ * @returns {PropertyDecorator<T>}
+ */
 export const NextFor = <T extends object>(
   nextOptions: NextForOptions<T> | NextForOptions<T>[],
 ): PropertyDecorator<T> => {
@@ -31,45 +39,39 @@ export const NextFor = <T extends object>(
 };
 
 /**
+ * Designate decorated methods as async pre hooks.
  *
- * @decorator
  * @export
  * @template T
- * @param {NextDecoratorOptions<T>} {
- *   action,
- *   options = {},
- * }
+ * @param {(NextDecoratorOptions<T> | NextDecoratorOptions<T>[])} nextOptions
  * @returns {PropertyDecorator<T>}
  */
 export const NextAsyncPre = <T extends object>(
-  asyncOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
+  nextOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
 ): PropertyDecorator<T> => {
-  return nextAsyncHelper(asyncOptions, PRE);
+  return nextAsyncHelper(nextOptions, PRE);
 };
 
 /**
- *
+ * Designate decorated methods as async post hooks.
  *
  * @export
  * @template T
- * @param {(NextDecoratorOptions<T> | NextDecoratorOptions<T>[])} asyncOptions
+ * @param {(NextDecoratorOptions<T> | NextDecoratorOptions<T>[])} nextOptions
  * @returns {PropertyDecorator<T>}
  */
-export function NextAsyncPost<T extends object>(
-  asyncOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
-): PropertyDecorator<T> {
-  return nextAsyncHelper(asyncOptions, POST);
-}
+export const NextAsyncPost = <T extends object>(
+  nextOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
+): PropertyDecorator<T> => {
+  return nextAsyncHelper(nextOptions, POST);
+};
 
 /**
+ * Designate decorated methods as async pre and post hooks.
  *
- * @decorator
  * @export
  * @template T
- * @param {NextDecoratorOptions<T>} {
- *   action,
- *   options = {},
- * }
+ * @param {(NextDecoratorOptions<T> | NextDecoratorOptions<T>[])} nextOptions
  * @returns {PropertyDecorator<T>}
  */
 export const NextAsyncPreAndPost = <T extends object>(
@@ -83,11 +85,11 @@ export const NextAsyncPreAndPost = <T extends object>(
 };
 
 const nextAsyncHelper = <T extends object>(
-  asyncOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
+  nextOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
   type: Which,
 ): PropertyDecorator<T> => {
   return (target: T, event: string, descriptor: PropertyDescriptor): void =>
-    asArray(asyncOptions).forEach(({ action, options }) =>
+    asArray(nextOptions).forEach(({ action, options }) =>
       NextFor({
         action,
         type,
@@ -97,14 +99,11 @@ const nextAsyncHelper = <T extends object>(
 };
 
 /**
+ * Designate decorated methods as pre hooks.
  *
- * @decorator
  * @export
  * @template T
- * @param {NextDecoratorOptions<T>} {
- *   action,
- *   options = {},
- * }
+ * @param {(NextDecoratorOptions<T> | NextDecoratorOptions<T>[])} nextOptions
  * @returns {PropertyDecorator<T>}
  */
 export const NextPre = <T extends object>(
@@ -113,12 +112,28 @@ export const NextPre = <T extends object>(
   return nextHelper<T>(nextOptions, PRE);
 };
 
+/**
+ * Designate decorated methods as post hook
+ *
+ * @export
+ * @template T
+ * @param {(NextDecoratorOptions<T> | NextDecoratorOptions<T>[])} nextOptions
+ * @returns {PropertyDecorator<T>}
+ */
 export const NextPost = <T extends object>(
   nextOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
 ): PropertyDecorator<T> => {
   return nextHelper<T>(nextOptions, POST);
 };
 
+/**
+ * Designate decorated methods as pre and post hooks.
+ *
+ * @export
+ * @template T
+ * @param {(NextDecoratorOptions<T> | NextDecoratorOptions<T>[])} nextOptions
+ * @returns {PropertyDecorator<T>}
+ */
 export const NextPreAndPost = <T extends object>(
   nextOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
 ): PropertyDecorator<T> => {
