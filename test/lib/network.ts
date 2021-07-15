@@ -32,6 +32,16 @@ export class Network {
     this.connected = true;
   }
 
+  async asyncConnect() {
+    console.log('connecting to somewhere...');
+
+    this.connected = true;
+  }
+
+  async asyncError() {
+    throw new Error('async error');
+  }
+
   checkServer(name: string) {
     return name;
   }

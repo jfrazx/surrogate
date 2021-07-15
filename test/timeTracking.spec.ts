@@ -28,8 +28,8 @@ describe('TimeTracking', () => {
     sinon.restore();
   });
 
-  it('should pass TimeTracking', async () => {
-    const serverName = 'server name time tracker';
+  it('should pass NodeTimeTracker', async () => {
+    const serverName = 'server name node time tracker';
     let elapsedTime: number;
 
     network
@@ -64,6 +64,87 @@ describe('TimeTracking', () => {
     expect(name).to.equal(serverName);
   });
 
+  it('should pass BrowserTimeTracker', async () => {
+    global.window = { performance: { now: () => Date.now() } } as any;
+    const serverName = 'server name browser time tracker';
+    let elapsedTime: number;
+
+    network
+      .getSurrogate()
+      .registerPreHook('checkServerAsync', [
+        ({ timeTracker, next }: NextHandler<Network>) => {
+          elapsedTime = timeTracker.getTotalDuration();
+
+          expect(timeTracker).to.be.instanceOf(BrowserTimeTracker);
+          expect(timeTracker.getTotalDuration()).to.be.a('number');
+
+          setTimeout(() => next.next(), 100);
+
+          clock.tick(200);
+        },
+      ])
+      .registerPostHook(
+        'checkServerAsync',
+        async ({ timeTracker }: NextHandler<Network>) => {
+          clock.tick(123);
+
+          expect(timeTracker).to.be.instanceOf(BrowserTimeTracker);
+          expect(timeTracker.getTotalDuration()).to.be.a('number');
+          expect(timeTracker.getTotalDuration()).to.be.greaterThan(elapsedTime);
+          expect(timeTracker.getDurationSinceLastRun()).to.be.a('number');
+        },
+        { useNext: false, wrapper: 'async' },
+      );
+
+    const name = await network.checkServerAsync(serverName);
+
+    expect(name).to.equal(serverName);
+
+    global.window = null;
+  });
+
+  it('should pass DefaultTimeTracker', async () => {
+    const hrtime = process.hrtime;
+
+    process.hrtime = null;
+
+    const serverName = 'server name default time tracker';
+    let elapsedTime: number;
+
+    network
+      .getSurrogate()
+      .registerPreHook('checkServerAsync', [
+        ({ timeTracker, next }: NextHandler<Network>) => {
+          elapsedTime = timeTracker.getTotalDuration();
+
+          expect(timeTracker).to.be.instanceOf(DefaultTimeTracker);
+          expect(timeTracker.getTotalDuration()).to.be.a('number');
+
+          setTimeout(() => next.next(), 100);
+
+          clock.tick(200);
+        },
+      ])
+      .registerPostHook(
+        'checkServerAsync',
+        async ({ timeTracker }: NextHandler<Network>) => {
+          clock.tick(123);
+
+          expect(timeTracker).to.be.instanceOf(DefaultTimeTracker);
+          expect(timeTracker.getTotalDuration()).to.be.a('number');
+          expect(timeTracker.getTotalDuration()).to.be.greaterThan(elapsedTime);
+          expect(timeTracker.getDurationSinceLastRun()).to.be.a('number');
+        },
+        { useNext: false, wrapper: 'async' },
+      );
+
+    const name = await network.checkServerAsync(serverName);
+
+    expect(name).to.equal(serverName);
+
+    process.hrtime = hrtime;
+  });
+
   it('should create a browser time tracker', () => {
     global.window = { performance: { now: () => Date.now() } } as any;
 
@@ -88,6 +169,8 @@ describe('TimeTracking', () => {
   it('should give the same results', async () => {
     const defaultTracker = new DefaultTimeTracker();
     const nodeTracker = new NodeTimeTracker();
+
+    expect(defaultTracker.lastRunStart).to.equal(nodeTracker.lastRunStart);
 
     await wait(50);
 

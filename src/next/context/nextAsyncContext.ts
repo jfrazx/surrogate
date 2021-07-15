@@ -24,10 +24,10 @@ export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
 
   async runOriginal(node: MethodNext<T>) {
     const { container, context } = node;
-    const { handler, originalArgs } = container;
+    const { handler } = container;
 
     try {
-      const result = await handler.apply(context.receiver, originalArgs);
+      const result = await handler.apply(context.receiver, this.currentArgs);
 
       this.setReturnValue(result);
       this.runNext(node.nextNode);

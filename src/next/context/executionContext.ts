@@ -1,5 +1,6 @@
 import { TimeTrackable } from '../../timeTracker';
 import { ContextController } from './interfaces';
+import { asArray } from '@jfrazx/asarray';
 import { NextNode } from '../interfaces';
 import { isAsync } from '../../helpers';
 
@@ -8,7 +9,11 @@ interface ExecutionConstruct<T extends object> {
 }
 
 export abstract class ExecutionContext<T extends object> implements ContextController<T> {
+  private utilizeLatest = false;
+
   readonly timeTracker = TimeTrackable.fetch();
+
+  latestArgs: any[];
 
   protected nextNode: NextNode<T>;
   returnValue: any;
@@ -38,6 +43,15 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
     this.nextNode ? this.nextNode.addNext(next) : this.setNext(next);
 
     return this;
+  }
+
+  updateLatestArgs(updatedArgs: any): void {
+    this.utilizeLatest = true;
+    this.latestArgs = asArray(updatedArgs);
+  }
+
+  get currentArgs() {
+    return this.utilizeLatest ? this.latestArgs : this.originalArgs;
   }
 
   protected runNext(next?: NextNode<T>) {

@@ -29,6 +29,7 @@ export interface NextHandler<T extends object> {
   surrogate: Surrogate<T>;
   originalArgs: any[];
   receivedArgs: any[];
+  currentArgs: any[];
   hookType: string;
   action: string;
   error?: Error;

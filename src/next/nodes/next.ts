@@ -33,6 +33,8 @@ export class Next<T extends object> extends BaseNext<T> implements INext {
   }
 
   next(nextOptions: NextOptions = {}): void {
+    this.replace(nextOptions);
+
     const useNextOptions = { ...nextOptionDefaults, ...nextOptions };
     const { error, using } = useNextOptions;
 

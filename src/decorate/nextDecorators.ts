@@ -49,6 +49,20 @@ export const NextAsyncPre = <T extends object>(
 
 /**
  *
+ *
+ * @export
+ * @template T
+ * @param {(NextDecoratorOptions<T> | NextDecoratorOptions<T>[])} asyncOptions
+ * @returns {PropertyDecorator<T>}
+ */
+export function NextAsyncPost<T extends object>(
+  asyncOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
+): PropertyDecorator<T> {
+  return nextAsyncHelper(asyncOptions, POST);
+}
+
+/**
+ *
  * @decorator
  * @export
  * @template T
@@ -58,12 +72,6 @@ export const NextAsyncPre = <T extends object>(
  * }
  * @returns {PropertyDecorator<T>}
  */
-export const NextAsyncPost = <T extends object>(
-  asyncOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
-): PropertyDecorator<T> => {
-  return nextAsyncHelper(asyncOptions, POST);
-};
-
 export const NextAsyncPreAndPost = <T extends object>(
   nextOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
 ): PropertyDecorator<T> => {
@@ -88,6 +96,17 @@ const nextAsyncHelper = <T extends object>(
     );
 };
 
+/**
+ *
+ * @decorator
+ * @export
+ * @template T
+ * @param {NextDecoratorOptions<T>} {
+ *   action,
+ *   options = {},
+ * }
+ * @returns {PropertyDecorator<T>}
+ */
 export const NextPre = <T extends object>(
   nextOptions: NextDecoratorOptions<T> | NextDecoratorOptions<T>[],
 ): PropertyDecorator<T> => {
