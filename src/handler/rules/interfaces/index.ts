@@ -1,11 +1,10 @@
-import { NextHandler } from '../../../interfaces';
+import { NextHandler, ShouldHandle } from '../../../interfaces';
 import { NextNode } from '../../../next';
 
-export interface HandlerRule<T extends object> {
-  shouldRun(): boolean;
+export interface HandlerRule<T extends object> extends ShouldHandle {
   run(nextHandler?: NextHandler<T>): any;
 }
-export interface AsyncHandlerRule<T extends object> extends HandlerRule<T> {
+export interface AsyncHandlerRule<T extends object> extends ShouldHandle {
   run(nextHandler?: NextHandler<T>): Promise<any>;
 }
 

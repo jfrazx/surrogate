@@ -1,4 +1,6 @@
+import { TimeTrackable } from '../../timeTracker';
 import { ContextController } from './interfaces';
+import { asArray } from '@jfrazx/asarray';
 import { NextNode } from '../interfaces';
 import { isAsync } from '../../helpers';
 
@@ -7,10 +9,16 @@ interface ExecutionConstruct<T extends object> {
 }
 
 export abstract class ExecutionContext<T extends object> implements ContextController<T> {
+  private utilizeLatest = false;
+
+  readonly timeTracker = TimeTrackable.fetch();
+
+  latestArgs: any[];
+
   protected nextNode: NextNode<T>;
   returnValue: any;
 
-  constructor(public originalMethod: Function, public originalArgs: any[]) {}
+  constructor(public readonly originalMethod: Function, public readonly originalArgs: any[]) {}
 
   static for<T extends object>(
     originalMethod: Function,
@@ -37,6 +45,15 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
     return this;
   }
 
+  updateLatestArgs(updatedArgs: any): void {
+    this.utilizeLatest = true;
+    this.latestArgs = asArray(updatedArgs);
+  }
+
+  get currentArgs() {
+    return this.utilizeLatest ? this.latestArgs : this.originalArgs;
+  }
+
   protected runNext(next?: NextNode<T>) {
     const node = next ?? this.nextNode;
 
@@ -49,10 +66,11 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
     console.error(`SurrogateError: ${error?.message ? error.message : JSON.stringify(error)}`);
   }
 
-  abstract start(): any;
-  abstract bail(bailWith?: any): any;
   abstract runOriginal(node: NextNode<T>): void;
+  abstract handleError(error?: Error): never | void;
+  abstract bail(bailWith?: any): any;
   abstract complete(): void;
+  abstract start(): any;
 }
 
 import { NextAsyncContext } from './nextAsyncContext';

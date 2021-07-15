@@ -66,7 +66,7 @@ export abstract class BaseNext<T extends object> implements INext {
       });
     }
 
-    this.generator.throw(error);
+    this.controller.handleError(error);
   }
 
   shouldRun(using: any[]): boolean {
@@ -108,6 +108,16 @@ export abstract class BaseNext<T extends object> implements INext {
 
   protected get useContext() {
     return this.context.determineContext(this.container.options);
+  }
+
+  private shouldReplace(options: NextOptions) {
+    return 'replace' in options;
+  }
+
+  protected replace(options: NextOptions) {
+    if (this.shouldReplace(options)) {
+      this.controller.updateLatestArgs(options.replace);
+    }
   }
 
   abstract skipWith(times?: number, ...args: any[]): void;

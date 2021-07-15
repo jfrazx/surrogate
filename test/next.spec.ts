@@ -59,12 +59,36 @@ describe('Next', () => {
     it('should pass the original arguments', () => {
       const serverName = 'server name';
 
-      network.getSurrogate().registerPreHook('checkServer', [
-        ({ originalArgs }: NextHandler<Network>) => {
-          expect(originalArgs).to.be.an('array');
-          expect(originalArgs[0]).to.equal(serverName);
-        },
-      ]);
+      network.getSurrogate().registerPreHook(
+        'checkServer',
+        [
+          ({ originalArgs }: NextHandler<Network>) => {
+            expect(originalArgs).to.be.an('array');
+            expect(originalArgs[0]).to.equal(serverName);
+          },
+        ],
+        { useNext: false },
+      );
+
+      network.checkServer(serverName);
+    });
+
+    it('should pass the current arguments', () => {
+      const serverName = 'server name';
+
+      network.getSurrogate().registerPreHook(
+        'checkServer',
+        [
+          ({ originalArgs, currentArgs }: NextHandler<Network>) => {
+            expect(currentArgs).to.be.an('array');
+            expect(currentArgs[0]).to.equal(serverName);
+
+            expect(originalArgs).to.equal(currentArgs);
+            expect(originalArgs === currentArgs).to.be.true;
+          },
+        ],
+        { useNext: false },
+      );
 
       network.checkServer(serverName);
     });
@@ -111,15 +135,19 @@ describe('Next', () => {
       expect(result).to.equal(serverName);
     });
 
-    it('should pass the current target method', () => {
+    it('should pass the current target method (action)', () => {
       const serverName = 'server name';
 
-      network.getSurrogate().registerPreHook('checkServer', [
-        ({ action }: NextHandler<Network>) => {
-          expect(action).to.be.an('string');
-          expect(action).to.equal('checkServer');
-        },
-      ]);
+      network.getSurrogate().registerPreHook(
+        'checkServer',
+        [
+          ({ action }: NextHandler<Network>) => {
+            expect(action).to.be.an('string');
+            expect(action).to.equal('checkServer');
+          },
+        ],
+        { useNext: false },
+      );
 
       network.checkServer(serverName);
     });
@@ -179,6 +207,30 @@ describe('Next', () => {
       const name = network.checkServer(serverName);
 
       expect(name).to.equal(serverName);
+    });
+
+    it('should update the current arguments', () => {
+      const serverName = 'update arguments test';
+      const replace = 'replacement method args';
+
+      network.getSurrogate().registerPreHook('checkServer', [
+        ({ next }: NextHandler<Network>) => {
+          next.next({ replace });
+        },
+
+        ({ next, currentArgs, originalArgs }: NextHandler<Network>) => {
+          expect(currentArgs).to.be.an('array');
+          expect(currentArgs === originalArgs).to.be.false;
+          expect(currentArgs[0]).to.equal(replace);
+
+          next.next();
+        },
+      ]);
+
+      const result = network.checkServer(serverName);
+
+      expect(result).to.not.equal(serverName);
+      expect(result).to.equal(replace);
     });
   });
 
@@ -513,29 +565,63 @@ describe('Next', () => {
       sinon.assert.notCalled(func2);
     });
 
-    it('should throw error received from Next(PRE) when using ASYNC wrapper', async () => {
+    it('should catch and throw inside handler when using ASYNC wrapper and NOT using Next', async () => {
       const error = new Error('fail');
       let errorThrown = false;
 
-      const connect = sinon.spy(network, 'connect');
+      const connect = sinon.spy(network, 'asyncConnect');
 
-      const func1 = sinon.spy(({ next }: NextHandler<Network>) => {
+      const func1 = sinon.spy(async ({ next }: NextHandler<Network>) => {
         expect(next).to.be.instanceOf(Next);
 
-        next.next({ error });
+        throw error;
       });
       const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
 
-      network.getSurrogate().registerPreHook('connect', [func1, func2], { wrapper: 'async' });
+      network
+        .getSurrogate()
+        .registerPreHook('asyncConnect', [func1], { wrapper: 'async', useNext: false })
+        .registerPreHook('asyncConnect', [func2], { wrapper: 'async' });
 
       try {
-        await network.connect();
-      } catch {
+        await network.asyncConnect();
+      } catch (err) {
+        expect(err).to.equal(error);
         errorThrown = true;
       }
+
       sinon.assert.calledOnce(func1);
       sinon.assert.notCalled(func2);
       sinon.assert.notCalled(connect);
+      expect(errorThrown).to.be.true;
+    });
+
+    it('should catch and throw when running original method', async () => {
+      let errorThrown = false;
+
+      const asyncError = sinon.spy(network, 'asyncError');
+
+      const func1 = sinon.spy(async ({ next }: NextHandler<Network>) => {
+        expect(next).to.be.instanceOf(Next);
+      });
+      const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+
+      network
+        .getSurrogate()
+        .registerPreHook('asyncError', [func1], { wrapper: 'async', useNext: false })
+        .registerPreHook('asyncError', [func2], { wrapper: 'sync' });
+
+      try {
+        await network.asyncError();
+      } catch (err) {
+        expect(err.message).to.equal('async error');
+        errorThrown = true;
+      }
+
+      sinon.assert.calledOnce(func1);
+      sinon.assert.calledOnce(func2);
+      sinon.assert.calledOnce(asyncError);
+
       expect(errorThrown).to.be.true;
     });
 

@@ -42,12 +42,12 @@ export const manageAsyncDecorator = <T extends object>(
 
 const organizeOptions = <T extends object>(delegateOptions: SurrogateDelegateOptions<T>) => {
   return asArray(delegateOptions).flatMap<SurrogateDecoratorOptions<T>>((value) => {
-    const mapHandlers = (decoratorOptions: SurrogateDecoratorOptions<T>) => {
-      const { handler: handlers, options = {} } = decoratorOptions;
-
-      return asArray(handlers).map((handler) => ({ handler, options }));
-    };
-
     return isFunction(value) ? [{ handler: value, options: {} }] : mapHandlers(value);
   });
+};
+
+const mapHandlers = <T extends object>(decoratorOptions: SurrogateDecoratorOptions<T>) => {
+  const { handler: handlers, options = {} } = decoratorOptions;
+
+  return asArray(handlers).map((handler) => ({ handler, options: { ...options } }));
 };
