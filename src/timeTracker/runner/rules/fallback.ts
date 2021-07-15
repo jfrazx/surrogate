@@ -1,13 +1,13 @@
 import { ShouldHandleTimeTracking } from './interfaces';
-import { DefaultTimeTracker } from '../../trackers';
+import { FallbackTimeTracker } from '../../trackers';
 import { TimeTracking } from '../../interfaces';
 
-export class DefaultRule implements ShouldHandleTimeTracking {
+export class FallbackRule implements ShouldHandleTimeTracking {
   shouldHandle(): boolean {
     return true;
   }
 
   run(): TimeTracking {
-    return new DefaultTimeTracker();
+    return new FallbackTimeTracker();
   }
 }

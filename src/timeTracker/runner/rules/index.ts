@@ -1,6 +1,6 @@
 import { TimeTrackingRule } from './interfaces';
+import { FallbackRule } from './fallback';
 import { BrowserRule } from './browser';
-import { DefaultRule } from './default';
 import { NodeRule } from './node';
 
-export const rules: TimeTrackingRule[] = [BrowserRule, NodeRule, DefaultRule];
+export const rules: TimeTrackingRule[] = [BrowserRule, NodeRule, FallbackRule];

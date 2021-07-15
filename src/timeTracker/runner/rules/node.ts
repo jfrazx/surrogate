@@ -5,7 +5,7 @@ import { isFunction } from '../../../helpers';
 
 export class NodeRule implements ShouldHandleTimeTracking {
   shouldHandle(): boolean {
-    return typeof process !== 'undefined' && isFunction(process.hrtime);
+    return typeof process !== 'undefined' && isFunction(process?.hrtime);
   }
 
   run(): TimeTracking {

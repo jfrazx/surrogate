@@ -1,6 +1,6 @@
 import { Trackable } from '../trackable';
 
-export class DefaultTimeTracker extends Trackable {
+export class FallbackTimeTracker extends Trackable {
   protected startTime: number = this.getNow();
 
   getStartTime(): number {

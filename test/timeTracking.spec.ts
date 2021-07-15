@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import {
   NodeTimeTracker,
   BrowserTimeTracker,
-  DefaultTimeTracker,
+  FallbackTimeTracker,
 } from '../src/timeTracker/trackers';
 
 describe('TimeTracking', () => {
@@ -103,12 +103,12 @@ describe('TimeTracking', () => {
     global.window = null;
   });
 
-  it('should pass DefaultTimeTracker', async () => {
+  it('should pass FallbackTimeTracker', async () => {
     const hrtime = process.hrtime;
 
     process.hrtime = null;
 
-    const serverName = 'server name default time tracker';
+    const serverName = 'server name fallback time tracker';
     let elapsedTime: number;
 
     network
@@ -117,7 +117,7 @@ describe('TimeTracking', () => {
         ({ timeTracker, next }: NextHandler<Network>) => {
           elapsedTime = timeTracker.getTotalDuration();
 
-          expect(timeTracker).to.be.instanceOf(DefaultTimeTracker);
+          expect(timeTracker).to.be.instanceOf(FallbackTimeTracker);
           expect(timeTracker.getTotalDuration()).to.be.a('number');
 
           setTimeout(() => next.next(), 100);
@@ -130,7 +130,7 @@ describe('TimeTracking', () => {
         async ({ timeTracker }: NextHandler<Network>) => {
           clock.tick(123);
 
-          expect(timeTracker).to.be.instanceOf(DefaultTimeTracker);
+          expect(timeTracker).to.be.instanceOf(FallbackTimeTracker);
           expect(timeTracker.getTotalDuration()).to.be.a('number');
           expect(timeTracker.getTotalDuration()).to.be.greaterThan(elapsedTime);
           expect(timeTracker.getDurationSinceLastRun()).to.be.a('number');
@@ -153,64 +153,64 @@ describe('TimeTracking', () => {
     expect(timeTracker).to.be.instanceOf(BrowserTimeTracker);
   });
 
-  it('should create a default time tracker', () => {
-    const timeTracker = new DefaultTimeTracker();
+  it('should create a fallback time tracker', () => {
+    const timeTracker = new FallbackTimeTracker();
 
-    expect(timeTracker).to.be.instanceOf(DefaultTimeTracker);
+    expect(timeTracker).to.be.instanceOf(FallbackTimeTracker);
   });
 
   it('should start with 0 time passed', () => {
-    const timeTracker = new DefaultTimeTracker();
+    const timeTracker = new FallbackTimeTracker();
 
     expect(timeTracker.getTotalDuration()).to.equal(0);
     expect(timeTracker.getDurationSinceLastRun()).to.equal(0);
   });
 
   it('should give the same results', async () => {
-    const defaultTracker = new DefaultTimeTracker();
+    const fallbackTracker = new FallbackTimeTracker();
     const nodeTracker = new NodeTimeTracker();
 
-    expect(defaultTracker.lastRunStart).to.equal(nodeTracker.lastRunStart);
+    expect(fallbackTracker.lastRunStart).to.equal(nodeTracker.lastRunStart);
 
     await wait(50);
 
-    defaultTracker.setHookStart();
+    fallbackTracker.setHookStart();
     nodeTracker.setHookStart();
 
     await wait(150);
 
-    defaultTracker.setHookEnd();
+    fallbackTracker.setHookEnd();
     nodeTracker.setHookEnd();
 
-    expect(defaultTracker.getHookStartTime()).to.be.within(
+    expect(fallbackTracker.getHookStartTime()).to.be.within(
       nodeTracker.getHookStartTime() - 1,
       nodeTracker.getHookStartTime() + 1,
     );
 
     await wait(97);
 
-    expect(defaultTracker.getLastRunDuration()).to.be.within(
+    expect(fallbackTracker.getLastRunDuration()).to.be.within(
       nodeTracker.getLastRunDuration() - 1,
       nodeTracker.getLastRunDuration() + 1,
     );
 
     await wait(170);
 
-    expect(defaultTracker.getStartTime()).to.be.within(
+    expect(fallbackTracker.getStartTime()).to.be.within(
       nodeTracker.getStartTime() - 1,
       nodeTracker.getStartTime() + 1,
     );
 
     await wait(340.45);
 
-    expect(defaultTracker.getTotalDuration()).to.be.within(
+    expect(fallbackTracker.getTotalDuration()).to.be.within(
       nodeTracker.getTotalDuration() - 1,
       nodeTracker.getTotalDuration() + 1,
     );
 
     await wait(20.56);
 
-    expect(defaultTracker.getDurationSinceLastRun()).to.be.within(
+    expect(fallbackTracker.getDurationSinceLastRun()).to.be.within(
       nodeTracker.getDurationSinceLastRun() - 1,
       nodeTracker.getDurationSinceLastRun() + 1,
     );
