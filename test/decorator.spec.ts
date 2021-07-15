@@ -15,6 +15,7 @@ import {
   SurrogateAsyncPre,
   SurrogateDelegate,
   SurrogateAsyncPost,
+  NextAsyncPreAndPost,
   SurrogatePreAndPost,
 } from '../src';
 
@@ -336,11 +337,11 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should decorate as Next for BOTH pre and post methods', () => {
-      const value = 'NextForTest';
+      const value = 'NextPreAndPostTest';
 
-      @SurrogateDelegate<NextForTest>()
-      class NextForTest {
-        @NextPreAndPost<NextForTest>({
+      @SurrogateDelegate<NextPreAndPostTest>()
+      class NextPreAndPostTest {
+        @NextPreAndPost<NextPreAndPostTest>({
           action: 'testMethod',
           options: {
             useNext: false,
@@ -355,9 +356,43 @@ describe('SurrogateDecorators', () => {
         }
       }
 
-      const test = new NextForTest();
+      const test = new NextPreAndPostTest();
 
       const result = test.testMethod();
+
+      expect(result).to.equal(value);
+      sinon.assert.calledTwice(log);
+    });
+  });
+
+  describe('NextAsyncPreAndPost', () => {
+    it('should be a function', () => {
+      expect(NextAsyncPreAndPost).to.be.a('function');
+    });
+
+    it('should decorate as Async Next for BOTH pre and post methods', async () => {
+      const value = 'NextAsyncPreAndPostTest';
+
+      @SurrogateDelegate<NextAsyncPreAndPostTest>()
+      class NextAsyncPreAndPostTest {
+        @NextAsyncPreAndPost<NextAsyncPreAndPostTest>({
+          action: 'testMethod',
+          options: {
+            useNext: false,
+          },
+        })
+        protected async nextHandler() {
+          console.log(`Next handler called`);
+        }
+
+        async testMethod() {
+          return value;
+        }
+      }
+
+      const test = new NextAsyncPreAndPostTest();
+
+      const result = await test.testMethod();
 
       expect(result).to.equal(value);
       sinon.assert.calledTwice(log);

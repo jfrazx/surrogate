@@ -5,7 +5,7 @@ import { isFunction } from '../../../helpers';
 
 export class BrowserRule implements ShouldHandleTimeTracking {
   shouldHandle(): boolean {
-    return typeof window !== 'undefined' && isFunction(window.performance?.now);
+    return typeof window !== 'undefined' && isFunction(window?.performance?.now);
   }
 
   run(): TimeTracking {

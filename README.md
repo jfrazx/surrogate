@@ -61,16 +61,17 @@ SurrogateHandler is any function that accepts a `NextHandler` object which can b
 
 `NextHandler` is passed to all hook handlers. It can supply the unwrapped or surrogate wrapped instance to the current handler. An `INext` object provides functionality to skip hooks or continue to the next hook for execution.
 
-| Property     | Type        | Description                                              |
-| ------------ | ----------- | -------------------------------------------------------- |
-| action       | string      | Provides the current action or method target.            |
-| hookType     | string      | Provides the current hook type as a string.              |
-| originalArgs | any[]       | Array of arguments passed to the original called method. |
-| receivedArgs | any[]       | Array of arguments passed from the last handler.         |
-| instance     | T           | Provides handler access to the unwrapped instance.       |
-| surrogate    | Surrogate   | Provides handler access to surrogate wrapped instance.   |
-| next         | INext       | Object that provides flow control capabilities           |
-| timeTracker  | TimeTracker | Provides access to the current time tracker              |
+| Property     | Type        | Description                                                                            |
+| ------------ | ----------- | -------------------------------------------------------------------------------------- |
+| action       | string      | Provides the current action or method target.                                          |
+| hookType     | string      | Provides the current hook type as a string.                                            |
+| originalArgs | any[]       | Array of arguments passed to the instance invoked method                               |
+| currentArgs  | any[]       | Array of potentially modified arguments passed to original method invoked by surrogate |
+| receivedArgs | any[]       | Array of arguments passed from the last handler.                                       |
+| instance     | T           | Provides handler access to the unwrapped instance.                                     |
+| surrogate    | Surrogate   | Provides handler access to surrogate wrapped instance.                                 |
+| next         | INext       | Object that provides flow control capabilities                                         |
+| timeTracker  | TimeTracker | Provides access to the current time tracker                                            |
 
 #### TimeTracker
 
@@ -97,6 +98,7 @@ SurrogateHandler is any function that accepts a `NextHandler` object which can b
 | error?    | Error   | Passing an Error may result in the error being thrown, depending on supplied handler options                            |
 | using?    | any[]   | An array of values to pass to the next handler                                                                          |
 | bail?     | boolean | Indicates all subsequent handler executions should stop immediately. Target method is not called if bailing in pre hook |
+| replace?  | any     | Replaces the original arguments passed to the target method.                                                            |
 | bailWith? | any     | If bailing, the supplied value should be returned                                                                       |
 
 ### SurrogateHandlerOptions
