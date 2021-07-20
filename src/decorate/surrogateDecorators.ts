@@ -14,6 +14,7 @@ type PropertyDecorator<T extends object> = (target: T, property: string | keyof 
  * Register class for automatic surrogate wrapping
  *
  * @export
+ * @decorator
  * @template T
  * @param {SurrogateDecorateOptions<T>} [delegateOptions={}]
  */
@@ -26,6 +27,7 @@ export const SurrogateDelegate =
  * Registers hooks for decorated methods. Handler type must be assigned.
  *
  * @export
+ * @decorator
  * @template T
  * @param {(SurrogateForOptions<T> | SurrogateForOptions<T>[])} forOptions
  * @returns {PropertyDecorator<T>}
@@ -47,6 +49,7 @@ export const SurrogateFor = <T extends object>(
  * Registers pre and post hooks for decorated methods
  *
  * @export
+ * @decorator
  * @template T
  * @param {(SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[])} decoratorOptions
  * @returns {PropertyDecorator<T>}
@@ -68,6 +71,7 @@ export const SurrogatePreAndPost = <T extends object>(
  * Registers pre hooks for decorated methods
  *
  * @export
+ * @decorator
  * @template T
  * @param {(SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[])} decoratorOptions
  * @returns {PropertyDecorator<T>}
@@ -87,6 +91,7 @@ export const SurrogatePre = <T extends object>(
  * Registers post hooks for decorated methods
  *
  * @export
+ * @decorator
  * @template T
  * @param {(SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[])} decoratorOptions
  * @returns {PropertyDecorator<T>}
@@ -106,6 +111,7 @@ export const SurrogatePost = <T extends object>(
  * Registers async pre and post hooks for decorated methods
  *
  * @export
+ * @decorator
  * @template T
  * @param {(SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[])} decoratorOptions
  * @returns {PropertyDecorator<T>}
@@ -124,6 +130,7 @@ export const SurrogateAsyncPreAndPost = <T extends object>(
  * Registers async post hooks for decorated methods
  *
  * @export
+ * @decorator
  * @template T
  * @param {(SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[])} decoratorOptions
  * @returns {PropertyDecorator<T>}
@@ -138,6 +145,7 @@ export const SurrogateAsyncPost = <T extends object>(
  * Registers async pre hooks for decorated methods
  *
  * @export
+ * @decorator
  * @template T
  * @param {(SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[])} decoratorOptions
  * @returns {PropertyDecorator<T>}

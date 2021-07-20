@@ -160,8 +160,6 @@ describe('Surrogate Event Manager', () => {
 
       surrogate.registerPreHook('connect', func1).registerPreHook('connect', func2);
 
-      console.log(surrogate);
-
       const { [PRE]: prePre } = surrogate.getEventHandlers('connect');
       expect(prePre).to.have.lengthOf(2);
 
@@ -242,13 +240,10 @@ describe('Surrogate Event Manager', () => {
         .registerPreHook('disconnect', func3)
         .registerPostHook('disconnect', func4);
 
-      const { [PRE]: prePreConnect, [POST]: postPreConnect } = surrogate.getEventHandlers(
-        'connect',
-      );
-      const {
-        [PRE]: prePreDisconnect,
-        [POST]: postPreDisconnect,
-      } = surrogate.getEventHandlers('disconnect');
+      const { [PRE]: prePreConnect, [POST]: postPreConnect } =
+        surrogate.getEventHandlers('connect');
+      const { [PRE]: prePreDisconnect, [POST]: postPreDisconnect } =
+        surrogate.getEventHandlers('disconnect');
 
       expect(prePreConnect).to.have.lengthOf(1);
       expect(prePreDisconnect).to.have.lengthOf(1);
@@ -257,13 +252,10 @@ describe('Surrogate Event Manager', () => {
 
       surrogate.deregisterHooks();
 
-      const { [PRE]: prePostConnect, [POST]: postPostConnect } = surrogate.getEventHandlers(
-        'connect',
-      );
-      const {
-        [PRE]: prePostDisconnect,
-        [POST]: postPostDisconnect,
-      } = surrogate.getEventHandlers('disconnect');
+      const { [PRE]: prePostConnect, [POST]: postPostConnect } =
+        surrogate.getEventHandlers('connect');
+      const { [PRE]: prePostDisconnect, [POST]: postPostDisconnect } =
+        surrogate.getEventHandlers('disconnect');
 
       expect(prePostConnect).to.have.lengthOf(0);
       expect(prePostDisconnect).to.have.lengthOf(0);

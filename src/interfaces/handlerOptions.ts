@@ -23,27 +23,25 @@ export enum HookType {
   BOTH = 'both',
 }
 
-export interface NextHandler<T extends object> {
-  instance: SurrogateUnwrapped<T>;
+export interface NextHandler<T extends object> extends ActionParameters<T> {
   timeTracker: TimeTracker;
   surrogate: Surrogate<T>;
-  originalArgs: any[];
-  receivedArgs: any[];
   currentArgs: any[];
   hookType: string;
-  action: string;
-  error?: Error;
   result: any;
   next: INext;
 }
 
-export interface RunConditionParameters<T extends object> {
+interface ActionParameters<T extends object> {
   instance: SurrogateUnwrapped<T>;
   originalArgs: any[];
   receivedArgs: any[];
-  didError: boolean;
   action: string;
   error?: Error;
+}
+
+export interface RunConditionParameters<T extends object> extends ActionParameters<T> {
+  didError: boolean;
 }
 
 export type RunCondition<T extends object> = (

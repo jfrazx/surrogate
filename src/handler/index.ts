@@ -1,4 +1,4 @@
-import { NextHandlerProvider } from './provider';
+import { NextHandlerProvider } from '../provider';
 import { MethodWrapper } from '../interfaces';
 import { asArray } from '@jfrazx/asarray';
 import { NextNode } from '../next';

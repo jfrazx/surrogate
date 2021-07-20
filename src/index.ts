@@ -5,6 +5,7 @@ export * from './decorate';
 export {
   Surrogate,
   NextHandler,
+  RunCondition,
   MethodWrapper,
   SurrogateContext,
   SurrogateHandler,
@@ -12,5 +13,6 @@ export {
   SurrogateOptions,
   SurrogateUnwrapped,
   SurrogateEventManager,
+  RunConditionParameters,
   SurrogateHandlerOptions,
 } from './interfaces';
