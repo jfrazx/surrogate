@@ -1,6 +1,7 @@
 import { IContainer, ContainerGenerator, TailGeneration } from '../../containers';
 import { SurrogateUnwrapped, HookType } from '../../interfaces';
 import { INext, NextOptions, NextNode } from '../interfaces';
+import { RunConditionProvider } from '../../provider';
 import { ContextController } from '../context';
 import { SurrogateProxy } from '../../proxy';
 import { asArray } from '@jfrazx/asarray';
@@ -70,22 +71,12 @@ export abstract class BaseNext<T extends object> implements INext {
   }
 
   shouldRun(using: any[]): boolean {
-    const didError = Boolean(this.prevNode?.didError);
-    const { originalArgs } = this.controller;
+    const runParameters = new RunConditionProvider(this, using, this.prevNode?.didError);
     const { options } = this.container;
     const context = this.useContext;
-    const { event } = this.context;
-    const instance = this.instance;
 
     return asArray(options.runConditions).every((condition) =>
-      condition.call(context, {
-        didError,
-        instance,
-        originalArgs,
-        action: event,
-        receivedArgs: using,
-        error: this.prevNode?.didError,
-      }),
+      condition.call(context, runParameters),
     );
   }
 

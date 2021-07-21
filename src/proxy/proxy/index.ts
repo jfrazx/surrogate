@@ -1,16 +1,16 @@
-import { containerGenerator, Tail, HandlerContainer } from '../containers';
-import { Next, ExecutionContext } from '../next';
-import { isAsync, isFunction } from '../helpers';
-import { FetchRuleRunner } from './rules';
-import { EventManager } from '../manager';
-import { PRE, POST } from '../which';
-import { Context } from '../context';
+import { containerGenerator, Tail, HandlerContainer } from '../../containers';
+import { Next, ExecutionContext } from '../../next';
+import { isAsync, isFunction } from '../../helpers';
+import { EventManager } from '../../manager';
+import { FetchRuleRunner } from '../rules';
+import { PRE, POST } from '../../which';
+import { Context } from '../../context';
 import {
   Surrogate,
   MethodWrapper,
   SurrogateOptions,
   SurrogateGlobalOptions,
-} from '../interfaces';
+} from '../../interfaces';
 
 type Target<T extends object> = WeakMap<any, EventManager<T>>;
 
