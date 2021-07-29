@@ -31,7 +31,7 @@ export class PreMethodNext<T extends object> extends FinalNext<T> implements INe
     );
   }
 
-  next(nextOptions: NextOptions = {}): void {
+  handleNext(nextOptions: NextOptions = {}): void {
     this.replace(nextOptions);
 
     const useNextOptions = { ...nextOptionDefaults, ...nextOptions };

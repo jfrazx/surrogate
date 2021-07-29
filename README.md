@@ -15,11 +15,11 @@ or
 There are a couple ways to manage Surrogate. The first is to utilize an exposed helper function, `wrapSurrogate`, to wrap objects and register pre and post methods through it.
 
 ```typescript
-import { wrapSurrogate, Surrogate, NextHandler } from 'surrogate';
+import { wrapSurrogate, Surrogate, NextParameters } from 'surrogate';
 
 const guitar: Surrogate<Guitar> = wrapSurrogate(new Guitar(), options);
 
-guitar.getSurrogate().registerPreHook('play', ({ next }: NextHandler<Guitar>) => {
+guitar.getSurrogate().registerPreHook('play', ({ next }: NextParameters<Guitar>) => {
   // do things before running 'play'
 
   next.next();
@@ -55,11 +55,11 @@ After wrapping your instance with Surrogate new methods are available, `getSurro
 | deregisterPostHooks | (event: string)                                                               | SurrogateEventManager | Deregisters `post` hooks for the given event |
 | deregisterHooks     | n/a                                                                           | SurrogateEventManager | Removes all hooks for the current instance.  |
 
-SurrogateHandler is any function that accepts a `NextHandler` object which can be used to control flow through pre and post hooks.
+SurrogateHandler is any function that accepts a `NextParameters` object which can be used to control flow through pre and post hooks.
 
-### NextHandler
+### NextParameters
 
-`NextHandler` is passed to all hook handlers. It can supply the unwrapped or surrogate wrapped instance to the current handler. An `INext` object provides functionality to skip hooks or continue to the next hook for execution.
+`NextParameters` is passed to all hook handlers. It can supply the unwrapped or surrogate wrapped instance to the current handler. An `INext` object provides functionality to skip hooks or continue to the next hook for execution.
 
 | Property     | Type        | Description                                                                            |
 | ------------ | ----------- | -------------------------------------------------------------------------------------- |
@@ -108,7 +108,7 @@ When registering a hook you may provide any of the following options.
 | Property       | Type                           | Default Value | Description                                                                                                             |
 | -------------- | ------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | useNext?       | boolean                        | true          | `true` indicates usage of the `INext` object to control flow, otherwise Surrogate makes a determination when to advance |
-| noArgs?        | boolean                        | false         | Specify that `NextHandler` should NOT be passed to a handler                                                            |
+| noArgs?        | boolean                        | false         | Specify that `NextParameters` should NOT be passed to a handler                                                         |
 | ignoreErrors?  | boolean                        | false         | If true and an Error is passed Surrogate will not throw.                                                                |
 | useContext?    | any                            | T             | The context in which to call surrogate handlers.                                                                        |
 | wrapper?       | MethodWrappers                 | sync          | Tells Surrogate if it is managing synchronous or asynchronous methods.                                                  |
@@ -167,11 +167,11 @@ export class Guitar {}
 Registering hooks:
 
 ```typescript
-import { NextHandler, SurrogatePre, SurrogatePost, SurrogateDelegate } from 'surrogate';
+import { NextParameters, SurrogatePre, SurrogatePost, SurrogateDelegate } from 'surrogate';
 
 @SurrogateDelegate()
 class Guitar {
-  @SurrogatePre(({ next }: NextHandler<Guitar>) => {
+  @SurrogatePre(({ next }: NextParameters<Guitar>) => {
     console.log(`Tuning guitar`);
 
     next.next();
@@ -228,7 +228,7 @@ class Account extends Model<Account> {
     timeTracker,
     hookType,
     action,
-  }: NextHandler<Account>) {
+  }: NextParameters<Account>) {
     const keys = (model.changed() || []) as (keyof Account)[];
     const changes = keys.reduce(
       (changed, key) => ({

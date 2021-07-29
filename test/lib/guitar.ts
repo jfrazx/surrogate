@@ -1,7 +1,7 @@
 import {
   POST,
   NextFor,
-  NextHandler,
+  NextParameters,
   SurrogatePre,
   SurrogatePost,
   SurrogateMethods,
@@ -18,7 +18,7 @@ export class Guitar {
 
   @SurrogatePre<Guitar>([
     {
-      handler: ({ next, instance }: NextHandler<Guitar>) => {
+      handler: ({ next, instance }: NextParameters<Guitar>) => {
         console.log('stringing instrument');
 
         instance.isStrung = true;
@@ -30,7 +30,7 @@ export class Guitar {
       },
     },
     {
-      handler: ({ next, instance: guitar }: NextHandler<Guitar>) => {
+      handler: ({ next, instance: guitar }: NextParameters<Guitar>) => {
         console.log('tuning instrument');
 
         guitar.isTuned = true;
@@ -45,7 +45,7 @@ export class Guitar {
     },
   ])
   @SurrogatePost({
-    handler: ({ next }: NextHandler<Guitar>) => {
+    handler: ({ next }: NextParameters<Guitar>) => {
       console.log('celebrate rocking out');
 
       next.next();
@@ -62,7 +62,7 @@ export class Guitar {
       runConditions: ({ instance: guitar }) => guitar.hasBrokenString,
     },
   })
-  postPlay({ next, instance }: NextHandler<this>) {
+  postPlay({ next, instance }: NextParameters<this>) {
     console.log('fixing broken string');
 
     instance.hasBrokenString = false;

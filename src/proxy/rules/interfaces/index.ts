@@ -1,5 +1,5 @@
 import { Surrogate, ShouldHandle } from '../../../interfaces';
-import { SurrogateProxy } from '../../proxy';
+import { SurrogateProxy } from '../../handler';
 
 export interface FetchRule extends ShouldHandle {
   returnableValue(): any;

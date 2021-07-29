@@ -1,61 +1,29 @@
-import { SurrogateUnwrapped, Surrogate } from './surrogate';
-import { TimeTracker } from '../timeTracker';
+import { SurrogateGlobalOptions } from './surrogateOptions';
+import { ProviderParameters } from './provider';
+import { RunCondition } from './runCondition';
+import { MethodWrappers } from './contexts';
+import { Surrogate } from './surrogate';
 import { INext } from '../next';
 
-export type SurrogateContexts = 'instance' | 'surrogate';
-export type MethodWrappers = 'sync' | 'async';
-
-export type Contexts = SurrogateContexts | typeof Object | typeof Function | Object;
-
-export enum SurrogateContext {
-  Instance = 'instance',
-  Surrogate = 'surrogate',
-}
-
-export enum MethodWrapper {
-  Sync = 'sync',
-  Async = 'async',
-}
-
-export enum HookType {
-  PRE = 'pre',
-  POST = 'post',
-  BOTH = 'both',
-}
-
+/**
+ *
+ * @deprecated Use NextParameters
+ * @export
+ * @interface NextHandler
+ * @extends {ProviderParameters<T>}
+ * @template T
+ */
 export interface NextHandler<T extends object> extends ProviderParameters<T> {
   surrogate: Surrogate<T>;
   next: INext;
 }
 
-export interface ProviderParameters<T extends object> {
-  instance: SurrogateUnwrapped<T>;
-  timeTracker: TimeTracker;
-  originalArgs: any[];
-  receivedArgs: any[];
-  currentArgs: any[];
-  hookType: string;
-  action: string;
-  error?: Error;
-  result: any;
+export interface NextParameters<T extends object> extends ProviderParameters<T> {
+  surrogate: Surrogate<T>;
+  next: INext;
 }
 
-export interface RunOnErrorParameters<T extends object> extends ProviderParameters<T> {
-  error: Error;
-}
-
-export interface RunConditionParameters<T extends object> extends ProviderParameters<T> {
-  didError: boolean;
-  valueFromCondition: any;
-  didReceiveFromLastCondition: boolean;
-  passToNextCondition(value: any): void;
-}
-
-export type RunCondition<T extends object> = (
-  parameters: RunConditionParameters<T>,
-) => boolean;
-
-export interface SurrogateHandlerOptions<T extends object> {
+export interface SurrogateHandlerOptions<T extends object> extends SurrogateGlobalOptions {
   /**
    * @description Pass Next object to the Surrogate Method
    *
@@ -76,18 +44,6 @@ export interface SurrogateHandlerOptions<T extends object> {
    * @default false
    */
   ignoreErrors?: boolean;
-
-  /**
-   * @description Specifies the context in which to call a handler
-   *
-   * @options
-   *  - instance
-   *  - surrogate
-   *  - user supplied context object
-   *
-   * @default instance
-   */
-  useContext?: Contexts;
 
   /**
    * @description Specifies the method context wrapper to utilize

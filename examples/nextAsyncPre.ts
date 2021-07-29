@@ -1,8 +1,8 @@
 import {
   BOTH,
   NextFor,
-  NextHandler,
   NextAsyncPre,
+  NextParameters,
   SurrogateMethods,
   SurrogateDelegate,
 } from '../build';
@@ -45,7 +45,7 @@ class ServiceBase {
     hookType,
     action,
     next,
-  }: NextHandler<ServiceBase>) {
+  }: NextParameters<ServiceBase>) {
     console.log(`recording telemetry ${hookType} ${action}`);
 
     telemetry?.trackEvent({

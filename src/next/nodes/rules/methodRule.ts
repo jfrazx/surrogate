@@ -7,7 +7,6 @@ export class MethodRule<T extends object> implements NextRule<T> {
   }
 
   run(node: NextNode<T>): void {
-    node.controller.timeTracker.setHookEnd();
     node.controller.runOriginal(node.nextNode);
   }
 }

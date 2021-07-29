@@ -8,7 +8,7 @@ export class FinalNext<T extends object> extends BaseNext<T> implements INext {
     return this.next({ using: args });
   }
 
-  next(nextOptions: NextOptions = {}): void {
+  handleNext(nextOptions: NextOptions = {}): void {
     const useOptions = { ...nextOptionDefaults, ...nextOptions };
     const { error, using } = useOptions;
 

@@ -1,8 +1,8 @@
 import * as appInsights from 'applicationinsights';
 import {
   NextPre,
-  NextHandler,
   SurrogatePre,
+  NextParameters,
   SurrogateContext,
   SurrogateDelegate,
 } from '../build';
@@ -135,7 +135,7 @@ export class Telemetry {
       useNext: false,
     },
   })
-  protected debug({ originalArgs }: NextHandler<Telemetry>) {
+  protected debug({ originalArgs }: NextParameters<Telemetry>) {
     console.log(...originalArgs);
   }
 

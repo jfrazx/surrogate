@@ -1,4 +1,4 @@
-import { PRE, POST, NextHandler, Surrogate, wrapSurrogate } from '../src';
+import { PRE, POST, NextParameters, Surrogate, wrapSurrogate } from '../src';
 import { WhichContainers } from '../src/interfaces';
 import { EventManager } from '../src/manager';
 import { Network } from './lib/network';
@@ -85,7 +85,7 @@ describe('Surrogate Event Manager', () => {
 
     it('should register multiple pre hooks', () => {
       const name = network.connect.name as keyof Network;
-      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
       const func2 = sinon.spy(() => {});
 
       network
@@ -112,7 +112,7 @@ describe('Surrogate Event Manager', () => {
 
     it('should register multiple post hooks', () => {
       const name = network.disconnect.name as keyof Network;
-      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
       const func2 = sinon.spy(() => {});
 
       network
@@ -129,9 +129,9 @@ describe('Surrogate Event Manager', () => {
 
     it('should register multiple pre and post hooks', () => {
       const name = network.connect.name as keyof Network;
-      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
-      const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
-      const func3 = sinon.spy(function ({ next }: NextHandler<Network>) {
+      const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
+      const func2 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
+      const func3 = sinon.spy(function ({ next }: NextParameters<Network>) {
         next.next();
       });
       const func4 = sinon.spy(function () {});

@@ -1,5 +1,9 @@
-import { SurrogateHandlerOptions, SurrogateGlobalOptions } from '../interfaces';
-import { MethodWrapper, SurrogateContext } from '../interfaces/handlerOptions';
+import {
+  MethodWrapper,
+  SurrogateContext,
+  SurrogateGlobalOptions,
+  SurrogateHandlerOptions,
+} from '../interfaces';
 
 interface GlobalHandlerOptions<T extends object> {
   handler?: SurrogateHandlerOptions<T>;
@@ -7,8 +11,9 @@ interface GlobalHandlerOptions<T extends object> {
 }
 
 const defaultMethodOptions: Required<SurrogateHandlerOptions<any>> = {
-  useNext: true,
   noArgs: false,
+  useNext: true,
+  runOnError: [],
   runConditions: [],
   ignoreErrors: false,
   wrapper: MethodWrapper.Sync,

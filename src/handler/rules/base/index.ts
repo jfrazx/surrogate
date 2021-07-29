@@ -1,4 +1,4 @@
-import { SurrogateHandler, NextHandler } from '../../../interfaces';
+import { SurrogateHandler, NextParameters } from '../../../interfaces';
 import { HandlerRule } from '../interfaces';
 import { NextNode } from '../../../next';
 
@@ -27,6 +27,6 @@ export abstract class HandlerBaseRule<T extends object> implements HandlerRule<T
     return context.determineContext(this.options);
   }
 
-  abstract run(nextHandler?: NextHandler<T>): any;
+  abstract run(NextProvider?: NextParameters<T>): any;
   abstract shouldHandle(): boolean;
 }

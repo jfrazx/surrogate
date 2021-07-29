@@ -7,6 +7,7 @@ export {
   NextHandler,
   RunCondition,
   MethodWrapper,
+  NextParameters,
   SurrogateContext,
   SurrogateHandler,
   SurrogateMethods,

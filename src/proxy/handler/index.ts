@@ -111,17 +111,3 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return this;
   }
 }
-
-/**
- * Helper function to create Surrogate wrapped objects
- *
- * @export
- * @template T
- * @param {T} object
- * @param {SurrogateOptions} [options={}]
- * @returns {Surrogate<T>}
- */
-export const wrapSurrogate = <T extends object>(
-  object: T,
-  options: SurrogateOptions = {},
-): Surrogate<T> => SurrogateProxy.wrap(object, options);

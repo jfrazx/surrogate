@@ -2,8 +2,9 @@ import { ProviderParameters } from '../../interfaces';
 import { Context } from '../../context';
 import { NextNode } from '../../next';
 
-export class Provider<T extends object> implements ProviderParameters<T> {
+export abstract class Provider<T extends object> implements ProviderParameters<T> {
   protected readonly context: Context<T>;
+  protected readonly returnValue: any;
 
   constructor(
     protected readonly node: NextNode<T>,
@@ -11,10 +12,15 @@ export class Provider<T extends object> implements ProviderParameters<T> {
     public readonly error?: Error,
   ) {
     this.context = node.context;
+    this.returnValue = this.node.controller.returnValue;
   }
 
   get action() {
     return this.context.event;
+  }
+
+  get correlationId() {
+    return this.node.controller.correlationId;
   }
 
   get instance() {
@@ -34,7 +40,7 @@ export class Provider<T extends object> implements ProviderParameters<T> {
   }
 
   get result() {
-    return this.node.controller.returnValue;
+    return this.returnValue;
   }
 
   get timeTracker() {

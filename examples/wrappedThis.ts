@@ -1,10 +1,10 @@
-import { wrapSurrogate, NextHandler, SurrogateMethods } from '../build';
+import { wrapSurrogate, NextParameters, SurrogateMethods } from '../build';
 
 interface INetwork {
   isEnabled: boolean;
   isDisabled: boolean;
   isConnected: boolean;
-  preConnectionCheck(next: NextHandler<Network>): void;
+  preConnectionCheck(next: NextParameters<Network>): void;
 }
 
 interface Network extends SurrogateMethods<Network> {}
@@ -20,7 +20,7 @@ class Network implements INetwork {
       .registerPreHook('connect', this.preConnectionCheck)
       .registerPreHook(
         'disconnect',
-        ({ next }: NextHandler<Network>) => next.next({ bail: true }),
+        ({ next }: NextParameters<Network>) => next.next({ bail: true }),
         {
           runConditions: ({ instance: network }) => {
             console.log(
@@ -65,7 +65,7 @@ class Network implements INetwork {
     this.connected = false;
   }
 
-  preConnectionCheck({ next }: NextHandler<Network>) {
+  preConnectionCheck({ next }: NextParameters<Network>) {
     console.info(
       `Checking connected: (${this.isConnected}) and disabled: (${this.isDisabled}) status`,
     );

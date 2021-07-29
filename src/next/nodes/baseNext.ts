@@ -2,8 +2,8 @@ import { IContainer, ContainerGenerator, TailGeneration } from '../../containers
 import { SurrogateUnwrapped, HookType } from '../../interfaces';
 import { INext, NextOptions, NextNode } from '../interfaces';
 import { RunConditionProvider } from '../../provider';
+import { SurrogateProxy } from '../../proxy/handler';
 import { ContextController } from '../context';
-import { SurrogateProxy } from '../../proxy';
 import { asArray } from '@jfrazx/asarray';
 import { Which, PRE } from '../../which';
 import { Context } from '../../context';
@@ -54,13 +54,19 @@ export abstract class BaseNext<T extends object> implements INext {
     return this.skipWith(times);
   }
 
+  next(options?: NextOptions): void {
+    this.controller.timeTracker.setHookEnd();
+
+    this.handleNext(options);
+  }
+
   nextError(error: Error, using: any[], nextOptions: NextOptions) {
     const { options } = this.container;
 
     this.didError = error;
 
     if (options.ignoreErrors) {
-      return this.next({
+      return this.handleNext({
         ...nextOptions,
         using,
         error: null,
@@ -75,9 +81,11 @@ export abstract class BaseNext<T extends object> implements INext {
     const { options } = this.container;
     const context = this.useContext;
 
-    return asArray(options.runConditions).every((condition) =>
-      condition.call(context, runParameters),
-    );
+    return asArray(options.runConditions).every((condition) => {
+      runParameters.reset();
+
+      return condition.call(context, runParameters);
+    });
   }
 
   get instance(): SurrogateUnwrapped<T> {
@@ -112,7 +120,7 @@ export abstract class BaseNext<T extends object> implements INext {
   }
 
   abstract skipWith(times?: number, ...args: any[]): void;
-  abstract next(options?: NextOptions): void;
+  abstract handleNext(options?: NextOptions): void;
 }
 
 import { Next } from './next';

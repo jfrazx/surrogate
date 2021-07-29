@@ -12,8 +12,6 @@ export class HandlerRule<T extends object> implements NextRule<T> {
   run(node: NextNode<T>): void {
     const handler = HandlerRunner.for(node);
 
-    this.node.controller.timeTracker.setHookEnd();
-
     handler.run(this.using, node.didError);
   }
 }

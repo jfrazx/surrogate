@@ -1,6 +1,6 @@
 import { SurrogateHandlerOptions } from './handlerOptions';
-import { SurrogateHandler } from './surrogateHandler';
 import { WhichContainers } from './whichContainers';
+import { SurrogateHandler } from './surrogate';
 import { Which } from '../which';
 
 /**
