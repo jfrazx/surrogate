@@ -6,11 +6,17 @@ export class ErrorProvider<T extends object>
   extends Provider<T>
   implements RunOnErrorParameters<T>
 {
-  constructor(
-    protected readonly node: NextNode<T>,
-    public readonly receivedArgs: any[],
-    public readonly error: Error,
-  ) {
+  private recover: boolean;
+
+  constructor(node: NextNode<T>, receivedArgs: any[], public readonly error: Error) {
     super(node, receivedArgs, error);
+  }
+
+  recoverFromError(recover: boolean): void {
+    this.recover ||= recover;
+  }
+
+  get shouldRecover(): boolean {
+    return this.node.container.options.ignoreErrors || this.recover;
   }
 }

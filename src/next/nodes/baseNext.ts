@@ -1,4 +1,5 @@
 import { IContainer, ContainerGenerator, TailGeneration } from '../../containers';
+import { ErrorRule, BailRule, NextRule, ProgressRule } from './rules';
 import { SurrogateUnwrapped, HookType } from '../../interfaces';
 import { INext, NextOptions, NextNode } from '../interfaces';
 import { RunConditionProvider } from '../../provider';
@@ -51,29 +52,22 @@ export abstract class BaseNext<T extends object> implements INext {
   }
 
   skip(times: number = 1): void {
-    return this.skipWith(times);
+    return this.nextNode.skipWith(times);
   }
 
-  next(options?: NextOptions): void {
+  next({ using = [], ...options }: NextOptions = {}): void {
     this.controller.timeTracker.setHookEnd();
+    this.replace(options);
 
-    this.handleNext(options);
-  }
+    const rules: NextRule<T>[] = [
+      new ErrorRule({ ...options, using }),
+      new BailRule({ ...options, using }),
+      new ProgressRule({ ...options, using }),
+    ];
 
-  nextError(error: Error, using: any[], nextOptions: NextOptions) {
-    const { options } = this.container;
+    const rule = rules.find((rule) => rule.shouldRun());
 
-    this.didError = error;
-
-    if (options.ignoreErrors) {
-      return this.handleNext({
-        ...nextOptions,
-        using,
-        error: null,
-      });
-    }
-
-    this.controller.handleError(error);
+    rule.run(this);
   }
 
   shouldRun(using: any[]): boolean {
@@ -105,7 +99,7 @@ export abstract class BaseNext<T extends object> implements INext {
     next.prevNode = this;
   }
 
-  protected get useContext() {
+  get useContext() {
     return this.context.determineContext(this.container.options);
   }
 

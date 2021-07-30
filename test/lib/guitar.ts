@@ -37,6 +37,7 @@ export class Guitar {
 
         next.next({
           bail: guitar.hasBrokenString,
+          bailWith: 'fixing broken string',
         });
       },
       options: {
@@ -52,7 +53,9 @@ export class Guitar {
     },
   })
   play() {
-    console.log('playing instrument');
+    console.log('rocking out');
+
+    return 'playing instrument';
   }
 
   @NextFor<Guitar>({

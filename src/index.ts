@@ -3,7 +3,9 @@ export { POST, PRE, BOTH } from './which';
 export { wrapSurrogate } from './proxy';
 export * from './decorate';
 export {
+  RunOnBail,
   Surrogate,
+  RunOnError,
   NextHandler,
   RunCondition,
   MethodWrapper,
@@ -13,6 +15,8 @@ export {
   SurrogateMethods,
   SurrogateOptions,
   SurrogateUnwrapped,
+  RunOnBailParameters,
+  RunOnErrorParameters,
   SurrogateEventManager,
   RunConditionParameters,
   SurrogateHandlerOptions,

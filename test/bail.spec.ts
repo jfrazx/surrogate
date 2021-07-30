@@ -13,6 +13,7 @@ describe('Bail', () => {
   });
 
   afterEach(() => {
+    network.disposeSurrogate();
     sinon.restore();
   });
 

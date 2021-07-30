@@ -61,7 +61,7 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
 
     this.setNext(node.nextNode);
 
-    return node.next();
+    return node.handleNext();
   }
 
   protected logError(error?: Error): void {

@@ -101,9 +101,9 @@ describe('SurrogateProxy', () => {
     });
 
     it('should run detached', () => {
-      const nextParameters = sinon.spy(({ next }: NextParameters<Network>) => next.next());
+      const handler = sinon.spy(({ next }: NextParameters<Network>) => next.next());
 
-      network.getSurrogate().registerPreHook('connect', nextParameters);
+      network.getSurrogate().registerPreHook('connect', handler);
 
       const { connect } = network;
 
@@ -112,7 +112,7 @@ describe('SurrogateProxy', () => {
       connect();
       connect();
 
-      sinon.assert.callCount(nextParameters, 4);
+      sinon.assert.callCount(handler, 4);
     });
 
     it('should wait for next to be called before continuing', async () => {
@@ -164,6 +164,7 @@ describe('SurrogateProxy', () => {
       const result = test.method();
 
       expect(result).to.equal(returnValue);
+
       sinon.assert.calledWith(log, handler1Log);
       sinon.assert.calledWith(log, handler2Log);
       sinon.assert.called(handler1);

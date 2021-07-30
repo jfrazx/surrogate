@@ -7,6 +7,6 @@ export class NextProvider<T extends object> extends Provider<T> implements NextP
   }
 
   get next() {
-    return this.node.nextNode;
+    return this.node;
   }
 }

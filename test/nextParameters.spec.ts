@@ -1,6 +1,5 @@
 import { Surrogate, wrapSurrogate, NextParameters } from '../src';
 import { NextProvider } from '../src/provider/next';
-import { FinalNext, Next } from '../src/next';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
@@ -37,12 +36,6 @@ describe('NextParameters', () => {
 
     network.getSurrogate().registerPreHook('connect', [func1, func2], { useNext: false });
     network.connect();
-
-    const [{ next: nextNext }]: NextParameters<Network>[] = func1.getCall(0).args;
-    const [{ next: finalNext }]: NextParameters<Network>[] = func2.getCall(0).args;
-
-    expect(nextNext).to.be.instanceOf(Next);
-    expect(finalNext).to.be.instanceOf(FinalNext);
 
     sinon.assert.calledOnce(func1);
     sinon.assert.calledOnce(func2);

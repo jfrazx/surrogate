@@ -1,6 +1,6 @@
 import { wrapSurrogate, Surrogate, NextParameters } from '../src';
-import { FinalNext, PreMethodNext, Next } from '../src/next';
 import { Network } from './lib/network';
+import { Next } from '../src/next';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 
@@ -146,9 +146,6 @@ describe('Next', () => {
 
       const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
       const func2 = sinon.spy(({ next }: NextParameters<Network>) => {
-        expect(next).to.be.instanceOf(FinalNext);
-        expect(next).to.be.instanceOf(PreMethodNext);
-
         next.next({ error });
       });
 
@@ -196,6 +193,7 @@ describe('Next', () => {
       network.getSurrogate().registerPostHook('connect', [func1, func2]);
 
       expect(() => network.connect()).to.throw(error.message);
+
       sinon.assert.calledOnce(func1);
       sinon.assert.notCalled(func2);
     });
@@ -228,6 +226,7 @@ describe('Next', () => {
       sinon.assert.calledOnce(func1);
       sinon.assert.notCalled(func2);
       sinon.assert.notCalled(connect);
+
       expect(errorThrown).to.be.true;
     });
 
@@ -291,8 +290,6 @@ describe('Next', () => {
 
       const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
       const func2 = sinon.spy(({ next }: NextParameters<Network>) => {
-        expect(next).to.be.instanceOf(FinalNext);
-
         next.next({ error });
       });
 
@@ -328,6 +325,31 @@ describe('Next', () => {
 
       sinon.assert.calledOnce(func1);
       sinon.assert.calledOnce(func2);
+    });
+
+    it(`should throw an error when async and next`, async () => {
+      const error = new Error('fail');
+      let errorThrown = false;
+
+      const func1 = sinon.spy((_nextParams) => {
+        throw error;
+      });
+      const func2 = sinon.spy(async ({ next }: NextParameters<Network>) => next.next());
+
+      network
+        .getSurrogate()
+        .registerPostHook('asyncConnect', [func1, func2], { wrapper: 'async' });
+
+      try {
+        await network.asyncConnect();
+      } catch (err) {
+        expect(err).to.equal(error);
+        errorThrown = true;
+      }
+
+      expect(errorThrown).to.be.true;
+      sinon.assert.calledOnce(func1);
+      sinon.assert.notCalled(func2);
     });
   });
 });

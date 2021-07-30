@@ -1,5 +1,5 @@
+import { RunOnError, RunOnBail } from './runOn';
 import { Contexts } from './contexts';
-import { RunOnError } from './runOn';
 
 /**
  * Surrogate Options
@@ -38,4 +38,11 @@ export interface SurrogateGlobalOptions {
    * @memberof SurrogateGlobalOptions
    */
   runOnError?: RunOnError | RunOnError[];
+
+  /**
+   * @description Function to be called when bailing out of a handler.
+   * @type {RunOnBail|RunOnBail[]}
+   * @memberof SurrogateGlobalOptions
+   */
+  runOnBail?: RunOnBail | RunOnBail[];
 }

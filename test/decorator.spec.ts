@@ -5,11 +5,11 @@ import sinon from 'sinon';
 import {
   NextPre,
   NextPost,
-  NextParameters,
   NextAsyncPre,
   SurrogatePre,
   NextAsyncPost,
   SurrogatePost,
+  NextParameters,
   NextPreAndPost,
   SurrogateHandler,
   SurrogateAsyncPre,

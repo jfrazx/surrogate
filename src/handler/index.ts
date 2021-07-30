@@ -43,11 +43,8 @@ export abstract class HandlerRunner<T extends object, R extends HandlerConstruct
       .find((rule) => rule.shouldHandle());
   }
 
-  protected runWithNext(nextProvider: NextProvider<T>): void {
-    return this.findRule().run(nextProvider);
-  }
-
   protected abstract runWithoutNext(nextProvider: NextProvider<T>): void;
+  protected abstract runWithNext(nextProvider: NextProvider<T>): void;
 
   protected shouldRunWithNext(): boolean {
     const {
@@ -69,14 +66,20 @@ class AsyncHandlerRunner<T extends object> extends HandlerRunner<
   ];
 
   protected async runWithoutNext(nextProvider: NextProvider<T>) {
-    const { nextNode } = this.node;
-
     try {
       const result = await this.findRule().run(nextProvider);
 
-      nextNode.next({ using: asArray(result) });
+      this.node.next({ using: asArray(result) });
     } catch (error) {
-      nextNode.next({ error });
+      this.node.next({ error });
+    }
+  }
+
+  protected async runWithNext(nextProvider: NextProvider<T>) {
+    try {
+      await this.findRule().run(nextProvider);
+    } catch (error) {
+      this.node.next({ error });
     }
   }
 }
@@ -88,9 +91,20 @@ class SyncHandlerRunner<T extends object> extends HandlerRunner<T, HandlerConstr
   ];
 
   protected runWithoutNext(nextProvider: NextProvider<T>): void {
-    const result = this.findRule().run(nextProvider);
-    const { nextNode } = this.node;
+    try {
+      const result = this.findRule().run(nextProvider);
 
-    nextNode.next({ using: asArray(result) });
+      this.node.next({ using: asArray(result) });
+    } catch (error) {
+      this.node.next({ error });
+    }
+  }
+
+  protected runWithNext(nextProvider: NextProvider<T>): void {
+    try {
+      this.findRule().run(nextProvider);
+    } catch (error) {
+      this.node.next({ error });
+    }
   }
 }

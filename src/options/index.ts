@@ -13,6 +13,7 @@ interface GlobalHandlerOptions<T extends object> {
 const defaultMethodOptions: Required<SurrogateHandlerOptions<any>> = {
   noArgs: false,
   useNext: true,
+  runOnBail: [],
   runOnError: [],
   runConditions: [],
   ignoreErrors: false,
@@ -40,9 +41,5 @@ export class OptionsHandler<T extends object> {
     global = {},
   }: GlobalHandlerOptions<T>): Required<SurrogateHandlerOptions<T>> {
     return { ...defaultMethodOptions, ...global, ...handler };
-  }
-
-  replace(handlerOptions: SurrogateHandlerOptions<T>): OptionsHandler<T> {
-    return new OptionsHandler({ handler: { ...this, ...handlerOptions } });
   }
 }
