@@ -57,21 +57,31 @@ After wrapping your instance with Surrogate new methods are available, `getSurro
 
 SurrogateHandler is any function that accepts a `NextParameters` object which can be used to control flow through pre and post hooks.
 
+### CommonParameters
+
+Common parameters passed to all handlers and conditional functions. (runConditions, runOnError, runOnBail)
+
+| Property          | Member Of          | Type        | Description                                                                            |
+| ----------------- | ------------------ | ----------- | -------------------------------------------------------------------------------------- |
+| action            | ProviderParameters | string      | The current target method.                                                             |
+| correlationId     | ProviderParameters | string      | Unique identifier for the current hook pipeline                                        |
+| instance          | ProviderParameters | T           | The current unwrapped instance                                                         |
+| error?            | ProviderParameters | Error       | An error object, if passed                                                             |
+| hookType          | ProviderParameters | string      | Provides the current hook type as a string.                                            |
+| receivedArguments | ProviderParameters | any[]       | Arguments received from the previous handler.                                          |
+| currentArgs       | ProviderParameters | any[]       | Array of potentially modified arguments passed to original method invoked by surrogate |
+| originalArgs      | ProviderParameters | any[]       | Array of arguments passed to the instance invoked method                               |
+| timeTracker       | ProviderParameters | TimeTracker | Provides access to the current time tracker                                            |
+| result            | ProviderParameters | any         | Result of original method invocation if run                                            |
+
 ### NextParameters
 
-`NextParameters` is passed to all hook handlers. It can supply the unwrapped or surrogate wrapped instance to the current handler. An `INext` object provides functionality to skip hooks or continue to the next hook for execution.
+`NextParameters` is passed to all hook handlers. In addition to `CommonParameters` you'll receive the current Surrogate wrapped instance and an `INext` object that provides functionality to skip hooks or continue to the next hook for execution.
 
-| Property     | Type        | Description                                                                            |
-| ------------ | ----------- | -------------------------------------------------------------------------------------- |
-| action       | string      | Provides the current action or method target.                                          |
-| hookType     | string      | Provides the current hook type as a string.                                            |
-| originalArgs | any[]       | Array of arguments passed to the instance invoked method                               |
-| currentArgs  | any[]       | Array of potentially modified arguments passed to original method invoked by surrogate |
-| receivedArgs | any[]       | Array of arguments passed from the last handler.                                       |
-| instance     | T           | Provides handler access to the unwrapped instance.                                     |
-| surrogate    | Surrogate   | Provides handler access to surrogate wrapped instance.                                 |
-| next         | INext       | Object that provides flow control capabilities                                         |
-| timeTracker  | TimeTracker | Provides access to the current time tracker                                            |
+| Property  | Type      | Description                                            |
+| --------- | --------- | ------------------------------------------------------ |
+| surrogate | Surrogate | Provides handler access to surrogate wrapped instance. |
+| next      | INext     | Object that provides flow control capabilities         |
 
 #### TimeTracker
 
@@ -109,22 +119,41 @@ When registering a hook you may provide any of the following options.
 | -------------- | ------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | useNext?       | boolean                        | true          | `true` indicates usage of the `INext` object to control flow, otherwise Surrogate makes a determination when to advance |
 | noArgs?        | boolean                        | false         | Specify that `NextParameters` should NOT be passed to a handler                                                         |
-| ignoreErrors?  | boolean                        | false         | If true and an Error is passed Surrogate will not throw.                                                                |
+| ignoreErrors?  | boolean                        | false         | If true and an Error is passed or caught Surrogate will not throw.                                                      |
 | useContext?    | any                            | T             | The context in which to call surrogate handlers.                                                                        |
 | wrapper?       | MethodWrappers                 | sync          | Tells Surrogate if it is managing synchronous or asynchronous methods.                                                  |
 | runConditions? | RunCondition \| RunCondition[] | n/a           | Conditions to determine if a handler should be executed.                                                                |
+| runOnError?    | RunOnError \| RunOnError[]     | n/a           | Functions to run in the event of handler error. Runs regardless of ignoreError                                          |
+| runOnBail?     | RunOnBail \| RunOnBail[]       | n/a           | Functions to run in the event of handler bailing.                                                                       |
 
 #### RunCondition
 
-A RunCondition is a function that receives `RunConditionParameters` and returns a boolean indicating if the current handler should be executed(`true`) or skipped(`false`). All run conditions are executed synchronously and all conditions must be true for the handler to execute.
+A RunCondition is a function that receives `RunConditionParameters`, which includes [CommonParameters](###CommonParameters) and returns a boolean indicating if the current handler should be executed(`true`) or skipped(`false`). All run conditions are executed synchronously and all conditions must be true for the handler to execute.
 
-| Property          | Member Of              | Type    | Description                                        |
-| ----------------- | ---------------------- | ------- | -------------------------------------------------- |
-| action            | RunConditionParameters | string  | The current target method.                         |
-| instance          | RunConditionParameters | T       | The current unwrapped instance                     |
-| didError          | RunConditionParameters | boolean | Indicates if the previous handler passed an Error. |
-| error?            | RunConditionParameters | Error   | An error object, if passed                         |
-| receivedArguments | RunConditionParameters | any[]   | Arguments received from the previous handler.      |
+| Property                    | Member Of              | Type    | Description                                         |
+| --------------------------- | ---------------------- | ------- | --------------------------------------------------- |
+| didError                    | RunConditionParameters | boolean | Indicates if the previous handler passed an Error.  |
+| valueFromCondition          | RunConditionParameters | any     | Value passed forward from previous run condition    |
+| didReceiveFromLastCondition | RunConditionParameters | boolean | Indicates if the previous condition passed a value. |
+| passToNextCondition()       | RunConditionParameters | any     | Function to pass a value to next condition          |
+
+#### RunOnError
+
+`RunOnError` is a function that receives `RunOnErrorParameters`, which includes [CommonParameters](###CommonParameters) and the ability to recover from an error.
+
+| Property           | Member Of            | Type    | Description                                       |
+| ------------------ | -------------------- | ------- | ------------------------------------------------- |
+| error              | RunOnErrorParameters | Error   | An error object received or caught from a handler |
+| recoverFromError() | RunOnErrorParameters | boolean | Function to recover from an error                 |
+
+#### RunOnBail
+
+`RunOnBail` is a function that receives `RunOnBailParameters`, which includes [CommonParameters](###CommonParameters) and the ability to recover from a bailing handler.
+
+| Property          | Member Of           | Type    | Description                                |
+| ----------------- | ------------------- | ------- | ------------------------------------------ |
+| bailWith()        | RunOnBailParameters | any     | Function that accepts a value ti bail with |
+| recoverFromBail() | RunOnBailParameters | boolean | Function to recover from a bailing handler |
 
 ---
 
