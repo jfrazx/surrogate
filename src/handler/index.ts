@@ -1,18 +1,11 @@
+import { HandlerConstructor, WithArgsRule, WithoutArgsRule } from './rules';
 import { MethodWrapper } from '../interfaces';
 import { NextProvider } from '../provider';
 import { asArray } from '@jfrazx/asarray';
 import { NextNode } from '../next';
-import {
-  HandlerConstructor,
-  AsyncHandlerConstructor,
-  SyncHandlerWithArgsRule,
-  AsyncHandlerWithArgsRule,
-  SyncHandlerWithoutArgsRule,
-  AsyncHandlerWithoutArgsRule,
-} from './rules';
 
-export abstract class HandlerRunner<T extends object, R extends HandlerConstructor<T>> {
-  protected abstract argsHandlers: R[];
+export abstract class HandlerRunner<T extends object> {
+  protected argsHandlers: HandlerConstructor<T>[] = [WithArgsRule, WithoutArgsRule];
 
   constructor(protected node: NextNode<T>) {}
 
@@ -56,15 +49,7 @@ export abstract class HandlerRunner<T extends object, R extends HandlerConstruct
   }
 }
 
-class AsyncHandlerRunner<T extends object> extends HandlerRunner<
-  T,
-  AsyncHandlerConstructor<T>
-> {
-  protected argsHandlers: AsyncHandlerConstructor<T>[] = [
-    AsyncHandlerWithArgsRule,
-    AsyncHandlerWithoutArgsRule,
-  ];
-
+class AsyncHandlerRunner<T extends object> extends HandlerRunner<T> {
   protected async runWithoutNext(nextProvider: NextProvider<T>) {
     try {
       const result = await this.findRule().run(nextProvider);
@@ -84,12 +69,7 @@ class AsyncHandlerRunner<T extends object> extends HandlerRunner<
   }
 }
 
-class SyncHandlerRunner<T extends object> extends HandlerRunner<T, HandlerConstructor<T>> {
-  protected argsHandlers: HandlerConstructor<T>[] = [
-    SyncHandlerWithArgsRule,
-    SyncHandlerWithoutArgsRule,
-  ];
-
+class SyncHandlerRunner<T extends object> extends HandlerRunner<T> {
   protected runWithoutNext(nextProvider: NextProvider<T>): void {
     try {
       const result = this.findRule().run(nextProvider);

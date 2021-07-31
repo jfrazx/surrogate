@@ -6,15 +6,16 @@ import { asArray } from '@jfrazx/asarray';
 import {
   WhichContainers,
   SurrogateHandler,
+  SurrogateEventManager,
   SurrogateGlobalOptions,
   SurrogateHandlerOptions,
 } from '../interfaces';
 
-export interface EventMap<T extends object> {
+interface EventMap<T extends object> {
   [event: string]: WhichContainers<T>;
 }
 
-export class EventManager<T extends object = any> {
+export class EventManager<T extends object = any> implements SurrogateEventManager<T> {
   private readonly events: EventMap<T> = wrapDefaults<EventMap<T>, WhichContainers<T>>({
     defaultValue: {
       [POST]: [],
@@ -102,11 +103,11 @@ export class EventManager<T extends object = any> {
   }
 
   deregisterPreHook(event: string, handler: SurrogateHandler<T>): EventManager<T> {
-    return this.deregisterhookType(event, PRE, handler);
+    return this.deregisterHookType(event, PRE, handler);
   }
 
   deregisterPostHook(event: string, handler: SurrogateHandler<T>): EventManager<T> {
-    return this.deregisterhookType(event, POST, handler);
+    return this.deregisterHookType(event, POST, handler);
   }
 
   /**
@@ -124,7 +125,7 @@ export class EventManager<T extends object = any> {
     return events;
   }
 
-  private deregisterhookType(
+  private deregisterHookType(
     event: string,
     which: Which,
     handlerToRemove: SurrogateHandler<T>,

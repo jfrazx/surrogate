@@ -25,7 +25,7 @@ export interface SurrogateEventManager<T extends object> {
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
-  deregisterPreHooks(event: keyof T): SurrogateEventManager<T>;
+  deregisterPreHooks(event: keyof T | string): SurrogateEventManager<T>;
   /**
    * @description Removes all POST handlers for the provided method
    *
@@ -33,7 +33,7 @@ export interface SurrogateEventManager<T extends object> {
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
-  deregisterPostHooks(event: keyof T): SurrogateEventManager<T>;
+  deregisterPostHooks(event: keyof T | string): SurrogateEventManager<T>;
   /**
    * @description Removes a specific PRE handler for the provided method
    *
@@ -42,7 +42,10 @@ export interface SurrogateEventManager<T extends object> {
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
-  deregisterPreHook(event: keyof T, handler: SurrogateHandler<T>): SurrogateEventManager<T>;
+  deregisterPreHook(
+    event: keyof T | string,
+    handler: SurrogateHandler<T>,
+  ): SurrogateEventManager<T>;
   /**
    * @description Removes a specific POST handler for the provided method
    *
@@ -51,7 +54,10 @@ export interface SurrogateEventManager<T extends object> {
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
-  deregisterPostHook(event: keyof T, handler: SurrogateHandler<T>): SurrogateEventManager<T>;
+  deregisterPostHook(
+    event: keyof T | string,
+    handler: SurrogateHandler<T>,
+  ): SurrogateEventManager<T>;
   /**
    * @description Retrieves all handlers for the provided method
    *
@@ -59,7 +65,7 @@ export interface SurrogateEventManager<T extends object> {
    * @returns {WhichContainers<T>}
    * @memberof SurrogateEventManager
    */
-  getEventHandlers(event: keyof T): WhichContainers<T>;
+  getEventHandlers(event: keyof T | string): WhichContainers<T>;
   /**
    * @description Registers a PRE handler or array of handlers for the provided method
    *
@@ -70,7 +76,7 @@ export interface SurrogateEventManager<T extends object> {
    * @memberof SurrogateEventManager
    */
   registerPreHook(
-    event: keyof T,
+    event: keyof T | string,
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options?: SurrogateHandlerOptions<T>,
   ): SurrogateEventManager<T>;
@@ -84,7 +90,7 @@ export interface SurrogateEventManager<T extends object> {
    * @memberof SurrogateEventManager
    */
   registerPostHook(
-    event: keyof T,
+    event: keyof T | string,
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options?: SurrogateHandlerOptions<T>,
   ): SurrogateEventManager<T>;
@@ -99,7 +105,7 @@ export interface SurrogateEventManager<T extends object> {
    * @memberof SurrogateEventManager
    */
   registerHook(
-    event: keyof T,
+    event: keyof T | string,
     type: Which,
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options: SurrogateHandlerOptions<T>,
