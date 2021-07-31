@@ -1,5 +1,5 @@
 import { isFunction, isUndefined } from '../../helpers';
-import { SurrogateProxy } from '../proxy';
+import { SurrogateProxy } from '../handler';
 import { FetchRule } from './interfaces';
 import { PRE, POST } from '../../which';
 

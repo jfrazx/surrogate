@@ -3,6 +3,7 @@ import { ContextController } from './interfaces';
 import { asArray } from '@jfrazx/asarray';
 import { NextNode } from '../interfaces';
 import { isAsync } from '../../helpers';
+import { v4 as uuid } from 'uuid';
 
 interface ExecutionConstruct<T extends object> {
   new (originalMethod: Function, originalArgs: any[]): ContextController<T>;
@@ -11,11 +12,12 @@ interface ExecutionConstruct<T extends object> {
 export abstract class ExecutionContext<T extends object> implements ContextController<T> {
   private utilizeLatest = false;
 
+  protected nextNode: NextNode<T>;
+
   readonly timeTracker = TimeTrackable.fetch();
+  readonly correlationId = uuid();
 
   latestArgs: any[];
-
-  protected nextNode: NextNode<T>;
   returnValue: any;
 
   constructor(public readonly originalMethod: Function, public readonly originalArgs: any[]) {}
@@ -59,7 +61,7 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
 
     this.setNext(node.nextNode);
 
-    return node.next();
+    return node.handleNext();
   }
 
   protected logError(error?: Error): void {

@@ -1,16 +1,16 @@
-import { containerGenerator, Tail, HandlerContainer } from '../containers';
-import { Next, ExecutionContext } from '../next';
-import { isAsync, isFunction } from '../helpers';
-import { FetchRuleRunner } from './rules';
-import { EventManager } from '../manager';
-import { PRE, POST } from '../which';
-import { Context } from '../context';
+import { containerGenerator, Tail, HandlerContainer } from '../../containers';
+import { Next, ExecutionContext } from '../../next';
+import { isAsync, isFunction } from '../../helpers';
+import { EventManager } from '../../manager';
+import { FetchRuleRunner } from '../rules';
+import { PRE, POST } from '../../which';
+import { Context } from '../../context';
 import {
   Surrogate,
   MethodWrapper,
   SurrogateOptions,
   SurrogateGlobalOptions,
-} from '../interfaces';
+} from '../../interfaces';
 
 type Target<T extends object> = WeakMap<any, EventManager<T>>;
 
@@ -111,17 +111,3 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return this;
   }
 }
-
-/**
- * Helper function to create Surrogate wrapped objects
- *
- * @export
- * @template T
- * @param {T} object
- * @param {SurrogateOptions} [options={}]
- * @returns {Surrogate<T>}
- */
-export const wrapSurrogate = <T extends object>(
-  object: T,
-  options: SurrogateOptions = {},
-): Surrogate<T> => SurrogateProxy.wrap(object, options);

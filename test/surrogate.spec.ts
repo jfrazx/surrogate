@@ -1,4 +1,4 @@
-import { wrapSurrogate, Surrogate, NextHandler } from '../src';
+import { wrapSurrogate, Surrogate, NextParameters } from '../src';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
@@ -34,62 +34,62 @@ describe('SurrogateProxy', () => {
 
   describe('Run', () => {
     it('should run twice', () => {
-      const nextHandler = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const nextParameters = sinon.spy(({ next }: NextParameters<Network>) => next.next());
 
-      network.getSurrogate().registerPreHook('connect', nextHandler);
+      network.getSurrogate().registerPreHook('connect', nextParameters);
       network.connect();
 
-      sinon.assert.calledOnce(nextHandler);
+      sinon.assert.calledOnce(nextParameters);
 
       network.connect();
 
-      sinon.assert.calledTwice(nextHandler);
+      sinon.assert.calledTwice(nextParameters);
     });
 
     it('should run twice without resetting context', () => {
-      const nextHandler = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const nextParameters = sinon.spy(({ next }: NextParameters<Network>) => next.next());
 
-      network.getSurrogate().registerPreHook('connect', nextHandler);
+      network.getSurrogate().registerPreHook('connect', nextParameters);
       network.connect();
 
-      sinon.assert.calledOnce(nextHandler);
+      sinon.assert.calledOnce(nextParameters);
 
       network.connect();
 
-      sinon.assert.calledTwice(nextHandler);
+      sinon.assert.calledTwice(nextParameters);
     });
 
     it('should run twice and dispose', () => {
-      const nextHandler = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const nextParameters = sinon.spy(({ next }: NextParameters<Network>) => next.next());
 
-      network.getSurrogate().registerPreHook('connect', nextHandler);
+      network.getSurrogate().registerPreHook('connect', nextParameters);
       network.connect();
 
-      sinon.assert.calledOnce(nextHandler);
+      sinon.assert.calledOnce(nextParameters);
 
       network.connect();
 
-      sinon.assert.calledTwice(nextHandler);
+      sinon.assert.calledTwice(nextParameters);
 
       const unwrapped = network.disposeSurrogate();
 
       unwrapped.connect();
 
-      sinon.assert.calledTwice(nextHandler);
+      sinon.assert.calledTwice(nextParameters);
 
       network.connect();
 
-      sinon.assert.calledTwice(nextHandler);
+      sinon.assert.calledTwice(nextParameters);
     });
 
     it('should run target method bypassing handlers', () => {
-      const nextHandler = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const nextParameters = sinon.spy(({ next }: NextParameters<Network>) => next.next());
       const network = new Network();
       const connect = network.connect;
 
       const wrappedNetwork = wrapSurrogate(network);
 
-      wrappedNetwork.getSurrogate().registerPreHook('connect', nextHandler);
+      wrappedNetwork.getSurrogate().registerPreHook('connect', nextParameters);
 
       const bypassedConnect = wrappedNetwork.bypassSurrogate().connect;
 
@@ -97,13 +97,13 @@ describe('SurrogateProxy', () => {
 
       wrappedNetwork.bypassSurrogate().connect();
 
-      sinon.assert.notCalled(nextHandler);
+      sinon.assert.notCalled(nextParameters);
     });
 
     it('should run detached', () => {
-      const nextHandler = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const handler = sinon.spy(({ next }: NextParameters<Network>) => next.next());
 
-      network.getSurrogate().registerPreHook('connect', nextHandler);
+      network.getSurrogate().registerPreHook('connect', handler);
 
       const { connect } = network;
 
@@ -112,14 +112,14 @@ describe('SurrogateProxy', () => {
       connect();
       connect();
 
-      sinon.assert.callCount(nextHandler, 4);
+      sinon.assert.callCount(handler, 4);
     });
 
     it('should wait for next to be called before continuing', async () => {
       const returnValue = 'ContinueTestResult';
 
       class ContinueTest {
-        handler({ next }: NextHandler<ContinueTest>) {
+        handler({ next }: NextParameters<ContinueTest>) {
           setTimeout(() => next.next(), 1000);
 
           clock.tick(1050);
@@ -164,6 +164,7 @@ describe('SurrogateProxy', () => {
       const result = test.method();
 
       expect(result).to.equal(returnValue);
+
       sinon.assert.calledWith(log, handler1Log);
       sinon.assert.calledWith(log, handler2Log);
       sinon.assert.called(handler1);

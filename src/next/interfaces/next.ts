@@ -1,4 +1,4 @@
-import { SurrogateUnwrapped } from '../../interfaces';
+import { SurrogateUnwrapped, Contexts } from '../../interfaces';
 import { ContextController } from '../context';
 import { IContainer } from '../../containers';
 import { NextOptions } from './nextOptions';
@@ -11,7 +11,7 @@ export interface INext {
 }
 
 export interface NextNode<T extends object> extends INext {
-  nextError(error: Error, using: any[], nextOptions: NextOptions): void;
+  handleNext(options?: NextOptions): void;
   shouldRun(using: any[]): boolean;
   addNext(next: NextNode<T>): void;
   controller: ContextController<T>;
@@ -19,6 +19,7 @@ export interface NextNode<T extends object> extends INext {
   container: IContainer<T>;
   nextNode: NextNode<T>;
   prevNode: NextNode<T>;
+  useContext: Contexts;
   context: Context<T>;
   hookType: string;
   didError: Error;

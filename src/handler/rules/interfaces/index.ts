@@ -1,11 +1,11 @@
-import { NextHandler, ShouldHandle } from '../../../interfaces';
+import { NextParameters, ShouldHandle } from '../../../interfaces';
 import { NextNode } from '../../../next';
 
 export interface HandlerRule<T extends object> extends ShouldHandle {
-  run(nextHandler?: NextHandler<T>): any;
+  run(nextParameters?: NextParameters<T>): any;
 }
 export interface AsyncHandlerRule<T extends object> extends ShouldHandle {
-  run(nextHandler?: NextHandler<T>): Promise<any>;
+  run(nextParameters?: NextParameters<T>): Promise<any>;
 }
 
 export interface HandlerConstructor<T extends object> {

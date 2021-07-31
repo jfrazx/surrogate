@@ -5,11 +5,11 @@ import sinon from 'sinon';
 import {
   NextPre,
   NextPost,
-  NextHandler,
   NextAsyncPre,
   SurrogatePre,
   NextAsyncPost,
   SurrogatePost,
+  NextParameters,
   NextPreAndPost,
   SurrogateHandler,
   SurrogateAsyncPre,
@@ -17,6 +17,7 @@ import {
   SurrogateAsyncPost,
   NextAsyncPreAndPost,
   SurrogatePreAndPost,
+  SurrogateAsyncPreAndPost,
 } from '../src';
 
 describe('SurrogateDecorators', () => {
@@ -66,6 +67,36 @@ describe('SurrogateDecorators', () => {
     });
   });
 
+  describe('SurrogateAsyncPreAndPost', () => {
+    it('should be a function', () => {
+      expect(SurrogateAsyncPreAndPost).to.be.a('function');
+    });
+
+    it('should decorate for BOTH async pre and post methods', async () => {
+      const value = 'SurrogateAsyncPreAndPostTest';
+
+      @SurrogateDelegate<SurrogateAsyncPreAndPostTest>()
+      class SurrogateAsyncPreAndPostTest {
+        @SurrogateAsyncPreAndPost<SurrogateAsyncPreAndPostTest>({
+          handler: () => console.log(`Next handler called`),
+          options: {
+            useNext: false,
+          },
+        })
+        testMethod() {
+          return value;
+        }
+      }
+
+      const test = new SurrogateAsyncPreAndPostTest();
+
+      const result = await test.testMethod();
+
+      expect(result).to.equal(value);
+      sinon.assert.calledTwice(log);
+    });
+  });
+
   describe('SurrogatePre', () => {
     it('should be a function', () => {
       expect(SurrogatePre).to.be.a('function');
@@ -78,7 +109,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should pre decorate a synchronous method', () => {
-      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextHandler<Test>) =>
+      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
         next.next(),
       ) as any;
       const results = 'SurrogatePre';
@@ -106,7 +137,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should post decorate a synchronous method', () => {
-      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextHandler<Test>) =>
+      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
         next.next(),
       ) as any;
       const results = 'SurrogatePost';
@@ -134,7 +165,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should post decorate an async method', async () => {
-      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextHandler<Test>) =>
+      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
         next.next(),
       ) as any;
       const results = 'SurrogateAsyncPost';
@@ -162,7 +193,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should pre decorate an async method', async () => {
-      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextHandler<Test>) =>
+      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
         next.next(),
       ) as any;
       const results = 'SurrogateAsyncPre';
@@ -184,7 +215,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should pre decorate an async method and bail', async () => {
-      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextHandler<Test>) =>
+      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
         next.next({
           bail: true,
         }),
@@ -208,7 +239,7 @@ describe('SurrogateDecorators', () => {
 
     it('should pre decorate an async method and bail with', async () => {
       const results = 'SurrogateAsyncPreBailWith';
-      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextHandler<Test>) =>
+      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
         next.next({
           bail: true,
           bailWith: results,
@@ -347,7 +378,7 @@ describe('SurrogateDecorators', () => {
             useNext: false,
           },
         })
-        protected nextHandler() {
+        protected nextParameters() {
           console.log(`Next handler called`);
         }
 
@@ -381,7 +412,7 @@ describe('SurrogateDecorators', () => {
             useNext: false,
           },
         })
-        protected async nextHandler() {
+        protected async nextParameters() {
           console.log(`Next handler called`);
         }
 
@@ -415,7 +446,7 @@ describe('SurrogateDecorators', () => {
             useNext: false,
           },
         })
-        protected nextHandler() {
+        protected nextParameters() {
           console.log(`Next handler called`);
         }
 
@@ -443,7 +474,7 @@ describe('SurrogateDecorators', () => {
             useNext: false,
           },
         })
-        protected nextHandler() {
+        protected nextParameters() {
           console.log(`Next handler called`);
         }
 
@@ -490,7 +521,7 @@ describe('SurrogateDecorators', () => {
             useNext: false,
           },
         })
-        protected nextHandler() {
+        protected nextParameters() {
           console.log(`Next handler called`);
         }
 
@@ -518,7 +549,7 @@ describe('SurrogateDecorators', () => {
             useNext: false,
           },
         })
-        protected nextHandler() {
+        protected nextParameters() {
           console.log(`Next handler called`);
         }
 
@@ -565,7 +596,7 @@ describe('SurrogateDecorators', () => {
             useNext: false,
           },
         })
-        protected async nextHandler() {
+        protected async nextParameters() {
           console.log(`Next handler called`);
         }
 
@@ -590,7 +621,7 @@ describe('SurrogateDecorators', () => {
         @NextAsyncPost<NextAsyncPostTest>({
           action: ['testMethod1', 'testMethod2', 'testMethod3'],
         })
-        protected nextHandler({ next }: NextHandler<NextAsyncPostTest>) {
+        protected nextParameters({ next }: NextParameters<NextAsyncPostTest>) {
           console.log(`Next handler called`);
 
           next.next();
@@ -639,7 +670,7 @@ describe('SurrogateDecorators', () => {
             useNext: false,
           },
         })
-        protected async nextHandler() {
+        protected async nextParameters() {
           console.log(`Next handler called`);
         }
 
@@ -664,7 +695,7 @@ describe('SurrogateDecorators', () => {
         @NextAsyncPre<NextAsyncPreTest>({
           action: ['testMethod1', 'testMethod2', 'testMethod3'],
         })
-        protected nextHandler({ next }: NextHandler<NextAsyncPreTest>) {
+        protected nextParameters({ next }: NextParameters<NextAsyncPreTest>) {
           console.log(`Next handler called`);
 
           next.next();

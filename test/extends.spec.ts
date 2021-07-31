@@ -4,10 +4,6 @@ import * as sinon from 'sinon';
 
 @SurrogateDelegate()
 class BassGuitar extends Guitar {
-  constructor() {
-    super();
-  }
-
   @SurrogatePre<BassGuitar>({
     handler: () => console.log('warming up'),
     options: {

@@ -1,4 +1,4 @@
-import { NextHandler } from '../../src';
+import { NextParameters } from '../../src';
 
 export class Network {
   private enabled: boolean = true;
@@ -56,7 +56,7 @@ export class Network {
     this.connected = false;
   }
 
-  preConnectHandler({ next }: NextHandler<this>) {
+  preConnectHandler({ next }: NextParameters<this>) {
     next.next({
       bail: this.isConnected || this.isDisabled,
     });

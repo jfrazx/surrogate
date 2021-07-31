@@ -1,9 +1,9 @@
-import { SurrogateDelegate, SurrogateMethods, NextHandler, NextPre } from '../../src';
+import { SurrogateDelegate, SurrogateMethods, NextParameters, NextPre } from '../../src';
 import * as sinon from 'sinon';
 
 export const logReporter = sinon.spy(function logReporter(
   this: BugReport,
-  { action, hookType }: NextHandler<BugReport>,
+  { action, hookType }: NextParameters<BugReport>,
 ) {
   console.log({
     action,
@@ -42,7 +42,7 @@ export class BugReport {
       useNext: false,
     },
   })
-  logReporter(next: NextHandler<BugReport>) {
+  logReporter(next: NextParameters<BugReport>) {
     logReporter.call(this, next);
   }
 }

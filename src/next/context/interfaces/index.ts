@@ -7,6 +7,7 @@ export interface ContextController<T extends object> {
   returnValue: any;
   currentArgs: any[];
   originalArgs: any[];
+  correlationId: string;
   bail(bailWith: any): any;
   originalMethod: Function;
   timeTracker: TimeTracking;

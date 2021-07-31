@@ -1,8 +1,10 @@
 import { IContainer, ContainerGenerator, TailGeneration } from '../../containers';
+import { ErrorRule, BailRule, NextRule, ProgressRule } from './rules';
 import { SurrogateUnwrapped, HookType } from '../../interfaces';
 import { INext, NextOptions, NextNode } from '../interfaces';
+import { RunConditionProvider } from '../../provider';
+import { SurrogateProxy } from '../../proxy/handler';
 import { ContextController } from '../context';
-import { SurrogateProxy } from '../../proxy';
 import { asArray } from '@jfrazx/asarray';
 import { Which, PRE } from '../../which';
 import { Context } from '../../context';
@@ -50,43 +52,34 @@ export abstract class BaseNext<T extends object> implements INext {
   }
 
   skip(times: number = 1): void {
-    return this.skipWith(times);
+    return this.nextNode.skipWith(times);
   }
 
-  nextError(error: Error, using: any[], nextOptions: NextOptions) {
-    const { options } = this.container;
+  next({ using = [], ...options }: NextOptions = {}): void {
+    this.controller.timeTracker.setHookEnd();
+    this.replace(options);
 
-    this.didError = error;
+    const rules: NextRule<T>[] = [
+      new ErrorRule({ ...options, using }),
+      new BailRule({ ...options, using }),
+      new ProgressRule({ ...options, using }),
+    ];
 
-    if (options.ignoreErrors) {
-      return this.next({
-        ...nextOptions,
-        using,
-        error: null,
-      });
-    }
+    const rule = rules.find((rule) => rule.shouldRun());
 
-    this.controller.handleError(error);
+    rule.run(this);
   }
 
   shouldRun(using: any[]): boolean {
-    const didError = Boolean(this.prevNode?.didError);
-    const { originalArgs } = this.controller;
+    const runParameters = new RunConditionProvider(this, using, this.prevNode?.didError);
     const { options } = this.container;
     const context = this.useContext;
-    const { event } = this.context;
-    const instance = this.instance;
 
-    return asArray(options.runConditions).every((condition) =>
-      condition.call(context, {
-        didError,
-        instance,
-        originalArgs,
-        action: event,
-        receivedArgs: using,
-        error: this.prevNode?.didError,
-      }),
-    );
+    return asArray(options.runConditions).every((condition) => {
+      runParameters.reset();
+
+      return condition.call(context, runParameters);
+    });
   }
 
   get instance(): SurrogateUnwrapped<T> {
@@ -106,7 +99,7 @@ export abstract class BaseNext<T extends object> implements INext {
     next.prevNode = this;
   }
 
-  protected get useContext() {
+  get useContext() {
     return this.context.determineContext(this.container.options);
   }
 
@@ -121,7 +114,7 @@ export abstract class BaseNext<T extends object> implements INext {
   }
 
   abstract skipWith(times?: number, ...args: any[]): void;
-  abstract next(options?: NextOptions): void;
+  abstract handleNext(options?: NextOptions): void;
 }
 
 import { Next } from './next';

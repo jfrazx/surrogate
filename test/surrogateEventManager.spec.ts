@@ -1,4 +1,4 @@
-import { PRE, POST, NextHandler, Surrogate, wrapSurrogate } from '../src';
+import { PRE, POST, NextParameters, Surrogate, wrapSurrogate } from '../src';
 import { WhichContainers } from '../src/interfaces';
 import { EventManager } from '../src/manager';
 import { Network } from './lib/network';
@@ -85,7 +85,7 @@ describe('Surrogate Event Manager', () => {
 
     it('should register multiple pre hooks', () => {
       const name = network.connect.name as keyof Network;
-      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
       const func2 = sinon.spy(() => {});
 
       network
@@ -112,7 +112,7 @@ describe('Surrogate Event Manager', () => {
 
     it('should register multiple post hooks', () => {
       const name = network.disconnect.name as keyof Network;
-      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
+      const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
       const func2 = sinon.spy(() => {});
 
       network
@@ -129,9 +129,9 @@ describe('Surrogate Event Manager', () => {
 
     it('should register multiple pre and post hooks', () => {
       const name = network.connect.name as keyof Network;
-      const func1 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
-      const func2 = sinon.spy(({ next }: NextHandler<Network>) => next.next());
-      const func3 = sinon.spy(function ({ next }: NextHandler<Network>) {
+      const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
+      const func2 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
+      const func3 = sinon.spy(function ({ next }: NextParameters<Network>) {
         next.next();
       });
       const func4 = sinon.spy(function () {});
@@ -159,8 +159,6 @@ describe('Surrogate Event Manager', () => {
       const func2 = () => {};
 
       surrogate.registerPreHook('connect', func1).registerPreHook('connect', func2);
-
-      console.log(surrogate);
 
       const { [PRE]: prePre } = surrogate.getEventHandlers('connect');
       expect(prePre).to.have.lengthOf(2);
@@ -242,13 +240,10 @@ describe('Surrogate Event Manager', () => {
         .registerPreHook('disconnect', func3)
         .registerPostHook('disconnect', func4);
 
-      const { [PRE]: prePreConnect, [POST]: postPreConnect } = surrogate.getEventHandlers(
-        'connect',
-      );
-      const {
-        [PRE]: prePreDisconnect,
-        [POST]: postPreDisconnect,
-      } = surrogate.getEventHandlers('disconnect');
+      const { [PRE]: prePreConnect, [POST]: postPreConnect } =
+        surrogate.getEventHandlers('connect');
+      const { [PRE]: prePreDisconnect, [POST]: postPreDisconnect } =
+        surrogate.getEventHandlers('disconnect');
 
       expect(prePreConnect).to.have.lengthOf(1);
       expect(prePreDisconnect).to.have.lengthOf(1);
@@ -257,13 +252,10 @@ describe('Surrogate Event Manager', () => {
 
       surrogate.deregisterHooks();
 
-      const { [PRE]: prePostConnect, [POST]: postPostConnect } = surrogate.getEventHandlers(
-        'connect',
-      );
-      const {
-        [PRE]: prePostDisconnect,
-        [POST]: postPostDisconnect,
-      } = surrogate.getEventHandlers('disconnect');
+      const { [PRE]: prePostConnect, [POST]: postPostConnect } =
+        surrogate.getEventHandlers('connect');
+      const { [PRE]: prePostDisconnect, [POST]: postPostDisconnect } =
+        surrogate.getEventHandlers('disconnect');
 
       expect(prePostConnect).to.have.lengthOf(0);
       expect(prePostDisconnect).to.have.lengthOf(0);

@@ -1,5 +1,5 @@
 import { FetchRule, InternalMethods } from './interfaces';
-import { SurrogateProxy } from '../proxy';
+import { SurrogateProxy } from '../handler';
 
 export class DisposeSurrogateRule<T extends object> implements FetchRule {
   constructor(

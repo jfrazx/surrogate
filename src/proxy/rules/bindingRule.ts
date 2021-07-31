@@ -1,5 +1,5 @@
 import { Surrogate } from '../../interfaces';
-import { SurrogateProxy } from '../proxy';
+import { SurrogateProxy } from '../handler';
 import { FetchRule } from './interfaces';
 
 export class BindingRule<T extends object> implements FetchRule {

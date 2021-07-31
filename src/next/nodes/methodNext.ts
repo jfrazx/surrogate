@@ -16,6 +16,4 @@ export class MethodNext<T extends object> extends FinalNext<T> {
   ) {
     super(proxy, context, controller, generator, container, hookType);
   }
-
-  next() {}
 }

@@ -1,5 +1,5 @@
-import { NextHandlerProvider } from './provider';
 import { MethodWrapper } from '../interfaces';
+import { NextProvider } from '../provider';
 import { asArray } from '@jfrazx/asarray';
 import { NextNode } from '../next';
 import {
@@ -27,14 +27,14 @@ export abstract class HandlerRunner<T extends object, R extends HandlerConstruct
   }
 
   run(args: any[], error?: Error) {
-    const nextHandler = new NextHandlerProvider(this.node, args, error);
+    const nextProvider = new NextProvider(this.node, args, error);
     const { timeTracker } = this.node.controller;
 
     const runner = this.shouldRunWithNext() ? this.runWithNext : this.runWithoutNext;
 
     timeTracker.setHookStart();
 
-    runner.call(this, nextHandler);
+    runner.call(this, nextProvider);
   }
 
   protected findRule() {
@@ -43,11 +43,8 @@ export abstract class HandlerRunner<T extends object, R extends HandlerConstruct
       .find((rule) => rule.shouldHandle());
   }
 
-  protected runWithNext(nextHandler: NextHandlerProvider<T>): void {
-    return this.findRule().run(nextHandler);
-  }
-
-  protected abstract runWithoutNext(nextHandler: NextHandlerProvider<T>): void;
+  protected abstract runWithoutNext(nextProvider: NextProvider<T>): void;
+  protected abstract runWithNext(nextProvider: NextProvider<T>): void;
 
   protected shouldRunWithNext(): boolean {
     const {
@@ -68,13 +65,22 @@ class AsyncHandlerRunner<T extends object> extends HandlerRunner<
     AsyncHandlerWithoutArgsRule,
   ];
 
-  protected runWithoutNext(nextHandler: NextHandlerProvider<T>): void {
-    const { nextNode } = this.node;
-    const handlerPromise = this.findRule().run(nextHandler);
+  protected async runWithoutNext(nextProvider: NextProvider<T>) {
+    try {
+      const result = await this.findRule().run(nextProvider);
 
-    handlerPromise
-      .then((result: any) => nextNode.next({ using: asArray(result) }))
-      .catch((error: Error) => nextNode.next({ error }));
+      this.node.next({ using: asArray(result) });
+    } catch (error) {
+      this.node.next({ error });
+    }
+  }
+
+  protected async runWithNext(nextProvider: NextProvider<T>) {
+    try {
+      await this.findRule().run(nextProvider);
+    } catch (error) {
+      this.node.next({ error });
+    }
   }
 }
 
@@ -84,10 +90,21 @@ class SyncHandlerRunner<T extends object> extends HandlerRunner<T, HandlerConstr
     SyncHandlerWithoutArgsRule,
   ];
 
-  protected runWithoutNext(nextHandler: NextHandlerProvider<T>): void {
-    const result = this.findRule().run(nextHandler);
-    const { nextNode } = this.node;
+  protected runWithoutNext(nextProvider: NextProvider<T>): void {
+    try {
+      const result = this.findRule().run(nextProvider);
 
-    nextNode.next({ using: asArray(result) });
+      this.node.next({ using: asArray(result) });
+    } catch (error) {
+      this.node.next({ error });
+    }
+  }
+
+  protected runWithNext(nextProvider: NextProvider<T>): void {
+    try {
+      this.findRule().run(nextProvider);
+    } catch (error) {
+      this.node.next({ error });
+    }
   }
 }
