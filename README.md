@@ -116,19 +116,20 @@ Common parameters passed to all handlers and conditional functions. (runConditio
 When registering a hook you may provide any of the following options.
 
 | Property       | Type                           | Default Value | Description                                                                                                             |
-| -------------- | ------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| useNext?       | boolean                        | true          | `true` indicates usage of the `INext` object to control flow, otherwise Surrogate makes a determination when to advance |
-| noArgs?        | boolean                        | false         | Specify that `NextParameters` should NOT be passed to a handler                                                         |
-| ignoreErrors?  | boolean                        | false         | If true and an Error is passed or caught Surrogate will not throw.                                                      |
-| useContext?    | any                            | T             | The context in which to call surrogate handlers.                                                                        |
-| wrapper?       | MethodWrappers                 | sync          | Tells Surrogate if it is managing synchronous or asynchronous methods.                                                  |
-| runConditions? | RunCondition \| RunCondition[] | n/a           | Conditions to determine if a handler should be executed.                                                                |
-| runOnError?    | RunOnError \| RunOnError[]     | n/a           | Functions to run in the event of handler error. Runs regardless of ignoreError                                          |
-| runOnBail?     | RunOnBail \| RunOnBail[]       | n/a           | Functions to run in the event of handler bailing.                                                                       |
+| -------------- | ------------------------------ | :-----------: | ----------------------------------------------------------------------------------------------------------------------- |
+| useNext?       | boolean                        |     true      | `true` indicates usage of the `INext` object to control flow, otherwise Surrogate makes a determination when to advance |
+| noArgs?        | boolean                        |     false     | Specify that `NextParameters` should NOT be passed to a handler                                                         |
+| ignoreErrors?  | boolean                        |     false     | If true and an Error is passed or caught Surrogate will not throw.                                                      |
+| useContext?    | any                            |       T       | The context in which to call surrogate handlers.                                                                        |
+| wrapper?       | MethodWrappers                 |     sync      | Tells Surrogate if it is managing synchronous or asynchronous methods.                                                  |
+| runConditions? | RunCondition \| RunCondition[] |      n/a      | Conditions to determine if a handler should be executed.                                                                |
+| runOnError?    | RunOnError \| RunOnError[]     |      n/a      | Functions to run in the event of handler error. Runs regardless of ignoreError                                          |
+| runOnBail?     | RunOnBail \| RunOnBail[]       |      n/a      | Functions to run in the event of handler bailing.                                                                       |
+| priority?      | number                         |       0       | Used to determine the order in which handlers are executed.                                                             |
 
 #### RunCondition
 
-A RunCondition is a function that receives `RunConditionParameters`, which includes [CommonParameters](###CommonParameters) and returns a boolean indicating if the current handler should be executed(`true`) or skipped(`false`). All run conditions are executed synchronously and all conditions must be true for the handler to execute.
+A RunCondition is a function that receives `RunConditionParameters`, which includes [CommonParameters](###-CommonParameters) and returns a boolean indicating if the current handler should be executed(`true`) or skipped(`false`). All run conditions are executed synchronously and all conditions must be true for the handler to execute.
 
 | Property                    | Member Of              | Type    | Description                                         |
 | --------------------------- | ---------------------- | ------- | --------------------------------------------------- |
@@ -139,7 +140,7 @@ A RunCondition is a function that receives `RunConditionParameters`, which inclu
 
 #### RunOnError
 
-`RunOnError` is a function that receives `RunOnErrorParameters`, which includes [CommonParameters](###CommonParameters) and the ability to recover from an error.
+`RunOnError` is a function that receives `RunOnErrorParameters`, which includes [CommonParameters](###-CommonParameters) and the ability to recover from an error.
 
 | Property           | Member Of            | Type    | Description                                       |
 | ------------------ | -------------------- | ------- | ------------------------------------------------- |
@@ -148,7 +149,7 @@ A RunCondition is a function that receives `RunConditionParameters`, which inclu
 
 #### RunOnBail
 
-`RunOnBail` is a function that receives `RunOnBailParameters`, which includes [CommonParameters](###CommonParameters) and the ability to recover from a bailing handler.
+`RunOnBail` is a function that receives `RunOnBailParameters`, which includes [CommonParameters](###-CommonParameters) and the ability to recover from a bailing handler.
 
 | Property          | Member Of           | Type    | Description                                |
 | ----------------- | ------------------- | ------- | ------------------------------------------ |
@@ -169,7 +170,7 @@ class Guitar {}
 ```
 
 `SurrogateDelegate` registers your class and will automatically wrap instances of that class with Surrogate.  
-It supports all options from [`SurrogateOptions`](###SurrogateOptions) as well as option `locateWith` which may be provided to assist Surrogate in
+It supports all options from [`SurrogateOptions`](###-SurrogateOptions) as well as option `locateWith` which may be provided to assist Surrogate in
 locating method decorators for a particular class. Should only be necessary if multiple class decorators are utilized.
 
 ```typescript
@@ -182,7 +183,7 @@ import { SurrogateDelegate } from 'surrogate';
 class Guitar {}
 ```
 
-If you wish to use `Surrogate` [methods](###SurrogateMethods) on your class instance you must extend `SurrogateMethods` interface.
+If you wish to use `Surrogate` [methods](###-SurrogateMethods) on your class instance you must extend `SurrogateMethods` interface.
 
 ```typescript
 import { SurrogateDelegate, SurrogateMethods } from 'surrogate';
@@ -223,19 +224,19 @@ class Guitar {
 
 All `Surrogate[Async](Pre|Post)` decorators accept `SurrogateDecoratorOptions` or an array of options and must decorate the intended hooked method.
 
-|  Option  | Type                                                  | Default Value | Description                                                                       |
-| :------: | ----------------------------------------------------- | :-----------: | --------------------------------------------------------------------------------- |
-| handler  | [SurrogateHandler](##SurrogateEventManager)           |      n/a      | This function or array of functions will run before or after the decorated method |
-| options? | [SurrogateHandlerOptions](###SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior                                     |
+|  Option  | Type                                                   | Default Value | Description                                                                       |
+| :------: | ------------------------------------------------------ | :-----------: | --------------------------------------------------------------------------------- |
+| handler  | [SurrogateHandler](##-SurrogateEventManager)           |      n/a      | This function or array of functions will run before or after the decorated method |
+| options? | [SurrogateHandlerOptions](###-SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior                                     |
 
 ### NextDecoratorOptions
 
 All `Next[Async](Pre|Post)` decorators accept `NextDecoratorOptions` or an array of options. Any method decorated with Next\* will be registered as a Surrogate handler. Therefore, you must supply the target method the Next\* method will run with.
 
-|  Option  | Type                                                  | Default Value | Description                                   |
-| :------: | ----------------------------------------------------- | :-----------: | --------------------------------------------- |
-|  action  | keyof T \| string \| (keyof T \| string )[]           |      n/a      | Name of the target decorated method           |
-| options? | [SurrogateHandlerOptions](###SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior |
+|  Option  | Type                                                   | Default Value | Description                                   |
+| :------: | ------------------------------------------------------ | :-----------: | --------------------------------------------- |
+|  action  | keyof T \| string \| (keyof T \| string )[]            |      n/a      | Name of the target decorated method           |
+| options? | [SurrogateHandlerOptions](###-SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior |
 
 ```typescript
 @SurrogateDelegate({
