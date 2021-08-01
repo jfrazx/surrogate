@@ -2,6 +2,7 @@ import { wrapSurrogate, Surrogate, NextParameters } from '../src';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
+import { EventManager } from '../src/manager/index';
 
 describe('SurrogateProxy', () => {
   let log: sinon.SinonStub<any, void>;
@@ -20,6 +21,7 @@ describe('SurrogateProxy', () => {
 
   afterEach(() => {
     sinon.restore();
+    network.disposeSurrogate();
   });
 
   describe('General', () => {
@@ -80,6 +82,14 @@ describe('SurrogateProxy', () => {
       network.connect();
 
       sinon.assert.calledTwice(nextParameters);
+
+      expect((unwrapped as any).getSurrogate).to.be.undefined;
+      expect((unwrapped as any).bypassSurrogate).to.be.undefined;
+      expect((unwrapped as any).disposeSurrogate).to.be.undefined;
+
+      expect(network.getSurrogate()).to.be.instanceOf(EventManager);
+      expect(network.bypassSurrogate()).to.equal(unwrapped);
+      expect(() => network.disposeSurrogate()).to.not.throw();
     });
 
     it('should run target method bypassing handlers', () => {

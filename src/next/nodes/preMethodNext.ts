@@ -1,4 +1,4 @@
-import { ContainerGenerator, IContainer, MethodContainer } from '../../containers';
+import { IContainer, MethodContainer } from '../../containers';
 import { ContextController } from '../context';
 import { SurrogateProxy } from '../../proxy';
 import { MethodNext } from './methodNext';
@@ -12,18 +12,16 @@ export class PreMethodNext<T extends object> extends FinalNext<T> implements INe
     proxy: SurrogateProxy<T>,
     context: Context<T>,
     controller: ContextController<T>,
-    generator: ContainerGenerator<T>,
     container: IContainer<T>,
     hookType: Which,
     args: any[],
   ) {
-    super(proxy, context, controller, generator, container, hookType);
+    super(proxy, context, controller, container, hookType);
 
     this.nextNode = new MethodNext(
       proxy,
       context,
       controller,
-      generator,
       new MethodContainer(context.original, args, container.options),
       hookType,
     );

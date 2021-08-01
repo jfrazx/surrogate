@@ -25,7 +25,7 @@ export class EventManager<T extends object = any> implements SurrogateEventManag
     shallowCopy: false,
   });
 
-  constructor(private globalOptions: SurrogateGlobalOptions) {}
+  constructor(private globalOptions: SurrogateGlobalOptions = {}) {}
 
   getEventHandlers(event: string): WhichContainers<T> {
     return this.events[event];

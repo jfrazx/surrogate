@@ -1,5 +1,5 @@
-import { HandlerContainer, ContainerGenerator } from '../../containers';
 import { NextRule, SkipRule, HandlerRule } from './rules';
+import { HandlerContainer } from '../../containers';
 import { INext, NextOptions } from '../interfaces';
 import { ContextController } from '../context';
 import { SurrogateProxy } from '../../proxy';
@@ -13,13 +13,10 @@ export class Next<T extends object> extends BaseNext<T> implements INext {
     proxy: SurrogateProxy<T>,
     context: Context<T>,
     executionContext: ContextController<T>,
-    iterator: ContainerGenerator<T>,
     public container: HandlerContainer<T>,
     hookType: Which,
   ) {
-    super(proxy, context, executionContext, iterator, container, hookType);
-
-    this.nextNode = Next.for(proxy, context, executionContext, iterator, hookType);
+    super(proxy, context, executionContext, container, hookType);
   }
 
   skipWith(times: number, ...args: any[]): void {

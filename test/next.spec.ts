@@ -15,6 +15,7 @@ describe('Next', () => {
 
   afterEach(() => {
     sinon.restore();
+    network.disposeSurrogate();
   });
 
   describe('General', () => {

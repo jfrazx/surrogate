@@ -2,7 +2,7 @@ import { SurrogateEventManager } from './surrogateEventManager';
 import { NextParameters } from './handlerOptions';
 
 export interface SurrogateMethods<T extends object> {
-  disposeSurrogate(): SurrogateUnwrapped<T>;
+  disposeSurrogate(): T;
   getSurrogate(): SurrogateEventManager<T>;
   bypassSurrogate(): SurrogateUnwrapped<T>;
 }

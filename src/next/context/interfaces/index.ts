@@ -1,5 +1,8 @@
+import { WhichContainers } from '../../../interfaces';
 import { TimeTracking } from '../../../timeTracker';
+import { SurrogateProxy } from '../../../proxy';
 import { NextNode } from '../../interfaces';
+import { Context } from '../../../context';
 
 export interface ContextController<T extends object> {
   start(): any;
@@ -16,4 +19,9 @@ export interface ContextController<T extends object> {
   runOriginal(node: NextNode<T>): void;
   handleError(error?: Error): never | void;
   updateLatestArgs(updatedArgs: any): void;
+  setupPipeline(
+    proxy: SurrogateProxy<T>,
+    context: Context<T>,
+    typeContainers: WhichContainers<T>,
+  ): ContextController<T>;
 }

@@ -14,6 +14,7 @@ describe('Skip', () => {
 
   afterEach(() => {
     sinon.restore();
+    network.disposeSurrogate();
   });
 
   it('should skip a single handler', () => {
