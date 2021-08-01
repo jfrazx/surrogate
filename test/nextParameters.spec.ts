@@ -16,6 +16,7 @@ describe('NextParameters', () => {
 
   afterEach(() => {
     sinon.restore();
+    network.disposeSurrogate();
   });
 
   it('should be an instance of NextProvider', () => {

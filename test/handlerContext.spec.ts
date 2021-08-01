@@ -14,6 +14,7 @@ describe('HandlerContext', () => {
 
   afterEach(() => {
     sinon.restore();
+    network.disposeSurrogate();
   });
 
   it('should call handlers with the proxied (unwrapped) object as context', () => {

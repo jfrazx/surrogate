@@ -16,6 +16,7 @@ describe('Surrogate Event Manager', () => {
 
   afterEach(() => {
     sinon.restore();
+    network.disposeSurrogate();
   });
 
   it('should retrieve an instance of EventManager', () => {

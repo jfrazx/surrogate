@@ -1,16 +1,9 @@
-import { containerGenerator, Tail, HandlerContainer } from '../../containers';
-import { Next, ExecutionContext } from '../../next';
-import { isAsync, isFunction } from '../../helpers';
+import { Surrogate, SurrogateOptions, SurrogateGlobalOptions } from '../../interfaces';
+import { ExecutionContext } from '../../next';
 import { EventManager } from '../../manager';
 import { FetchRuleRunner } from '../rules';
-import { PRE, POST } from '../../which';
+import { isFunction } from '../../helpers';
 import { Context } from '../../context';
-import {
-  Surrogate,
-  MethodWrapper,
-  SurrogateOptions,
-  SurrogateGlobalOptions,
-} from '../../interfaces';
 
 type Target<T extends object> = WeakMap<any, EventManager<T>>;
 
@@ -57,31 +50,11 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
 
   private surrogateHandler(context: Context<T>, ...args: any[]): any {
     const { target, event, original } = context;
-    const { [PRE]: pre, [POST]: post } = this.getEventManager(target).getEventHandlers(event);
-    const { hasAsync } = this.initializeContextOptions([...pre, ...post]);
+    const typeContainers = this.getEventManager(target).getEventHandlers(event);
 
-    const executionContext = ExecutionContext.for<T>(original, args, hasAsync);
-
-    Next.for(
-      this,
-      context,
-      executionContext,
-      containerGenerator(pre, Tail.for(PRE, args)),
-      PRE,
-    );
-    Next.for(this, context, executionContext, containerGenerator(post, Tail.for(POST)), POST);
-
-    return executionContext.start();
-  }
-
-  private initializeContextOptions(handlers: HandlerContainer<T>[]) {
-    const hasAsync = handlers.some(
-      ({ handler, options }) => isAsync(handler) || options.wrapper === MethodWrapper.Async,
-    );
-
-    return {
-      hasAsync,
-    };
+    return ExecutionContext.for<T>(original, args, typeContainers)
+      .setupPipeline(this, context, typeContainers)
+      .start();
   }
 
   dispose(target: T) {

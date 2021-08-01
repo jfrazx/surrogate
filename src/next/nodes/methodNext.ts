@@ -1,4 +1,4 @@
-import { MethodContainer, ContainerGenerator } from '../../containers';
+import { MethodContainer } from '../../containers';
 import { ContextController } from '../context';
 import { SurrogateProxy } from '../../proxy';
 import { FinalNext } from './finalNext';
@@ -10,10 +10,9 @@ export class MethodNext<T extends object> extends FinalNext<T> {
     proxy: SurrogateProxy<T>,
     context: Context<T>,
     controller: ContextController<T>,
-    generator: ContainerGenerator<T>,
     public container: MethodContainer<T>,
     hookType: Which,
   ) {
-    super(proxy, context, controller, generator, container, hookType);
+    super(proxy, context, controller, container, hookType);
   }
 }

@@ -1,15 +1,8 @@
 import { isFunction, isUndefined } from '../../helpers';
-import { SurrogateProxy } from '../handler';
-import { FetchRule } from './interfaces';
 import { PRE, POST } from '../../which';
+import { ProxyRule } from './base';
 
-export class UnprocessableRule<T extends object> implements FetchRule {
-  constructor(
-    private readonly proxy: SurrogateProxy<T>,
-    private readonly target: T,
-    private readonly event: string,
-  ) {}
-
+export class UnprocessableRule<T extends object> extends ProxyRule<T> {
   shouldHandle(): boolean {
     const original = Reflect.get(this.target, this.event);
     const manager = this.proxy.getEventManager(this.target);

@@ -1,18 +1,12 @@
-import { FetchRule, InternalMethods } from './interfaces';
-import { SurrogateProxy } from '../handler';
+import { InternalMethods } from './interfaces';
+import { ProxyRule } from './base';
 
-export class DisposeSurrogateRule<T extends object> implements FetchRule {
-  constructor(
-    private readonly proxy: SurrogateProxy<T>,
-    private readonly target: T,
-    private readonly event: string,
-  ) {}
-
+export class DisposeSurrogateRule<T extends object> extends ProxyRule<T> {
   shouldHandle(): boolean {
     return this.event.toString() === InternalMethods.Dispose;
   }
 
   returnableValue() {
-    return () => this.proxy.dispose(this.target);
+    return this.isDisposed ? () => {} : () => this.proxy.dispose(this.target);
   }
 }

@@ -26,6 +26,7 @@ describe('TimeTracking', () => {
 
   afterEach(() => {
     sinon.restore();
+    network.disposeSurrogate();
   });
 
   it('should pass NodeTimeTracker', async () => {
