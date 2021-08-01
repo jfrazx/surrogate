@@ -1,4 +1,4 @@
-import { HandlerContainer } from '../containers';
+import { SurrogateHandlerContainer } from '../containers';
 import { PRE, POST } from '../which';
 
 /**
@@ -9,6 +9,6 @@ import { PRE, POST } from '../which';
  * @template T
  */
 export interface WhichContainers<T extends object> {
-  [PRE]: HandlerContainer<T>[];
-  [POST]: HandlerContainer<T>[];
+  [PRE]: SurrogateHandlerContainer<T>[];
+  [POST]: SurrogateHandlerContainer<T>[];
 }
