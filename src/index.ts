@@ -2,6 +2,7 @@ export { RunCondition, RunConditionParameters } from './interfaces/runCondition'
 export { SurrogateEventManager } from './interfaces/surrogateEventManager';
 export { SurrogateContext, MethodWrapper } from './interfaces/contexts';
 export { SurrogateOptions } from './interfaces/surrogateOptions';
+export { SurrogateHandlerContainer } from './containers';
 export { INext, NextOptions } from './next';
 export { POST, PRE, BOTH } from './which';
 export { wrapSurrogate } from './proxy';

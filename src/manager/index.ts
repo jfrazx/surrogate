@@ -1,4 +1,4 @@
-import { HandlerContainer } from '../containers';
+import { SurrogateHandlerContainer } from '../containers';
 import { wrapDefaults } from '@status/defaults';
 import { PRE, POST, Which } from '../which';
 import { OptionsHandler } from '../options';
@@ -29,6 +29,14 @@ export class EventManager<T extends object = any> implements SurrogateEventManag
 
   getEventHandlers(event: string): WhichContainers<T> {
     return this.events[event];
+  }
+
+  getPreEventHandlers(event: string): SurrogateHandlerContainer<T>[] {
+    return this.getEventHandlersFor(event, PRE);
+  }
+
+  getPostEventHandlers(event: string): SurrogateHandlerContainer<T>[] {
+    return this.getEventHandlersFor(event, POST);
   }
 
   registerHook(
@@ -62,10 +70,13 @@ export class EventManager<T extends object = any> implements SurrogateEventManag
     handlers: SurrogateHandler<T>[],
     options: SurrogateHandlerOptions<T> = {},
   ): EventManager<T> {
-    const currentContainers: HandlerContainer<T>[] = this.getEventHandlersFor(event, type);
+    const currentContainers: SurrogateHandlerContainer<T>[] = this.getEventHandlersFor(
+      event,
+      type,
+    );
     const containers = handlers.map(
       (handler) =>
-        new HandlerContainer(
+        new SurrogateHandlerContainer(
           handler,
           type,
           new OptionsHandler({ handler: options, global: this.globalOptions }),
@@ -78,14 +89,14 @@ export class EventManager<T extends object = any> implements SurrogateEventManag
     return this;
   }
 
-  private getEventHandlersFor(event: string, which: Which): HandlerContainer<T>[] {
+  private getEventHandlersFor(event: string, which: Which): SurrogateHandlerContainer<T>[] {
     return this.getEventHandlers(event)[which];
   }
 
   private setEventHandlersFor(
     event: string,
     type: Which,
-    containers: HandlerContainer<T>[] = [],
+    containers: SurrogateHandlerContainer<T>[] = [],
   ): EventManager<T> {
     this.getEventHandlers(event)[type] = containers;
 

@@ -1,5 +1,6 @@
 import { SurrogateHandlerOptions } from './handlerOptions';
 import { WhichContainers } from './whichContainers';
+import { SurrogateHandlerContainer } from '../containers';
 import { SurrogateHandler } from './surrogate';
 import { Which } from '../which';
 
@@ -18,10 +19,11 @@ export interface SurrogateEventManager<T extends object> {
    * @memberof SurrogateEventManager
    */
   deregisterHooks(): SurrogateEventManager<T>;
+
   /**
    * @description Removes all PRE handlers for the provided method
    *
-   * @param {keyof T} event
+   * @param {keyof T | string} event
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
@@ -29,15 +31,16 @@ export interface SurrogateEventManager<T extends object> {
   /**
    * @description Removes all POST handlers for the provided method
    *
-   * @param {keyof T} event
+   * @param {keyof T | string} event
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
   deregisterPostHooks(event: keyof T | string): SurrogateEventManager<T>;
+
   /**
    * @description Removes a specific PRE handler for the provided method
    *
-   * @param {keyof T} event
+   * @param {keyof T | string} event
    * @param {SurrogateHandler<T>} handler
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
@@ -46,10 +49,11 @@ export interface SurrogateEventManager<T extends object> {
     event: keyof T | string,
     handler: SurrogateHandler<T>,
   ): SurrogateEventManager<T>;
+
   /**
    * @description Removes a specific POST handler for the provided method
    *
-   * @param {keyof T} event
+   * @param {keyof T | string} event
    * @param {SurrogateHandler<T>} handler
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
@@ -58,18 +62,38 @@ export interface SurrogateEventManager<T extends object> {
     event: keyof T | string,
     handler: SurrogateHandler<T>,
   ): SurrogateEventManager<T>;
+
   /**
    * @description Retrieves all handlers for the provided method
    *
-   * @param {keyof T} event
+   * @param {keyof T | string} event
    * @returns {WhichContainers<T>}
    * @memberof SurrogateEventManager
    */
   getEventHandlers(event: keyof T | string): WhichContainers<T>;
+
+  /**
+   * @description Retrieves all PRE handlers for the provided method
+   *
+   * @param {keyof T | string} event
+   * @returns {SurrogateHandlerContainer<T>}
+   * @memberof SurrogateEventManager
+   */
+  getPreEventHandlers(event: keyof T | string): SurrogateHandlerContainer<T>[];
+
+  /**
+   * @description Retrieves all POST handlers for the provided method
+   *
+   * @param {keyof T | string} event
+   * @returns {SurrogateHandlerContainer<T>}
+   * @memberof SurrogateEventManager
+   */
+  getPostEventHandlers(event: keyof T | string): SurrogateHandlerContainer<T>[];
+
   /**
    * @description Registers a PRE handler or array of handlers for the provided method
    *
-   * @param {keyof T} event
+   * @param {keyof T | string} event
    * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
    * @param {SurrogateHandlerOptions<T>} [options]
    * @returns {SurrogateEventManager<T>}
@@ -80,10 +104,11 @@ export interface SurrogateEventManager<T extends object> {
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options?: SurrogateHandlerOptions<T>,
   ): SurrogateEventManager<T>;
+
   /**
    * @description Registers a POST handler or array of handlers for the provided method
    *
-   * @param {keyof T} event
+   * @param {keyof T | string} event
    * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
    * @param {SurrogateHandlerOptions<T>} [options]
    * @returns {SurrogateEventManager<T>}
@@ -94,10 +119,11 @@ export interface SurrogateEventManager<T extends object> {
     handler: SurrogateHandler<T> | SurrogateHandler<T>[],
     options?: SurrogateHandlerOptions<T>,
   ): SurrogateEventManager<T>;
+
   /**
    * @description Registers a PRE or POST handler for the provided method
    *
-   * @param {keyof T} event
+   * @param {keyof T | string} event
    * @param {Which} type
    * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
    * @param {SurrogateHandlerOptions<T>} options

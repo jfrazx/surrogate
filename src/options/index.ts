@@ -11,6 +11,7 @@ interface GlobalHandlerOptions<T extends object> {
 }
 
 const defaultMethodOptions: Required<SurrogateHandlerOptions<any>> = {
+  priority: 0,
   noArgs: false,
   useNext: true,
   runOnBail: [],
