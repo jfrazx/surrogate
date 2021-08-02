@@ -23,6 +23,7 @@
     "tsc": "tsc",
     "predocs": "rimraf docs",
     "docs": "typedoc src/index.ts",
+    "del:merged": "node -r ts-node/register/transpile-only scripts/merged",
     "prebuild": "rimraf build",
     "build": "tsc",
     "prebuild:examples": "rimraf build-examples && npm run build",
