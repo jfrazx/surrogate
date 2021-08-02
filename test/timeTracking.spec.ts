@@ -1,4 +1,4 @@
-import { wrapSurrogate, Surrogate, NextHandler } from '../src';
+import { wrapSurrogate, Surrogate, NextParameters } from '../src';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
@@ -26,6 +26,7 @@ describe('TimeTracking', () => {
 
   afterEach(() => {
     sinon.restore();
+    network.disposeSurrogate();
   });
 
   it('should pass NodeTimeTracker', async () => {
@@ -35,7 +36,7 @@ describe('TimeTracking', () => {
     network
       .getSurrogate()
       .registerPreHook('checkServerAsync', [
-        ({ timeTracker, next }: NextHandler<Network>) => {
+        ({ timeTracker, next }: NextParameters<Network>) => {
           elapsedTime = timeTracker.getTotalDuration();
 
           expect(timeTracker).to.be.instanceOf(NodeTimeTracker);
@@ -48,7 +49,7 @@ describe('TimeTracking', () => {
       ])
       .registerPostHook(
         'checkServerAsync',
-        async ({ timeTracker }: NextHandler<Network>) => {
+        async ({ timeTracker }: NextParameters<Network>) => {
           clock.tick(123);
 
           expect(timeTracker).to.be.instanceOf(NodeTimeTracker);
@@ -72,7 +73,7 @@ describe('TimeTracking', () => {
     network
       .getSurrogate()
       .registerPreHook('checkServerAsync', [
-        ({ timeTracker, next }: NextHandler<Network>) => {
+        ({ timeTracker, next }: NextParameters<Network>) => {
           elapsedTime = timeTracker.getTotalDuration();
 
           expect(timeTracker).to.be.instanceOf(BrowserTimeTracker);
@@ -85,7 +86,7 @@ describe('TimeTracking', () => {
       ])
       .registerPostHook(
         'checkServerAsync',
-        async ({ timeTracker }: NextHandler<Network>) => {
+        async ({ timeTracker }: NextParameters<Network>) => {
           clock.tick(123);
 
           expect(timeTracker).to.be.instanceOf(BrowserTimeTracker);
@@ -114,7 +115,7 @@ describe('TimeTracking', () => {
     network
       .getSurrogate()
       .registerPreHook('checkServerAsync', [
-        ({ timeTracker, next }: NextHandler<Network>) => {
+        ({ timeTracker, next }: NextParameters<Network>) => {
           elapsedTime = timeTracker.getTotalDuration();
 
           expect(timeTracker).to.be.instanceOf(FallbackTimeTracker);
@@ -127,7 +128,7 @@ describe('TimeTracking', () => {
       ])
       .registerPostHook(
         'checkServerAsync',
-        async ({ timeTracker }: NextHandler<Network>) => {
+        async ({ timeTracker }: NextParameters<Network>) => {
           clock.tick(123);
 
           expect(timeTracker).to.be.instanceOf(FallbackTimeTracker);

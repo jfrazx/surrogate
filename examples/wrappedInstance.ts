@@ -1,4 +1,4 @@
-import { wrapSurrogate, NextHandler } from '../build';
+import { wrapSurrogate, NextParameters } from '../build';
 
 class Network {
   private enabled: boolean = Boolean(Math.random() > 0.5);
@@ -38,7 +38,7 @@ class Network {
     this.connected = false;
   }
 
-  preConnectionCheck({ next }: NextHandler<Network>) {
+  preConnectionCheck({ next }: NextParameters<Network>) {
     console.info(
       `Checking connected: (${this.isConnected}) and disabled: (${this.isDisabled}) status`,
     );

@@ -1,13 +1,7 @@
-import { FetchRule, InternalMethods } from './interfaces';
-import { SurrogateProxy } from '../proxy';
+import { InternalMethods } from './interfaces';
+import { ProxyRule } from './base';
 
-export class BypassSurrogateRule<T extends object> implements FetchRule {
-  constructor(
-    protected readonly proxy: SurrogateProxy<T>,
-    private readonly target: T,
-    private readonly event: string,
-  ) {}
-
+export class BypassSurrogateRule<T extends object> extends ProxyRule<T> {
   shouldHandle(): boolean {
     return this.event.toString() === InternalMethods.Bypass;
   }

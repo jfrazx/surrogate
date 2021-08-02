@@ -1,7 +1,7 @@
 import {
   NextPost,
-  NextHandler,
   SurrogatePre,
+  NextParameters,
   SurrogateMethods,
   SurrogateDelegate,
 } from '../build';
@@ -15,7 +15,7 @@ export class Animal {
 
   @SurrogatePre<Animal>([
     {
-      handler: ({ next, instance: animal }: NextHandler<Animal>) => {
+      handler: ({ next, instance: animal }: NextParameters<Animal>) => {
         next.next({
           bail: animal.isSleeping,
         });
@@ -32,7 +32,7 @@ export class Animal {
       runConditions: ({ instance: animal }) => animal.mayBeFed,
     },
   })
-  feed({ next }: NextHandler<Animal>) {
+  feed({ next }: NextParameters<Animal>) {
     console.log('Feeding animal');
 
     const animalBitesHand = Math.random() < 0.2;

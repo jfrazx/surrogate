@@ -14,6 +14,7 @@ type PropertyDecorator<T extends object> = (
  * Designate decorated methods as next handler. Handler type must be assigned
  *
  * @export
+ * @decorator
  * @template T
  * @param {(NextForOptions<T> | NextForOptions<T>[])} nextOptions
  * @returns {PropertyDecorator<T>}
@@ -42,6 +43,7 @@ export const NextFor = <T extends object>(
  * Designate decorated methods as async pre hooks.
  *
  * @export
+ * @decorator
  * @template T
  * @param {(NextDecoratorOptions<T> | NextDecoratorOptions<T>[])} nextOptions
  * @returns {PropertyDecorator<T>}
@@ -56,6 +58,7 @@ export const NextAsyncPre = <T extends object>(
  * Designate decorated methods as async post hooks.
  *
  * @export
+ * @decorator
  * @template T
  * @param {(NextDecoratorOptions<T> | NextDecoratorOptions<T>[])} nextOptions
  * @returns {PropertyDecorator<T>}
@@ -70,6 +73,7 @@ export const NextAsyncPost = <T extends object>(
  * Designate decorated methods as async pre and post hooks.
  *
  * @export
+ * @decorator
  * @template T
  * @param {(NextDecoratorOptions<T> | NextDecoratorOptions<T>[])} nextOptions
  * @returns {PropertyDecorator<T>}
@@ -102,6 +106,7 @@ const nextAsyncHelper = <T extends object>(
  * Designate decorated methods as pre hooks.
  *
  * @export
+ * @decorator
  * @template T
  * @param {(NextDecoratorOptions<T> | NextDecoratorOptions<T>[])} nextOptions
  * @returns {PropertyDecorator<T>}
@@ -116,6 +121,7 @@ export const NextPre = <T extends object>(
  * Designate decorated methods as post hook
  *
  * @export
+ * @decorator
  * @template T
  * @param {(NextDecoratorOptions<T> | NextDecoratorOptions<T>[])} nextOptions
  * @returns {PropertyDecorator<T>}
@@ -130,6 +136,7 @@ export const NextPost = <T extends object>(
  * Designate decorated methods as pre and post hooks.
  *
  * @export
+ * @decorator
  * @template T
  * @param {(NextDecoratorOptions<T> | NextDecoratorOptions<T>[])} nextOptions
  * @returns {PropertyDecorator<T>}

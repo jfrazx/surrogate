@@ -1,21 +1,39 @@
+import { MethodWrapper, WhichContainers } from '../../interfaces';
 import { TimeTrackable } from '../../timeTracker';
 import { ContextController } from './interfaces';
+import { Which, PRE, POST } from '../../which';
+import { SurrogateProxy } from '../../proxy';
 import { asArray } from '@jfrazx/asarray';
 import { NextNode } from '../interfaces';
+import { Context } from '../../context';
 import { isAsync } from '../../helpers';
+import { Tail } from '../../containers';
+import { v4 as uuid } from 'uuid';
+import { Next } from '../nodes';
 
 interface ExecutionConstruct<T extends object> {
   new (originalMethod: Function, originalArgs: any[]): ContextController<T>;
 }
 
+const containerSorter = (
+  a: SurrogateHandlerContainer<any>,
+  b: SurrogateHandlerContainer<any>,
+) =>
+  a.options.priority === b.options.priority
+    ? 0
+    : a.options.priority > b.options.priority
+    ? -1
+    : 1;
+
 export abstract class ExecutionContext<T extends object> implements ContextController<T> {
   private utilizeLatest = false;
 
+  protected nextNode: NextNode<T>;
+
   readonly timeTracker = TimeTrackable.fetch();
+  readonly correlationId = uuid();
 
   latestArgs: any[];
-
-  protected nextNode: NextNode<T>;
   returnValue: any;
 
   constructor(public readonly originalMethod: Function, public readonly originalArgs: any[]) {}
@@ -23,12 +41,41 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
   static for<T extends object>(
     originalMethod: Function,
     originalArgs: any[],
-    hasAsync: boolean,
+    typeContainers: WhichContainers<T>,
   ) {
+    const hasAsync = this.hasAsync(typeContainers);
     const TargetContext: ExecutionConstruct<T> =
       hasAsync || isAsync(originalMethod) ? NextAsyncContext : NextContext;
 
     return new TargetContext(originalMethod, originalArgs);
+  }
+
+  setupPipeline(
+    proxy: SurrogateProxy<T>,
+    context: Context<T>,
+    typeContainers: WhichContainers<T>,
+  ) {
+    const which = [PRE, POST] as const;
+
+    which.forEach((type) => {
+      const containers = [...typeContainers[type]];
+
+      containers
+        .sort(containerSorter)
+        .forEach((container) => new Next(proxy, context, this, container, type));
+
+      Tail.for<T>(type, this.originalArgs)(proxy, context, this);
+    });
+
+    return this;
+  }
+
+  private static hasAsync<T extends object>(typeContainers: WhichContainers<T>) {
+    return Object.getOwnPropertySymbols(typeContainers)
+      .flatMap((type) => typeContainers[type as Which])
+      .some(
+        ({ handler, options }) => isAsync(handler) || options.wrapper === MethodWrapper.Async,
+      );
   }
 
   protected setReturnValue(value: any) {
@@ -59,7 +106,7 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
 
     this.setNext(node.nextNode);
 
-    return node.next();
+    return node.handleNext();
   }
 
   protected logError(error?: Error): void {
@@ -75,3 +122,4 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
 
 import { NextAsyncContext } from './nextAsyncContext';
 import { NextContext } from './nextContext';
+import { SurrogateHandlerContainer } from '../../containers/handler';

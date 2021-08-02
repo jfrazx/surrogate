@@ -5,7 +5,7 @@ import { UnprocessableRule } from './unprocessableRule';
 import { EventMangerRule } from './eventMangerRule';
 import { Surrogate } from '../../interfaces';
 import { BindingRule } from './bindingRule';
-import { SurrogateProxy } from '../proxy';
+import { SurrogateProxy } from '../handler';
 
 export abstract class FetchRuleRunner {
   static fetchRule<T extends object>(

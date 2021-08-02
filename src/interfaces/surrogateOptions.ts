@@ -1,4 +1,5 @@
-import { Contexts } from './handlerOptions';
+import { RunOnError, RunOnBail } from './runOn';
+import { Contexts } from './contexts';
 
 /**
  * Surrogate Options
@@ -18,10 +19,30 @@ export interface SurrogateOptions extends SurrogateGlobalOptions {
 
 export interface SurrogateGlobalOptions {
   /**
-   * @description Defines a global context for use with all handlers and methods. Method defined contexts take precedence.
+   * @description Specifies the context in which to call a handler. Method defined contexts take precedence.
+   *
+   * @options
+   *  - instance
+   *  - surrogate
+   *  - user supplied context object
+   *
    * @default instance
    * @type {Contexts}
-   * @memberof SurrogateOptions
+   * @memberof SurrogateGlobalOptions
    */
   useContext?: Contexts;
+
+  /**
+   * @description Function to be called when an error is thrown. Will run even if errors are ignored.
+   * @type {RunOnError|RunOnError[]}
+   * @memberof SurrogateGlobalOptions
+   */
+  runOnError?: RunOnError | RunOnError[];
+
+  /**
+   * @description Function to be called when bailing out of a handler.
+   * @type {RunOnBail|RunOnBail[]}
+   * @memberof SurrogateGlobalOptions
+   */
+  runOnBail?: RunOnBail | RunOnBail[];
 }

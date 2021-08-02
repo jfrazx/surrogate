@@ -1,4 +1,2 @@
-export * from './asyncWithoutArgs';
-export * from './syncWithoutArgs';
-export * from './asyncWithArgs';
-export * from './syncWithArgs';
+export * from './withoutArgs';
+export * from './withArgs';

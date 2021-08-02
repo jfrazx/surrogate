@@ -15,11 +15,11 @@ or
 There are a couple ways to manage Surrogate. The first is to utilize an exposed helper function, `wrapSurrogate`, to wrap objects and register pre and post methods through it.
 
 ```typescript
-import { wrapSurrogate, Surrogate, NextHandler } from 'surrogate';
+import { wrapSurrogate, Surrogate, NextParameters } from 'surrogate';
 
 const guitar: Surrogate<Guitar> = wrapSurrogate(new Guitar(), options);
 
-guitar.getSurrogate().registerPreHook('play', ({ next }: NextHandler<Guitar>) => {
+guitar.getSurrogate().registerPreHook('play', ({ next }: NextParameters<Guitar>) => {
   // do things before running 'play'
 
   next.next();
@@ -55,23 +55,33 @@ After wrapping your instance with Surrogate new methods are available, `getSurro
 | deregisterPostHooks | (event: string)                                                               | SurrogateEventManager | Deregisters `post` hooks for the given event |
 | deregisterHooks     | n/a                                                                           | SurrogateEventManager | Removes all hooks for the current instance.  |
 
-SurrogateHandler is any function that accepts a `NextHandler` object which can be used to control flow through pre and post hooks.
+SurrogateHandler is any function that accepts a `NextParameters` object which can be used to control flow through pre and post hooks.
 
-### NextHandler
+### CommonParameters
 
-`NextHandler` is passed to all hook handlers. It can supply the unwrapped or surrogate wrapped instance to the current handler. An `INext` object provides functionality to skip hooks or continue to the next hook for execution.
+Common parameters passed to all handlers and conditional functions. (runConditions, runOnError, runOnBail)
 
-| Property     | Type        | Description                                                                            |
-| ------------ | ----------- | -------------------------------------------------------------------------------------- |
-| action       | string      | Provides the current action or method target.                                          |
-| hookType     | string      | Provides the current hook type as a string.                                            |
-| originalArgs | any[]       | Array of arguments passed to the instance invoked method                               |
-| currentArgs  | any[]       | Array of potentially modified arguments passed to original method invoked by surrogate |
-| receivedArgs | any[]       | Array of arguments passed from the last handler.                                       |
-| instance     | T           | Provides handler access to the unwrapped instance.                                     |
-| surrogate    | Surrogate   | Provides handler access to surrogate wrapped instance.                                 |
-| next         | INext       | Object that provides flow control capabilities                                         |
-| timeTracker  | TimeTracker | Provides access to the current time tracker                                            |
+| Property          | Member Of          | Type        | Description                                                                            |
+| ----------------- | ------------------ | ----------- | -------------------------------------------------------------------------------------- |
+| action            | ProviderParameters | string      | The current target method.                                                             |
+| correlationId     | ProviderParameters | string      | Unique identifier for the current hook pipeline                                        |
+| instance          | ProviderParameters | T           | The current unwrapped instance                                                         |
+| error?            | ProviderParameters | Error       | An error object, if passed                                                             |
+| hookType          | ProviderParameters | string      | Provides the current hook type as a string.                                            |
+| receivedArguments | ProviderParameters | any[]       | Arguments received from the previous handler.                                          |
+| currentArgs       | ProviderParameters | any[]       | Array of potentially modified arguments passed to original method invoked by surrogate |
+| originalArgs      | ProviderParameters | any[]       | Array of arguments passed to the instance invoked method                               |
+| timeTracker       | ProviderParameters | TimeTracker | Provides access to the current time tracker                                            |
+| result            | ProviderParameters | any         | Result of original method invocation if run                                            |
+
+### NextParameters
+
+`NextParameters` is passed to all hook handlers. In addition to `CommonParameters` you'll receive the current Surrogate wrapped instance and an `INext` object that provides functionality to skip hooks or continue to the next hook for execution.
+
+| Property  | Type      | Description                                            |
+| --------- | --------- | ------------------------------------------------------ |
+| surrogate | Surrogate | Provides handler access to surrogate wrapped instance. |
+| next      | INext     | Object that provides flow control capabilities         |
 
 #### TimeTracker
 
@@ -106,25 +116,45 @@ SurrogateHandler is any function that accepts a `NextHandler` object which can b
 When registering a hook you may provide any of the following options.
 
 | Property       | Type                           | Default Value | Description                                                                                                             |
-| -------------- | ------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| useNext?       | boolean                        | true          | `true` indicates usage of the `INext` object to control flow, otherwise Surrogate makes a determination when to advance |
-| noArgs?        | boolean                        | false         | Specify that `NextHandler` should NOT be passed to a handler                                                            |
-| ignoreErrors?  | boolean                        | false         | If true and an Error is passed Surrogate will not throw.                                                                |
-| useContext?    | any                            | T             | The context in which to call surrogate handlers.                                                                        |
-| wrapper?       | MethodWrappers                 | sync          | Tells Surrogate if it is managing synchronous or asynchronous methods.                                                  |
-| runConditions? | RunCondition \| RunCondition[] | n/a           | Conditions to determine if a handler should be executed.                                                                |
+| -------------- | ------------------------------ | :-----------: | ----------------------------------------------------------------------------------------------------------------------- |
+| useNext?       | boolean                        |     true      | `true` indicates usage of the `INext` object to control flow, otherwise Surrogate makes a determination when to advance |
+| noArgs?        | boolean                        |     false     | Specify that `NextParameters` should NOT be passed to a handler                                                         |
+| ignoreErrors?  | boolean                        |     false     | If true and an Error is passed or caught Surrogate will not throw.                                                      |
+| useContext?    | any                            |       T       | The context in which to call surrogate handlers.                                                                        |
+| wrapper?       | MethodWrappers                 |     sync      | Tells Surrogate if it is managing synchronous or asynchronous methods.                                                  |
+| runConditions? | RunCondition \| RunCondition[] |      n/a      | Conditions to determine if a handler should be executed.                                                                |
+| runOnError?    | RunOnError \| RunOnError[]     |      n/a      | Functions to run in the event of handler error. Runs regardless of ignoreError                                          |
+| runOnBail?     | RunOnBail \| RunOnBail[]       |      n/a      | Functions to run in the event of handler bailing.                                                                       |
+| priority?      | number                         |       0       | Used to determine the order in which handlers are executed. Larger numbers have higher priority                         |
 
 #### RunCondition
 
-A RunCondition is a function that receives `RunConditionParameters` and returns a boolean indicating if the current handler should be executed(`true`) or skipped(`false`). All run conditions are executed synchronously and all conditions must be true for the handler to execute.
+A RunCondition is a function that receives `RunConditionParameters`, which includes [CommonParameters](###-CommonParameters) and returns a boolean indicating if the current handler should be executed(`true`) or skipped(`false`). All run conditions are executed synchronously and all conditions must be true for the handler to execute.
 
-| Property          | Member Of              | Type    | Description                                        |
-| ----------------- | ---------------------- | ------- | -------------------------------------------------- |
-| action            | RunConditionParameters | string  | The current target method.                         |
-| instance          | RunConditionParameters | T       | The current unwrapped instance                     |
-| didError          | RunConditionParameters | boolean | Indicates if the previous handler passed an Error. |
-| error?            | RunConditionParameters | Error   | An error object, if passed                         |
-| receivedArguments | RunConditionParameters | any[]   | Arguments received from the previous handler.      |
+| Property                    | Member Of              | Type    | Description                                         |
+| --------------------------- | ---------------------- | ------- | --------------------------------------------------- |
+| didError                    | RunConditionParameters | boolean | Indicates if the previous handler passed an Error.  |
+| valueFromCondition          | RunConditionParameters | any     | Value passed forward from previous run condition    |
+| didReceiveFromLastCondition | RunConditionParameters | boolean | Indicates if the previous condition passed a value. |
+| passToNextCondition()       | RunConditionParameters | any     | Function to pass a value to next condition          |
+
+#### RunOnError
+
+`RunOnError` is a function that receives `RunOnErrorParameters`, which includes [CommonParameters](###-CommonParameters) and the ability to recover from an error.
+
+| Property           | Member Of            | Type    | Description                                       |
+| ------------------ | -------------------- | ------- | ------------------------------------------------- |
+| error              | RunOnErrorParameters | Error   | An error object received or caught from a handler |
+| recoverFromError() | RunOnErrorParameters | boolean | Function to recover from an error                 |
+
+#### RunOnBail
+
+`RunOnBail` is a function that receives `RunOnBailParameters`, which includes [CommonParameters](###-CommonParameters) and the ability to recover from a bailing handler.
+
+| Property          | Member Of           | Type    | Description                                |
+| ----------------- | ------------------- | ------- | ------------------------------------------ |
+| bailWith()        | RunOnBailParameters | any     | Function that accepts a value ti bail with |
+| recoverFromBail() | RunOnBailParameters | boolean | Function to recover from a bailing handler |
 
 ---
 
@@ -140,7 +170,7 @@ class Guitar {}
 ```
 
 `SurrogateDelegate` registers your class and will automatically wrap instances of that class with Surrogate.  
-It supports all options from [`SurrogateOptions`](###SurrogateOptions) as well as option `locateWith` which may be provided to assist Surrogate in
+It supports all options from [`SurrogateOptions`](###-SurrogateOptions) as well as option `locateWith` which may be provided to assist Surrogate in
 locating method decorators for a particular class. Should only be necessary if multiple class decorators are utilized.
 
 ```typescript
@@ -153,7 +183,7 @@ import { SurrogateDelegate } from 'surrogate';
 class Guitar {}
 ```
 
-If you wish to use `Surrogate` [methods](###SurrogateMethods) on your class instance you must extend `SurrogateMethods` interface.
+If you wish to use `Surrogate` [methods](###-SurrogateMethods) on your class instance you must extend `SurrogateMethods` interface.
 
 ```typescript
 import { SurrogateDelegate, SurrogateMethods } from 'surrogate';
@@ -167,11 +197,11 @@ export class Guitar {}
 Registering hooks:
 
 ```typescript
-import { NextHandler, SurrogatePre, SurrogatePost, SurrogateDelegate } from 'surrogate';
+import { NextParameters, SurrogatePre, SurrogatePost, SurrogateDelegate } from 'surrogate';
 
 @SurrogateDelegate()
 class Guitar {
-  @SurrogatePre(({ next }: NextHandler<Guitar>) => {
+  @SurrogatePre(({ next }: NextParameters<Guitar>) => {
     console.log(`Tuning guitar`);
 
     next.next();
@@ -194,19 +224,19 @@ class Guitar {
 
 All `Surrogate[Async](Pre|Post)` decorators accept `SurrogateDecoratorOptions` or an array of options and must decorate the intended hooked method.
 
-|  Option  | Type                                                  | Default Value | Description                                                                       |
-| :------: | ----------------------------------------------------- | :-----------: | --------------------------------------------------------------------------------- |
-| handler  | [SurrogateHandler](##SurrogateEventManager)           |      n/a      | This function or array of functions will run before or after the decorated method |
-| options? | [SurrogateHandlerOptions](###SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior                                     |
+|  Option  | Type                                                   | Default Value | Description                                                                       |
+| :------: | ------------------------------------------------------ | :-----------: | --------------------------------------------------------------------------------- |
+| handler  | [SurrogateHandler](##-SurrogateEventManager)           |      n/a      | This function or array of functions will run before or after the decorated method |
+| options? | [SurrogateHandlerOptions](###-SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior                                     |
 
 ### NextDecoratorOptions
 
 All `Next[Async](Pre|Post)` decorators accept `NextDecoratorOptions` or an array of options. Any method decorated with Next\* will be registered as a Surrogate handler. Therefore, you must supply the target method the Next\* method will run with.
 
-|  Option  | Type                                                  | Default Value | Description                                   |
-| :------: | ----------------------------------------------------- | :-----------: | --------------------------------------------- |
-|  action  | keyof T \| string \| (keyof T \| string )[]           |      n/a      | Name of the target decorated method           |
-| options? | [SurrogateHandlerOptions](###SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior |
+|  Option  | Type                                                   | Default Value | Description                                                             |
+| :------: | ------------------------------------------------------ | :-----------: | ----------------------------------------------------------------------- |
+|  action  | keyof T \| string \| (keyof T \| string )[]            |      n/a      | Name of the target decorated method, accepts regexp string for matching |
+| options? | [SurrogateHandlerOptions](###-SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior                           |
 
 ```typescript
 @SurrogateDelegate({
@@ -228,7 +258,7 @@ class Account extends Model<Account> {
     timeTracker,
     hookType,
     action,
-  }: NextHandler<Account>) {
+  }: NextParameters<Account>) {
     const keys = (model.changed() || []) as (keyof Account)[];
     const changes = keys.reduce(
       (changed, key) => ({
