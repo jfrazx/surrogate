@@ -125,7 +125,7 @@ When registering a hook you may provide any of the following options.
 | runConditions? | RunCondition \| RunCondition[] |      n/a      | Conditions to determine if a handler should be executed.                                                                |
 | runOnError?    | RunOnError \| RunOnError[]     |      n/a      | Functions to run in the event of handler error. Runs regardless of ignoreError                                          |
 | runOnBail?     | RunOnBail \| RunOnBail[]       |      n/a      | Functions to run in the event of handler bailing.                                                                       |
-| priority?      | number                         |       0       | Used to determine the order in which handlers are executed.                                                             |
+| priority?      | number                         |       0       | Used to determine the order in which handlers are executed. Larger numbers have higher priority                         |
 
 #### RunCondition
 
@@ -233,10 +233,10 @@ All `Surrogate[Async](Pre|Post)` decorators accept `SurrogateDecoratorOptions` o
 
 All `Next[Async](Pre|Post)` decorators accept `NextDecoratorOptions` or an array of options. Any method decorated with Next\* will be registered as a Surrogate handler. Therefore, you must supply the target method the Next\* method will run with.
 
-|  Option  | Type                                                   | Default Value | Description                                   |
-| :------: | ------------------------------------------------------ | :-----------: | --------------------------------------------- |
-|  action  | keyof T \| string \| (keyof T \| string )[]            |      n/a      | Name of the target decorated method           |
-| options? | [SurrogateHandlerOptions](###-SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior |
+|  Option  | Type                                                   | Default Value | Description                                                             |
+| :------: | ------------------------------------------------------ | :-----------: | ----------------------------------------------------------------------- |
+|  action  | keyof T \| string \| (keyof T \| string )[]            |      n/a      | Name of the target decorated method, accepts regexp string for matching |
+| options? | [SurrogateHandlerOptions](###-SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior                           |
 
 ```typescript
 @SurrogateDelegate({

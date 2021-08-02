@@ -83,7 +83,7 @@ describe('SurrogateDecorators', () => {
             useNext: false,
           },
         })
-        testMethod() {
+        async testMethod() {
           return value;
         }
       }
