@@ -2,6 +2,7 @@ import { SurrogateOptions, SurrogateEventManager } from '../interfaces';
 import { wrapDefaults } from '@status/defaults';
 import { Which, POST, PRE } from '../which';
 import { SurrogateProxy } from '../proxy';
+import { isFunction } from '../helpers';
 import {
   Constructor,
   SurrogateDecorateOptions,
@@ -30,26 +31,69 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
       this.options,
     );
 
+    const methods = this.getPropertyNames(wrappedInstance);
     const eventManager = wrappedInstance.getSurrogate();
 
-    this.applyDecorators(eventManager, decoratorMap);
+    this.applyDecorators(eventManager, decoratorMap, methods);
 
     return wrappedInstance;
+  }
+
+  private getPropertyNames(instance: T): string[] {
+    const objectProto = Object.getPrototypeOf({});
+    const props: string[][] = [];
+    let current = instance;
+
+    do {
+      props.push(Object.getOwnPropertyNames(current));
+    } while (
+      Object.getPrototypeOf(current) !== objectProto &&
+      (current = Object.getPrototypeOf(current))
+    );
+
+    const properties = new Set(props.flatMap((p) => p));
+
+    return [...properties.values()]
+      .filter((prop) => prop !== 'constructor')
+      .filter((name) => isFunction(Reflect.get(instance, name)));
   }
 
   private applyDecorators(
     eventManager: SurrogateEventManager<T>,
     decoratorMap: DecoratedEventMap,
+    methods: string[],
   ) {
-    Object.entries(decoratorMap).forEach(([event, options]) => {
-      Object.getOwnPropertySymbols(options).forEach((which: any) => {
-        const { [which]: handlerOptions }: { [hook: string]: SurrogateDecoratorOptions<T>[] } =
-          options as any;
+    Object.entries(decoratorMap).forEach(([action, options]) => {
+      const events = this.getApplicableMethods(action, methods);
 
-        handlerOptions.forEach(({ handler, options }) => {
-          eventManager.registerHook(event as keyof T, which, handler, options);
+      events.forEach((event) => {
+        Object.getOwnPropertySymbols(options).forEach((which: any) => {
+          const {
+            [which]: handlerOptions,
+          }: { [hook: string]: SurrogateDecoratorOptions<T>[] } = options as any;
+
+          this.registerHandlers(eventManager, handlerOptions, which, event);
         });
       });
+    });
+  }
+
+  private getApplicableMethods(event: string, methods: string[]): string[] {
+    const methodTest = new RegExp(event);
+
+    return methods.includes(event)
+      ? [event]
+      : methods.filter((method) => methodTest.test(method));
+  }
+
+  private registerHandlers(
+    eventManager: SurrogateEventManager<T>,
+    handlerOptions: SurrogateDecoratorOptions<T>[],
+    hook: Which,
+    event: string | keyof T,
+  ) {
+    handlerOptions.forEach(({ handler, options }) => {
+      eventManager.registerHook(event, hook, handler, options);
     });
   }
 
