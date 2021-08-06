@@ -6,6 +6,7 @@ export class Context<T extends object> {
     public receiver: Surrogate<T>,
     public event: string,
     public original: Function,
+    public originalArguments: any[],
   ) {}
 
   determineContext(options: SurrogateHandlerOptions<T>): Contexts {
@@ -18,11 +19,11 @@ export class Context<T extends object> {
       : useContext;
   }
 
-  private useInstance(context: SurrogateHandlerOptions<T>['useContext']) {
+  useInstance(context: SurrogateHandlerOptions<T>['useContext']) {
     return context === SurrogateContext.Instance;
   }
 
-  private useSurrogate(context: SurrogateHandlerOptions<T>['useContext']) {
+  useSurrogate(context: SurrogateHandlerOptions<T>['useContext']) {
     return context === SurrogateContext.Surrogate;
   }
 }

@@ -3,6 +3,7 @@ import {
   NextPre,
   SurrogatePre,
   NextParameters,
+  SurrogateMethods,
   SurrogateContext,
   SurrogateDelegate,
 } from '../build';
@@ -10,7 +11,8 @@ import {
 const configuration = {
   instrumentationKey: '1aa11111-bbbb-1ccc-8ddd-eeeeffff3333',
   debugKey: '1aa11111-bbbb-1ccc-8ddd-eeeeffff3333',
-  debug: Math.random() >= 0.49,
+  debug: false,
+  liveMetrics: false,
   appInstance: 'App Instance',
   name: 'TelemetryExample',
   sampleRate: 100,
@@ -62,31 +64,45 @@ export class Telemetry {
   }
 
   getClient() {
+    console.log(`getting client`);
     return appInsights.defaultClient;
   }
 
   @SurrogatePre<Telemetry>({
     handler: ({ next }) => next.next({ bail: true }),
     options: {
-      runConditions: ({ instance: telemetry }) => telemetry.telemetryStarted(),
+      runConditions: ({ instance: telemetry }) => {
+        throw new Error(`stop`);
+        console.log(
+          `SurrogatePre bootstrap Run Condition`,
+          telemetry.telemetryStarted(),
+          (telemetry as any).isInitialized,
+        );
+
+        return telemetry.telemetryStarted();
+      },
     },
   })
   @NextPre<Telemetry>({
-    action: [
-      'getClient',
-      'trackEvent',
-      'trackTrace',
-      'trackMetric',
-      'trackException',
-      'trackDependency',
-    ],
+    action: ['getClient'],
     options: {
       noArgs: true,
       useNext: false,
-      runConditions: ({ instance: telemetry }) => !telemetry.telemetryStarted(),
+      runConditions(this: Telemetry, { instance: telemetry }) {
+        console.log(
+          `NextPre Get Client Run Condition`,
+          !telemetry.telemetryStarted(),
+          (telemetry as any).isInitialized,
+          this.isInitialized,
+          appInsights.defaultClient !== null,
+        );
+
+        return !telemetry.telemetryStarted();
+      },
     },
   })
   bootstrap(processName = 'ExampleApp') {
+    console.log(`bootstrapping`);
     if (this.appInsightsKeyExists() === false) {
       console.error(
         'AppInsights key is missing from APP_INSIGHTS_INSTRUMENTATION_KEY. Telemetry disabled.',
@@ -104,7 +120,7 @@ export class Telemetry {
       .setAutoCollectDependencies(true)
       .setAutoCollectConsole(true, true)
       .setUseDiskRetryCaching(true)
-      .setSendLiveMetrics(this.config.debug)
+      .setSendLiveMetrics(this.config.liveMetrics)
       .setDistributedTracingMode(appInsights.DistributedTracingModes.AI);
 
     const cRoleKey = appInsights.defaultClient.context.keys.cloudRole;
@@ -127,9 +143,9 @@ export class Telemetry {
   }
 
   @NextPre<Telemetry>({
-    action: ['trackEvent', 'trackException', 'trackMetric', 'trackTrace', 'trackDependency'],
+    action: ['track*'],
     options: {
-      runConditions: function (this: Telemetry) {
+      runConditions(this: Telemetry) {
         return this.config.debug;
       },
       useNext: false,
@@ -154,16 +170,25 @@ export class Telemetry {
     return Number.isNaN(sampleRate) || sampleRate < 0 || sampleRate > 100 ? 100 : sampleRate;
   }
 
-  getBatchSize = () => {
+  getBatchSize() {
     const { batchSize } = this.config;
 
     return Number.isNaN(batchSize) || batchSize < 1 ? 200 : batchSize;
-  };
+  }
 }
 
 console.log(`Telemetry debugging is disabled: ${configuration.debug === false}`);
 
 const telemetry = new Telemetry();
+
+export interface Telemetry extends SurrogateMethods<Telemetry> {}
+
+console.log(telemetry.getSurrogate());
+
+Object.entries(telemetry.getSurrogate().getEventMap()).forEach(([event, whichContainers]) => {
+  console.log(`Containers for ${event}`);
+  console.log(whichContainers);
+});
 
 telemetry.trackEvent({
   name: 'TestingTrackEvent',

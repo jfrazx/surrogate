@@ -17,8 +17,16 @@ export abstract class HandlerBaseRule<T extends object> implements HandlerRule<T
     return this.node.container.options;
   }
 
+  // get shouldReflectSurrogate() {
+  //   const { container, context } = this.node;
+
+  //   return container.shouldReflect && context.useSurrogate(this.options.useContext);
+  // }
+
   protected get handler() {
-    return this.node.container.handler as SurrogateHandler<T>;
+    const { container, context } = this.node;
+
+    return container.getHandler(context) as SurrogateHandler<T>;
   }
 
   protected get context() {

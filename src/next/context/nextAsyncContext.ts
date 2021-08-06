@@ -24,7 +24,7 @@ export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
 
   async runOriginal(node: MethodNext<T>) {
     const { container, context } = node;
-    const { handler } = container;
+    const handler = container.getHandler(context) as Function;
 
     try {
       const result = await handler.apply(context.receiver, this.currentArgs);

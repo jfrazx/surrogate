@@ -1,4 +1,3 @@
-import { HandlerRunner } from '../../../handler';
 import { NextNode } from 'next/interfaces';
 import { NextRule } from './interfaces';
 
@@ -10,7 +9,7 @@ export class HandlerRule<T extends object> implements NextRule<T> {
   }
 
   run(node: NextNode<T>): void {
-    const handler = HandlerRunner.for(node);
+    const handler = node.container.getHandlerRunner(node);
 
     handler.run(this.using, node.didError);
   }

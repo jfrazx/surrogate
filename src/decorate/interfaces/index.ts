@@ -1,7 +1,7 @@
 import { Whichever } from '../../which';
 import {
-  SurrogateHandler,
   SurrogateOptions,
+  SurrogateHandlers,
   SurrogateUnwrapped,
   SurrogateHandlerOptions,
 } from '../../interfaces';
@@ -13,13 +13,12 @@ export interface SurrogateDecorateOptions<T extends object> extends SurrogateOpt
 }
 
 export interface SurrogateDecoratorOptions<T extends object> {
-  handler: SurrogateHandler<T> | SurrogateHandler<T>[];
+  handler: SurrogateHandlers<T>;
   options?: SurrogateHandlerOptions<T>;
 }
 
 export type SurrogateDelegateOptions<T extends object> =
-  | SurrogateHandler<T>
-  | SurrogateHandler<T>[]
+  | SurrogateHandlers<T>
   | SurrogateDecoratorOptions<T>
   | SurrogateDecoratorOptions<T>[];
 

@@ -6,6 +6,7 @@ export class ErrorProvider<T extends object>
   extends Provider<T>
   implements RunOnErrorParameters<T>
 {
+  public timeOfError = new Date();
   private recover: boolean;
 
   constructor(node: NextNode<T>, receivedArgs: any[], public readonly error: Error) {
