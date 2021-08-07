@@ -9,10 +9,9 @@ export interface ContextController<T extends object> {
   complete(): void;
   returnValue: any;
   currentArgs: any[];
-  originalArgs: any[];
+  context: Context<T>;
   correlationId: string;
   bail(bailWith: any): any;
-  originalMethod: Function;
   timeTracker: TimeTracking;
   addNext(next: NextNode<T>): void;
   setNext(next: NextNode<T>): void;
@@ -21,7 +20,6 @@ export interface ContextController<T extends object> {
   updateLatestArgs(updatedArgs: any): void;
   setupPipeline(
     proxy: SurrogateProxy<T>,
-    context: Context<T>,
     typeContainers: WhichContainers<T>,
   ): ContextController<T>;
 }

@@ -32,7 +32,7 @@ export abstract class Provider<T extends object> implements ProviderParameters<T
   }
 
   get originalArgs() {
-    return this.node.controller.originalArgs;
+    return this.context.originalArguments;
   }
 
   get currentArgs() {

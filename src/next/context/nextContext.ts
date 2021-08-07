@@ -18,7 +18,7 @@ export class NextContext<T extends object> extends ExecutionContext<T> {
 
   runOriginal(node: MethodNext<T>) {
     const { container, context } = node;
-    const { handler } = container;
+    const handler = container.getHandler(context) as Function;
 
     const result = handler.apply(context.receiver, this.currentArgs);
 

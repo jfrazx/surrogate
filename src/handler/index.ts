@@ -1,19 +1,23 @@
 import { HandlerConstructor, WithArgsRule, WithoutArgsRule } from './rules';
 import { MethodWrapper } from '../interfaces';
+import { OptionsHandler } from '../options';
 import { NextProvider } from '../provider';
 import { asArray } from '@jfrazx/asarray';
 import { NextNode } from '../next';
 
-export abstract class HandlerRunner<T extends object> {
+export interface SurrogateHandlerRunner {
+  run(args: any[], error?: Error): void;
+}
+
+export abstract class HandlerRunner<T extends object> implements SurrogateHandlerRunner {
   protected argsHandlers: HandlerConstructor<T>[] = [WithArgsRule, WithoutArgsRule];
 
   constructor(protected node: NextNode<T>) {}
 
-  static for<T extends object>(node: NextNode<T>) {
-    const {
-      container: { options },
-    } = node;
-
+  static for<T extends object>(
+    node: NextNode<T>,
+    options: OptionsHandler<T>,
+  ): SurrogateHandlerRunner {
     return options.wrapper === MethodWrapper.Async
       ? new AsyncHandlerRunner<T>(node)
       : new SyncHandlerRunner<T>(node);
@@ -40,10 +44,9 @@ export abstract class HandlerRunner<T extends object> {
   protected abstract runWithNext(nextProvider: NextProvider<T>): void;
 
   protected shouldRunWithNext(): boolean {
-    const {
-      container: { handler, options },
-    } = this.node;
-    const { useNext, noArgs } = options;
+    const { container, context } = this.node;
+    const handler = container.getHandler(context);
+    const { useNext, noArgs } = container.options;
 
     return useNext && Boolean(handler.length) && !noArgs;
   }

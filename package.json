@@ -1,6 +1,6 @@
 {
   "name": "surrogate",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Object method hooks made easy",
   "main": "build/index.js",
   "keywords": [
@@ -13,7 +13,8 @@
     "flow",
     "control",
     "async",
-    "sync"
+    "sync",
+    "api"
   ],
   "scripts": {
     "sloc": "sloc ./src",
@@ -23,6 +24,8 @@
     "tsc": "tsc",
     "predocs": "rimraf docs",
     "docs": "typedoc src/index.ts",
+    "del:merged": "node -r ts-node/register/transpile-only scripts/merged",
+    "leak:test": "node -r ts-node/register/transpile-only scripts/leak",
     "prebuild": "rimraf build",
     "build": "tsc",
     "prebuild:examples": "rimraf build-examples && npm run build",

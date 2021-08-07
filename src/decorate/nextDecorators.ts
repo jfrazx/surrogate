@@ -22,17 +22,18 @@ type PropertyDecorator<T extends object> = (
 export const NextFor = <T extends object>(
   nextOptions: NextForOptions<T> | NextForOptions<T>[],
 ): PropertyDecorator<T> => {
-  return (target: T, _event: string, descriptor: PropertyDescriptor): void => {
+  return (target: T, event: string): void => {
     asArray(nextOptions).forEach((nextOption) => {
       const { type, action, options } = nextOption;
       const which: Which[] = determineWhich(type);
       const actions = asArray(action);
 
-      const { value: handler } = descriptor;
-
       which.forEach((type) =>
         actions.forEach((action) =>
-          manageDecorator(type, { handler, options })(target, action),
+          manageDecorator(type, {
+            handler: event,
+            options,
+          })(target, action),
         ),
       );
     });

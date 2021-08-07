@@ -1,8 +1,12 @@
 import { SurrogateHandlerOptions } from './handlerOptions';
-import { WhichContainers } from './whichContainers';
 import { SurrogateHandlerContainer } from '../containers';
-import { SurrogateHandler } from './surrogate';
+import { WhichContainers } from './whichContainers';
+import { SurrogateHandlers } from './surrogate';
 import { Which } from '../which';
+
+export interface EventMap<T extends object> {
+  [event: string]: WhichContainers<T>;
+}
 
 /**
  * @description Class that manages PRE and POST method handlers for Surrogate wrapped instances.
@@ -41,27 +45,35 @@ export interface SurrogateEventManager<T extends object> {
    * @description Removes a specific PRE handler for the provided method
    *
    * @param {keyof T | string} event
-   * @param {SurrogateHandler<T>} handler
+   * @param {SurrogateHandlers<T>} handler
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
   deregisterPreHook(
     event: keyof T | string,
-    handler: SurrogateHandler<T>,
+    handler: SurrogateHandlers<T>,
   ): SurrogateEventManager<T>;
 
   /**
    * @description Removes a specific POST handler for the provided method
    *
    * @param {keyof T | string} event
-   * @param {SurrogateHandler<T>} handler
+   * @param {SurrogateHandlers<T>} handler
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
   deregisterPostHook(
     event: keyof T | string,
-    handler: SurrogateHandler<T>,
+    handler: SurrogateHandlers<T>,
   ): SurrogateEventManager<T>;
+
+  /**
+   * @description Retrieves all handlers in an event map
+   *
+   * @returns {EventMap<T>}
+   * @memberof SurrogateEventManager
+   */
+  getEventMap(): EventMap<T>;
 
   /**
    * @description Retrieves all handlers for the provided method
@@ -94,14 +106,14 @@ export interface SurrogateEventManager<T extends object> {
    * @description Registers a PRE handler or array of handlers for the provided method
    *
    * @param {keyof T | string} event
-   * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
+   * @param {(SurrogateHandlers<T>)} handler
    * @param {SurrogateHandlerOptions<T>} [options]
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
   registerPreHook(
     event: keyof T | string,
-    handler: SurrogateHandler<T> | SurrogateHandler<T>[],
+    handler: SurrogateHandlers<T>,
     options?: SurrogateHandlerOptions<T>,
   ): SurrogateEventManager<T>;
 
@@ -109,14 +121,14 @@ export interface SurrogateEventManager<T extends object> {
    * @description Registers a POST handler or array of handlers for the provided method
    *
    * @param {keyof T | string} event
-   * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
+   * @param {(SurrogateHandlers<T>)} handler
    * @param {SurrogateHandlerOptions<T>} [options]
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
    */
   registerPostHook(
     event: keyof T | string,
-    handler: SurrogateHandler<T> | SurrogateHandler<T>[],
+    handler: SurrogateHandlers<T>,
     options?: SurrogateHandlerOptions<T>,
   ): SurrogateEventManager<T>;
 
@@ -125,7 +137,7 @@ export interface SurrogateEventManager<T extends object> {
    *
    * @param {keyof T | string} event
    * @param {Which} type
-   * @param {(SurrogateHandler<T> | SurrogateHandler<T>[])} handler
+   * @param {(SurrogateHandlers<T>)} handler
    * @param {SurrogateHandlerOptions<T>} options
    * @returns {SurrogateEventManager<T>}
    * @memberof SurrogateEventManager
@@ -133,7 +145,7 @@ export interface SurrogateEventManager<T extends object> {
   registerHook(
     event: keyof T | string,
     type: Which,
-    handler: SurrogateHandler<T> | SurrogateHandler<T>[],
+    handler: SurrogateHandlers<T>,
     options: SurrogateHandlerOptions<T>,
   ): SurrogateEventManager<T>;
 }

@@ -1,4 +1,5 @@
 import { MethodWrapper, WhichContainers } from '../../interfaces';
+import { SurrogateHandlerContainer } from '../../containers';
 import { TimeTrackable } from '../../timeTracker';
 import { ContextController } from './interfaces';
 import { Which, PRE, POST } from '../../which';
@@ -12,7 +13,7 @@ import { v4 as uuid } from 'uuid';
 import { Next } from '../nodes';
 
 interface ExecutionConstruct<T extends object> {
-  new (originalMethod: Function, originalArgs: any[]): ContextController<T>;
+  new (context: Context<T>): ContextController<T>;
 }
 
 const containerSorter = (
@@ -36,25 +37,17 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
   latestArgs: any[];
   returnValue: any;
 
-  constructor(public readonly originalMethod: Function, public readonly originalArgs: any[]) {}
+  constructor(public readonly context: Context<T>) {}
 
-  static for<T extends object>(
-    originalMethod: Function,
-    originalArgs: any[],
-    typeContainers: WhichContainers<T>,
-  ) {
+  static for<T extends object>(context: Context<T>, typeContainers: WhichContainers<T>) {
     const hasAsync = this.hasAsync(typeContainers);
     const TargetContext: ExecutionConstruct<T> =
-      hasAsync || isAsync(originalMethod) ? NextAsyncContext : NextContext;
+      hasAsync || isAsync(context.original) ? NextAsyncContext : NextContext;
 
-    return new TargetContext(originalMethod, originalArgs);
+    return new TargetContext(context);
   }
 
-  setupPipeline(
-    proxy: SurrogateProxy<T>,
-    context: Context<T>,
-    typeContainers: WhichContainers<T>,
-  ) {
+  setupPipeline(proxy: SurrogateProxy<T>, typeContainers: WhichContainers<T>) {
     const which = [PRE, POST] as const;
 
     which.forEach((type) => {
@@ -62,9 +55,9 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
 
       containers
         .sort(containerSorter)
-        .forEach((container) => new Next(proxy, context, this, container, type));
+        .forEach((container) => new Next(this, proxy, container, type));
 
-      Tail.for<T>(type, this.originalArgs)(proxy, context, this);
+      Tail.for<T>(this, proxy, type);
     });
 
     return this;
@@ -98,7 +91,7 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
   }
 
   get currentArgs() {
-    return this.utilizeLatest ? this.latestArgs : this.originalArgs;
+    return this.utilizeLatest ? this.latestArgs : this.context.originalArguments;
   }
 
   protected runNext(next?: NextNode<T>) {
@@ -122,4 +115,3 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
 
 import { NextAsyncContext } from './nextAsyncContext';
 import { NextContext } from './nextContext';
-import { SurrogateHandlerContainer } from '../../containers/handler';
