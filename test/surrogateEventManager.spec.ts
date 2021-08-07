@@ -25,6 +25,13 @@ describe('Surrogate Event Manager', () => {
     expect(surrogate).to.be.instanceOf(EventManager);
   });
 
+  it(`should retrieve the event map`, () => {
+    const manager = network.getSurrogate();
+    const eventMap = manager.getEventMap();
+
+    expect(eventMap).to.be.an('object');
+  });
+
   it('should always retrieve the same event manager for the same object', () => {
     const s1 = network.getSurrogate();
     const s2 = network.getSurrogate();

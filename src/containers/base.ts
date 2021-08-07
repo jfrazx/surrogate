@@ -14,10 +14,22 @@ export abstract class BaseContainer<T extends object> implements IContainer<T> {
     public options: OptionsHandler<T> = new OptionsHandler(),
   ) {}
 
-  getHandler({ target, receiver }: Context<T>): Function | SurrogateHandler<T> {
-    return isFunction(this.handler)
-      ? this.handler
-      : Reflect.get(target, this.handler, receiver);
+  getHandler(context: Context<T>): Function | SurrogateHandler<T> {
+    const { target, receiver } = context;
+
+    return this.shouldReflect
+      ? this.shouldReflectSurrogate(context)
+        ? Reflect.get(receiver, this.handler as string)
+        : Reflect.get(target, this.handler as string, receiver)
+      : this.handler;
+  }
+
+  private get shouldReflect() {
+    return !isFunction(this.handler);
+  }
+
+  private shouldReflectSurrogate(context: Context<T>) {
+    return context.useSurrogate(this.options.useContext);
   }
 
   getHandlerRunner(node: NextNode<T>): SurrogateHandlerRunner {

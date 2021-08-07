@@ -1,4 +1,4 @@
-import { Telemetry } from '../examples/telemetry';
+import { Telemetry } from '../test/lib/telemetry';
 
 const objects: any = [];
 
@@ -23,7 +23,7 @@ const run = async (runsLeft = randomRuns): Promise<void> => {
     return console.log(`Finished!`);
   }
 
-  for (let i = 0; i < 100000; i++) {
+  for (let i = 0; i < 1000000; i++) {
     const telemetry = new Telemetry();
 
     telemetry.trackEvent(generateTelemetryEvent());

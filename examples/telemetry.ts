@@ -4,25 +4,23 @@ import {
   SurrogatePre,
   NextParameters,
   SurrogateMethods,
-  SurrogateContext,
   SurrogateDelegate,
 } from '../build';
 
 const configuration = {
   instrumentationKey: '1aa11111-bbbb-1ccc-8ddd-eeeeffff3333',
   debugKey: '1aa11111-bbbb-1ccc-8ddd-eeeeffff3333',
-  debug: false,
+  debug: Math.random() >= 0.49,
   liveMetrics: false,
   appInstance: 'App Instance',
   name: 'TelemetryExample',
   sampleRate: 100,
   batchSize: 200,
 };
-
 const NANOSECONDS_IN_SECONDS = 1000000000;
 const NANOSECONDS_IN_MILLISECONDS = 1000000;
 
-@SurrogateDelegate<Telemetry>({ useContext: SurrogateContext.Surrogate })
+@SurrogateDelegate<Telemetry>()
 export class Telemetry {
   readonly dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
   readonly instance = appInsights;
@@ -64,23 +62,13 @@ export class Telemetry {
   }
 
   getClient() {
-    console.log(`getting client`);
     return appInsights.defaultClient;
   }
 
   @SurrogatePre<Telemetry>({
     handler: ({ next }) => next.next({ bail: true }),
     options: {
-      runConditions: ({ instance: telemetry }) => {
-        throw new Error(`stop`);
-        console.log(
-          `SurrogatePre bootstrap Run Condition`,
-          telemetry.telemetryStarted(),
-          (telemetry as any).isInitialized,
-        );
-
-        return telemetry.telemetryStarted();
-      },
+      runConditions: ({ instance: telemetry }) => telemetry.telemetryStarted(),
     },
   })
   @NextPre<Telemetry>({
@@ -88,21 +76,10 @@ export class Telemetry {
     options: {
       noArgs: true,
       useNext: false,
-      runConditions(this: Telemetry, { instance: telemetry }) {
-        console.log(
-          `NextPre Get Client Run Condition`,
-          !telemetry.telemetryStarted(),
-          (telemetry as any).isInitialized,
-          this.isInitialized,
-          appInsights.defaultClient !== null,
-        );
-
-        return !telemetry.telemetryStarted();
-      },
+      runConditions: ({ instance: telemetry }) => !telemetry.telemetryStarted(),
     },
   })
   bootstrap(processName = 'ExampleApp') {
-    console.log(`bootstrapping`);
     if (this.appInsightsKeyExists() === false) {
       console.error(
         'AppInsights key is missing from APP_INSIGHTS_INSTRUMENTATION_KEY. Telemetry disabled.',
@@ -182,8 +159,6 @@ console.log(`Telemetry debugging is disabled: ${configuration.debug === false}`)
 const telemetry = new Telemetry();
 
 export interface Telemetry extends SurrogateMethods<Telemetry> {}
-
-console.log(telemetry.getSurrogate());
 
 Object.entries(telemetry.getSurrogate().getEventMap()).forEach(([event, whichContainers]) => {
   console.log(`Containers for ${event}`);

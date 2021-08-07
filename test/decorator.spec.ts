@@ -1,6 +1,4 @@
 import { BugReport, logReporter } from './lib/reportable';
-import * as appInsights from 'applicationinsights';
-import { Guitar } from './lib/guitar';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import {
@@ -12,9 +10,7 @@ import {
   SurrogatePost,
   NextParameters,
   NextPreAndPost,
-  SurrogateContext,
   SurrogateHandler,
-  SurrogateMethods,
   SurrogateAsyncPre,
   SurrogateDelegate,
   SurrogateAsyncPost,
@@ -103,12 +99,6 @@ describe('SurrogateDecorators', () => {
   describe('SurrogatePre', () => {
     it('should be a function', () => {
       expect(SurrogatePre).to.be.a('function');
-    });
-
-    it('should run pre hooks', () => {
-      const guitar = new Guitar();
-
-      guitar.play();
     });
 
     it('should pre decorate a synchronous method', () => {
@@ -505,132 +495,6 @@ describe('SurrogateDecorators', () => {
       expect(result3).to.equal(value + '3');
 
       sinon.assert.calledThrice(log);
-    });
-
-    it(`should run next decorators and surrogate decorators`, () => {
-      const getClientRunCondition = sinon.spy(({ instance: telemetry }) => {
-        console.info(`calling getClient run condition`);
-
-        return !telemetry.telemetryStarted();
-      });
-      const bootstrapRunCondition = sinon.spy(({ instance: telemetry }) => {
-        console.info(`calling bootstrap run condition`);
-        return telemetry.telemetryStarted();
-      });
-
-      interface Telemetry extends SurrogateMethods<Telemetry> {}
-
-      @SurrogateDelegate({ useContext: SurrogateContext.Surrogate })
-      class Telemetry {
-        private isInitialized = false;
-
-        getClient() {
-          console.info(`calling get client`);
-
-          return appInsights.defaultClient;
-        }
-
-        trackEvent(event: any) {
-          console.info(`trackEvent called`);
-          this.getClient()?.trackEvent(event);
-          console.info(`trackEVent finished`);
-        }
-
-        @SurrogatePre<Telemetry>({
-          handler: ({ next }) => next.next({ bail: true }),
-          options: {
-            runConditions: bootstrapRunCondition,
-          },
-        })
-        @NextPre<Telemetry>({
-          action: ['getClient'],
-          options: {
-            noArgs: true,
-            useNext: false,
-            runConditions: getClientRunCondition,
-          },
-        })
-        bootstrap() {
-          console.info(`calling bootstrap`);
-          this.isInitialized = true;
-        }
-
-        telemetryStarted() {
-          return this.isInitialized;
-        }
-      }
-
-      const telemetry = new Telemetry();
-
-      const bootstrap = sinon.spy(telemetry, 'bootstrap');
-      const getClient = sinon.spy(telemetry, 'getClient');
-      const trackEvent = sinon.spy(telemetry, 'trackEvent');
-      const getClientHooks = telemetry.getSurrogate().getPreEventHandlers('getClient');
-      const bootstrapHooks = telemetry.getSurrogate().getPreEventHandlers('bootstrap');
-
-      expect(bootstrapHooks).have.lengthOf(1);
-      expect(getClientHooks).have.lengthOf(1);
-
-      expect(getClientRunCondition.callCount).to.equal(0);
-      expect(bootstrapRunCondition.callCount).to.equal(0);
-      expect(bootstrap.callCount).to.equal(0);
-      expect(getClient.callCount).to.equal(0);
-      expect(trackEvent.callCount).to.equal(0);
-
-      telemetry.trackEvent({ name: 'test' });
-
-      expect(getClientRunCondition.callCount).to.equal(1);
-      expect(bootstrapRunCondition.callCount).to.equal(1);
-      expect(bootstrap.callCount).to.equal(1);
-      expect(getClient.callCount).to.equal(1);
-      expect(trackEvent.callCount).to.equal(1);
-    });
-
-    it(`should run a method`, () => {
-      const value = 'NextPreTest';
-      const handler = sinon.spy(() => {});
-
-      interface NextPreTest extends SurrogateMethods<NextPreTest> {}
-
-      @SurrogateDelegate<NextPreTest>()
-      class NextPreTest {
-        @SurrogatePre<NextPreTest>({
-          handler,
-          options: {
-            useNext: false,
-          },
-        })
-        method() {
-          return value;
-        }
-      }
-
-      const test = new NextPreTest();
-
-      const spy = sinon.spy(test, 'method');
-
-      expect(handler.called).to.be.false;
-      expect(spy.called).to.be.false;
-
-      const result = test.method();
-
-      expect(handler.called).to.be.true;
-      expect(spy.called).to.be.true;
-      expect(result).to.equal(value);
-
-      const method = test.method;
-
-      const result2 = method();
-
-      // expect(handler.callCount).to.equal(2);
-      expect(spy.callCount).to.equal(2);
-      expect(result2).to.equal(value);
-
-      const result3 = method.call(test);
-
-      expect(handler.callCount).to.equal(3);
-      expect(spy.callCount).to.equal(3);
-      expect(result3).to.equal(value);
     });
   });
 
