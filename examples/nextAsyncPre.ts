@@ -1,8 +1,7 @@
 import {
-  BOTH,
-  NextFor,
   NextAsyncPre,
   NextParameters,
+  NextPreAndPost,
   SurrogateMethods,
   SurrogateDelegate,
 } from '../build';
@@ -36,8 +35,7 @@ class ServiceBase {
     this.isInitialized = true;
   }
 
-  @NextFor<ServiceBase>({
-    type: BOTH,
+  @NextPreAndPost<ServiceBase>({
     action: ['find', 'findOne', 'aggregate'],
   })
   protected recordTelemetry({

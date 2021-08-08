@@ -18,6 +18,13 @@ export interface NextHandler<T extends object> extends ProviderParameters<T> {
   next: INext;
 }
 
+/**
+ *
+ * @export
+ * @interface NextParameters
+ * @extends {ProviderParameters<T>}
+ * @template T
+ */
 export interface NextParameters<T extends object> extends ProviderParameters<T> {
   surrogate: Surrogate<T>;
   next: INext;

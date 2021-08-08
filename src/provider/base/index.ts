@@ -23,20 +23,24 @@ export abstract class Provider<T extends object> implements ProviderParameters<T
     return this.node.controller.correlationId;
   }
 
-  get instance() {
-    return this.node.instance;
+  get currentArgs() {
+    return this.node.controller.currentArgs;
   }
 
   get hookType() {
     return this.node.hookType;
   }
 
+  get instance() {
+    return this.node.instance;
+  }
+
   get originalArgs() {
     return this.context.originalArguments;
   }
 
-  get currentArgs() {
-    return this.node.controller.currentArgs;
+  get provide() {
+    return this.node.container.options.provide;
   }
 
   get result() {

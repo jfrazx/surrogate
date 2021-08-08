@@ -11,5 +11,6 @@ export interface ProviderParameters<T extends object> {
   hookType: string;
   action: string;
   error?: Error;
+  provide: any;
   result: any;
 }
