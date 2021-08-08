@@ -2,10 +2,10 @@ import { MethodWrapper, WhichContainers } from '../../interfaces';
 import { SurrogateHandlerContainer } from '../../containers';
 import { TimeTrackable } from '../../timeTracker';
 import { ContextController } from './interfaces';
-import { Which, PRE, POST } from '../../which';
 import { SurrogateProxy } from '../../proxy';
 import { asArray } from '@jfrazx/asarray';
 import { NextNode } from '../interfaces';
+import { PRE, POST } from '../../which';
 import { Context } from '../../context';
 import { isAsync } from '../../helpers';
 import { Tail } from '../../containers';
@@ -16,9 +16,9 @@ interface ExecutionConstruct<T extends object> {
   new (context: Context<T>): ContextController<T>;
 }
 
-const containerSorter = (
-  a: SurrogateHandlerContainer<any>,
-  b: SurrogateHandlerContainer<any>,
+const containerSorter = <T extends object>(
+  a: SurrogateHandlerContainer<T>,
+  b: SurrogateHandlerContainer<T>,
 ) =>
   a.options.priority === b.options.priority
     ? 0
@@ -64,10 +64,11 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
   }
 
   private static hasAsync<T extends object>(typeContainers: WhichContainers<T>) {
-    return Object.getOwnPropertySymbols(typeContainers)
-      .flatMap((type) => typeContainers[type as Which])
+    return Object.values(typeContainers)
+      .flat()
       .some(
-        ({ handler, options }) => isAsync(handler) || options.wrapper === MethodWrapper.Async,
+        ({ handler, options }: SurrogateHandlerContainer<T>) =>
+          isAsync(handler) || options.wrapper === MethodWrapper.Async,
       );
   }
 
