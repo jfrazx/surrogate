@@ -30,10 +30,11 @@ Check [examples](./examples) for expanded samples.
 
 ### SurrogateOptions
 
-| Option        | Type    | Default Value | Description                                                                                 |
-| ------------- | ------- | :-----------: | ------------------------------------------------------------------------------------------- |
-| useSingleton? | boolean |     true      | Informs Surrogate to operate as a Singleton                                                 |
-| useContext?   | any     |       T       | The context in which to call surrogate handlers. Handler specific contexts take precedence. |
+| Option        | Type    | Default Value | Description                                                                                         |
+| ------------- | ------- | :-----------: | --------------------------------------------------------------------------------------------------- |
+| useSingleton? | boolean |     true      | Informs Surrogate to operate as a Singleton                                                         |
+| useContext?   | any     |       T       | The context in which to call surrogate handlers. Handler specific contexts take precedence.         |
+| provide       | any     |     null      | User provided content to pass to handlers and conditionals. Handler specific values take precedence |
 
 ### SurrogateMethods
 
@@ -41,21 +42,21 @@ After wrapping your instance with Surrogate new methods are available, `getSurro
 
 | Method           | Parameters | Returns               | Description                                            |
 | ---------------- | :--------: | --------------------- | ------------------------------------------------------ |
-| getSurrogate     |    n/a     | SurrogateEventManager | Provides capabilities for [de]registering hooks.       |
+| getSurrogate     |    n/a     | SurrogateEventManager | Provides capabilities for managing method hooks        |
 | disposeSurrogate |    n/a     | T                     | Cleans current instance of Surrogate handlers          |
 | bypassSurrogate  |    n/a     | T                     | Allows calling target methods without running handlers |
 
 ### SurrogateEventManager
 
-| Method              | Parameters                                                                    | Returns               | Description                                  |
-| ------------------- | ----------------------------------------------------------------------------- | --------------------- | -------------------------------------------- |
-| registerPreHook     | (event: string, handler: SurrogateHandler, options?: SurrogateHandlerOptions) | SurrogateEventManager | Registers a `pre` hook                       |
-| registerPostHook    | (event: string, handler: SurrogateHandler, options?: SurrogateHandlerOptions) | SurrogateEventManager | Registers a `post` hook                      |
-| deregisterPreHooks  | (event: string)                                                               | SurrogateEventManager | Deregisters `pre` hooks for the given event  |
-| deregisterPostHooks | (event: string)                                                               | SurrogateEventManager | Deregisters `post` hooks for the given event |
-| deregisterHooks     | n/a                                                                           | SurrogateEventManager | Removes all hooks for the current instance.  |
+| Method              | Parameters                                                                     | Returns               | Description                                  |
+| ------------------- | ------------------------------------------------------------------------------ | --------------------- | -------------------------------------------- |
+| registerPreHook     | (event: string, handler: SurrogateHandlers, options?: SurrogateHandlerOptions) | SurrogateEventManager | Registers a `pre` hook                       |
+| registerPostHook    | (event: string, handler: SurrogateHandlers, options?: SurrogateHandlerOptions) | SurrogateEventManager | Registers a `post` hook                      |
+| deregisterPreHooks  | (event: string)                                                                | SurrogateEventManager | Deregisters `pre` hooks for the given event  |
+| deregisterPostHooks | (event: string)                                                                | SurrogateEventManager | Deregisters `post` hooks for the given event |
+| deregisterHooks     | n/a                                                                            | SurrogateEventManager | Removes all hooks for the current instance.  |
 
-SurrogateHandler is any function that accepts a `NextParameters` object which can be used to control flow through pre and post hooks.
+SurrogateHandlers is any function that accepts a `NextParameters` object which can be used to control flow through pre and post hooks. It may also be the name of a method on the target object.
 
 ### CommonParameters
 
@@ -73,6 +74,7 @@ Common parameters passed to all handlers and conditional functions. (runConditio
 | originalArgs      | ProviderParameters | any[]       | Array of arguments passed to the instance invoked method                               |
 | timeTracker       | ProviderParameters | TimeTracker | Provides access to the current time tracker                                            |
 | result            | ProviderParameters | any         | Result of original method invocation if run                                            |
+| provide           | ProviderParameters | any         | User provided content to pass to handlers and conditionals. Default value is `null`    |
 
 ### NextParameters
 
@@ -127,9 +129,11 @@ When registering a hook you may provide any of the following options.
 | runOnBail?     | RunOnBail \| RunOnBail[]       |      n/a      | Functions to run in the event of handler bailing.                                                                       |
 | priority?      | number                         |       0       | Used to determine the order in which handlers are executed. Larger numbers have higher priority                         |
 
+`useContext` option defaults to the current instance. Specifying context should be `surrogate` will allow hooks in the pipeline to trigger additional hooks. This can be extraordinarily useful but has the potential to cause recursive loops.
+
 #### RunCondition
 
-A RunCondition is a function that receives `RunConditionParameters`, which includes [CommonParameters](###-CommonParameters) and returns a boolean indicating if the current handler should be executed(`true`) or skipped(`false`). All run conditions are executed synchronously and all conditions must be true for the handler to execute.
+A RunCondition is a function that receives `RunConditionParameters`, which includes [CommonParameters](#-CommonParameters) and returns a boolean indicating if the current handler should be executed(`true`) or skipped(`false`). All run conditions are executed synchronously and all conditions must be true for the handler to execute.
 
 | Property                    | Member Of              | Type    | Description                                         |
 | --------------------------- | ---------------------- | ------- | --------------------------------------------------- |
@@ -140,7 +144,7 @@ A RunCondition is a function that receives `RunConditionParameters`, which inclu
 
 #### RunOnError
 
-`RunOnError` is a function that receives `RunOnErrorParameters`, which includes [CommonParameters](###-CommonParameters) and the ability to recover from an error.
+`RunOnError` is a function that receives `RunOnErrorParameters`, which includes [CommonParameters](#-CommonParameters) and the ability to recover from an error.
 
 | Property           | Member Of            | Type    | Description                                       |
 | ------------------ | -------------------- | ------- | ------------------------------------------------- |
@@ -149,7 +153,7 @@ A RunCondition is a function that receives `RunConditionParameters`, which inclu
 
 #### RunOnBail
 
-`RunOnBail` is a function that receives `RunOnBailParameters`, which includes [CommonParameters](###-CommonParameters) and the ability to recover from a bailing handler.
+`RunOnBail` is a function that receives `RunOnBailParameters`, which includes [CommonParameters](#-CommonParameters) and the ability to recover from a bailing handler.
 
 | Property          | Member Of           | Type    | Description                                |
 | ----------------- | ------------------- | ------- | ------------------------------------------ |
@@ -170,7 +174,7 @@ class Guitar {}
 ```
 
 `SurrogateDelegate` registers your class and will automatically wrap instances of that class with Surrogate.  
-It supports all options from [`SurrogateOptions`](###-SurrogateOptions) as well as option `locateWith` which may be provided to assist Surrogate in
+It supports all options from [`SurrogateOptions`](#-SurrogateOptions) as well as option `locateWith` which may be provided to assist Surrogate in
 locating method decorators for a particular class. Should only be necessary if multiple class decorators are utilized.
 
 ```typescript
@@ -183,7 +187,7 @@ import { SurrogateDelegate } from 'surrogate';
 class Guitar {}
 ```
 
-If you wish to use `Surrogate` [methods](###-SurrogateMethods) on your class instance you must extend `SurrogateMethods` interface.
+If you wish to use `Surrogate` [methods](#-SurrogateMethods) on your class instance you must extend `SurrogateMethods` interface.
 
 ```typescript
 import { SurrogateDelegate, SurrogateMethods } from 'surrogate';
@@ -224,19 +228,19 @@ class Guitar {
 
 All `Surrogate[Async](Pre|Post)` decorators accept `SurrogateDecoratorOptions` or an array of options and must decorate the intended hooked method.
 
-|  Option  | Type                                                   | Default Value | Description                                                                       |
-| :------: | ------------------------------------------------------ | :-----------: | --------------------------------------------------------------------------------- |
-| handler  | [SurrogateHandler](##-SurrogateEventManager)           |      n/a      | This function or array of functions will run before or after the decorated method |
-| options? | [SurrogateHandlerOptions](###-SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior                                     |
+|  Option  | Type                                                 | Default Value | Description                                                                       |
+| :------: | ---------------------------------------------------- | :-----------: | --------------------------------------------------------------------------------- |
+| handler  | [SurrogateHandlers](##-SurrogateEventManager)        |      n/a      | This function or array of functions will run before or after the decorated method |
+| options? | [SurrogateHandlerOptions](#-SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior                                     |
 
 ### NextDecoratorOptions
 
 All `Next[Async](Pre|Post)` decorators accept `NextDecoratorOptions` or an array of options. Any method decorated with Next\* will be registered as a Surrogate handler. Therefore, you must supply the target method the Next\* method will run with.
 
-|  Option  | Type                                                   | Default Value | Description                                                             |
-| :------: | ------------------------------------------------------ | :-----------: | ----------------------------------------------------------------------- |
-|  action  | keyof T \| string \| (keyof T \| string )[]            |      n/a      | Name of the target decorated method, accepts regexp string for matching |
-| options? | [SurrogateHandlerOptions](###-SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior                           |
+|  Option  | Type                                                 | Default Value | Description                                                             |
+| :------: | ---------------------------------------------------- | :-----------: | ----------------------------------------------------------------------- |
+|  action  | keyof T \| string \| (keyof T \| string )[]          |      n/a      | Name of the target decorated method, accepts regexp string for matching |
+| options? | [SurrogateHandlerOptions](#-SurrogateHandlerOptions) |      {}       | Options defining `Surrogate` handler behavior                           |
 
 ```typescript
 @SurrogateDelegate({
