@@ -7,16 +7,13 @@ import { ContextController } from '../context';
 import { IContainer } from '../../containers';
 import { asArray } from '@jfrazx/asarray';
 import { Which, PRE } from '../../which';
-import { Context } from '../../context';
 
 export interface NextConstruct<T extends object> {
   new (
-    proxy: SurrogateProxy<T>,
-    context: Context<T>,
     controller: ContextController<T>,
+    proxy: SurrogateProxy<T>,
     container: IContainer<T>,
     hookFor: Which,
-    args?: any[],
   ): NextNode<T>;
 }
 
@@ -26,9 +23,8 @@ export abstract class BaseNext<T extends object> implements INext {
   public didError: Error = null;
 
   constructor(
-    protected proxy: SurrogateProxy<T>,
-    public context: Context<T>,
     public controller: ContextController<T>,
+    protected proxy: SurrogateProxy<T>,
     public container: IContainer<T>,
     public hookFor: Which,
   ) {
@@ -60,9 +56,11 @@ export abstract class BaseNext<T extends object> implements INext {
     const context = this.useContext;
 
     return asArray(options.runConditions).every((condition) => {
+      const result = condition.call(context, runParameters);
+
       runParameters.reset();
 
-      return condition.call(context, runParameters);
+      return result;
     });
   }
 
@@ -72,6 +70,10 @@ export abstract class BaseNext<T extends object> implements INext {
 
   get hookType() {
     return this.hookFor === PRE ? HookType.PRE : HookType.POST;
+  }
+
+  get context() {
+    return this.controller.context;
   }
 
   addNext(next: NextNode<T>) {

@@ -3,7 +3,7 @@ import {
   NextPre,
   SurrogatePre,
   NextParameters,
-  SurrogateContext,
+  SurrogateMethods,
   SurrogateDelegate,
 } from '../build';
 
@@ -11,16 +11,16 @@ const configuration = {
   instrumentationKey: '1aa11111-bbbb-1ccc-8ddd-eeeeffff3333',
   debugKey: '1aa11111-bbbb-1ccc-8ddd-eeeeffff3333',
   debug: Math.random() >= 0.49,
+  liveMetrics: false,
   appInstance: 'App Instance',
   name: 'TelemetryExample',
   sampleRate: 100,
   batchSize: 200,
 };
-
 const NANOSECONDS_IN_SECONDS = 1000000000;
 const NANOSECONDS_IN_MILLISECONDS = 1000000;
 
-@SurrogateDelegate<Telemetry>({ useContext: SurrogateContext.Surrogate })
+@SurrogateDelegate<Telemetry>()
 export class Telemetry {
   readonly dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
   readonly instance = appInsights;
@@ -72,14 +72,7 @@ export class Telemetry {
     },
   })
   @NextPre<Telemetry>({
-    action: [
-      'getClient',
-      'trackEvent',
-      'trackTrace',
-      'trackMetric',
-      'trackException',
-      'trackDependency',
-    ],
+    action: ['getClient'],
     options: {
       noArgs: true,
       useNext: false,
@@ -104,7 +97,7 @@ export class Telemetry {
       .setAutoCollectDependencies(true)
       .setAutoCollectConsole(true, true)
       .setUseDiskRetryCaching(true)
-      .setSendLiveMetrics(this.config.debug)
+      .setSendLiveMetrics(this.config.liveMetrics)
       .setDistributedTracingMode(appInsights.DistributedTracingModes.AI);
 
     const cRoleKey = appInsights.defaultClient.context.keys.cloudRole;
@@ -127,9 +120,9 @@ export class Telemetry {
   }
 
   @NextPre<Telemetry>({
-    action: ['trackEvent', 'trackException', 'trackMetric', 'trackTrace', 'trackDependency'],
+    action: ['track*'],
     options: {
-      runConditions: function (this: Telemetry) {
+      runConditions(this: Telemetry) {
         return this.config.debug;
       },
       useNext: false,
@@ -154,16 +147,23 @@ export class Telemetry {
     return Number.isNaN(sampleRate) || sampleRate < 0 || sampleRate > 100 ? 100 : sampleRate;
   }
 
-  getBatchSize = () => {
+  getBatchSize() {
     const { batchSize } = this.config;
 
     return Number.isNaN(batchSize) || batchSize < 1 ? 200 : batchSize;
-  };
+  }
 }
 
 console.log(`Telemetry debugging is disabled: ${configuration.debug === false}`);
 
 const telemetry = new Telemetry();
+
+export interface Telemetry extends SurrogateMethods<Telemetry> {}
+
+Object.entries(telemetry.getSurrogate().getEventMap()).forEach(([event, whichContainers]) => {
+  console.log(`Containers for ${event}`);
+  console.log(whichContainers);
+});
 
 telemetry.trackEvent({
   name: 'TestingTrackEvent',

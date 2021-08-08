@@ -1,5 +1,4 @@
 import { BugReport, logReporter } from './lib/reportable';
-import { Guitar } from './lib/guitar';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import {
@@ -100,12 +99,6 @@ describe('SurrogateDecorators', () => {
   describe('SurrogatePre', () => {
     it('should be a function', () => {
       expect(SurrogatePre).to.be.a('function');
-    });
-
-    it('should run pre hooks', () => {
-      const guitar = new Guitar();
-
-      guitar.play();
     });
 
     it('should pre decorate a synchronous method', () => {

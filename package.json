@@ -1,6 +1,6 @@
 {
   "name": "surrogate",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Object method hooks made easy",
   "main": "build/index.js",
   "keywords": [
@@ -13,7 +13,8 @@
     "flow",
     "control",
     "async",
-    "sync"
+    "sync",
+    "api"
   ],
   "scripts": {
     "sloc": "sloc ./src",
@@ -23,6 +24,8 @@
     "tsc": "tsc",
     "predocs": "rimraf docs",
     "docs": "typedoc src/index.ts",
+    "del:merged": "node -r ts-node/register/transpile-only scripts/merged",
+    "leak:test": "node -r ts-node/register/transpile-only scripts/leak",
     "prebuild": "rimraf build",
     "build": "tsc",
     "prebuild:examples": "rimraf build-examples && npm run build",
@@ -50,13 +53,13 @@
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/chai": "^4.2.21",
-    "@types/lodash": "^4.14.171",
+    "@types/lodash": "^4.14.172",
     "@types/mocha": "^9.0.0",
-    "@types/node": "^16.4.10",
+    "@types/node": "^16.4.13",
     "@types/sinon": "^10.0.2",
     "@types/uuid": "^8.3.1",
-    "@typescript-eslint/eslint-plugin": "^4.28.5",
-    "@typescript-eslint/parser": "^4.28.5",
+    "@typescript-eslint/eslint-plugin": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.0",
     "applicationinsights": "^2.1.4",
     "chai": "^4.3.4",
     "codecov": "^3.8.3",

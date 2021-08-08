@@ -42,23 +42,25 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   }
 
   bindHandler(event: string, target: T, receiver: Surrogate<T>) {
-    const func = Reflect.get(target, event);
-    const context = new Context(target, receiver, event, func);
+    const func = Reflect.get(target, event, receiver);
 
-    return this.surrogateHandler.bind(this, context);
+    return {
+      [event]: (...args: any[]) =>
+        this.surrogateHandler(new Context(target, receiver, event, func, args)),
+    }[event];
   }
 
-  private surrogateHandler(context: Context<T>, ...args: any[]): any {
-    const { target, event, original } = context;
+  surrogateHandler(context: Context<T>): any {
+    const { target, event } = context;
     const typeContainers = this.getEventManager(target).getEventHandlers(event);
 
-    return ExecutionContext.for<T>(original, args, typeContainers)
-      .setupPipeline(this, context, typeContainers)
+    return ExecutionContext.for<T>(context, typeContainers)
+      .setupPipeline(this, typeContainers)
       .start();
   }
 
   dispose(target: T) {
-    this.getEventManager(target).clearEvents();
+    this.getEventManager(target).deregisterHooks();
     this.targets.delete(target);
 
     return target;

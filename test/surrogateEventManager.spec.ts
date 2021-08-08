@@ -1,5 +1,4 @@
 import { PRE, POST, NextParameters, Surrogate, wrapSurrogate } from '../src';
-import { WhichContainers } from '../src/interfaces';
 import { EventManager } from '../src/manager';
 import { Network } from './lib/network';
 import { expect } from 'chai';
@@ -25,6 +24,13 @@ describe('Surrogate Event Manager', () => {
     expect(surrogate).to.be.instanceOf(EventManager);
   });
 
+  it(`should retrieve the event map`, () => {
+    const manager = network.getSurrogate();
+    const eventMap = manager.getEventMap();
+
+    expect(eventMap).to.be.an('object');
+  });
+
   it('should always retrieve the same event manager for the same object', () => {
     const s1 = network.getSurrogate();
     const s2 = network.getSurrogate();
@@ -42,12 +48,10 @@ describe('Surrogate Event Manager', () => {
       const events = surrogate.getEventHandlers('connect');
 
       expect(events).to.be.an('object');
-      expect(Object.getOwnPropertySymbols(events)).to.be.length(2);
+      expect(Object.keys(events)).to.be.length(2);
 
-      Object.getOwnPropertySymbols(events).forEach((symbol: any) => {
-        const handlers = events[symbol as keyof WhichContainers<Network>];
-
-        expect(symbol).to.be.a('symbol');
+      Object.entries(events).forEach(([hookType, handlers]) => {
+        expect(hookType).to.be.a('string');
         expect(handlers).to.be.an('array');
         expect(handlers).to.have.lengthOf(1);
       });
@@ -59,12 +63,10 @@ describe('Surrogate Event Manager', () => {
       const events = surrogate.getEventHandlers('connect');
 
       expect(events).to.be.an('object');
-      expect(Object.getOwnPropertySymbols(events)).to.be.length(2);
+      expect(Object.keys(events)).to.be.length(2);
 
-      Object.getOwnPropertySymbols(events).forEach((symbol: any) => {
-        const handlers = events[symbol as keyof WhichContainers<Network>];
-
-        expect(symbol).to.be.a('symbol');
+      Object.entries(events).forEach(([hookType, handlers]) => {
+        expect(hookType).to.be.a('string');
         expect(handlers).to.be.an('array');
         expect(handlers).to.have.lengthOf(0);
       });

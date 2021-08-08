@@ -51,6 +51,6 @@ class Network {
 
 const network = wrapSurrogate(new Network());
 
-network.getSurrogate().registerPreHook('connect', network.preConnectionCheck);
+network.getSurrogate().registerPreHook('connect', 'preConnectionCheck');
 
 network.connect();

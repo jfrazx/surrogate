@@ -45,4 +45,11 @@ export interface SurrogateGlobalOptions {
    * @memberof SurrogateGlobalOptions
    */
   runOnBail?: RunOnBail | RunOnBail[];
+
+  /**
+   * @description Provide content for Surrogate to pass to handlers and conditionals.
+   * @type {any}
+   * @memberof SurrogateGlobalOptions
+   */
+  provide?: any;
 }

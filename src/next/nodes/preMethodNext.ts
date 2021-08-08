@@ -1,30 +1,21 @@
-import { IContainer, MethodContainer } from '../../containers';
 import { ContextController } from '../context';
+import { IContainer } from '../../containers';
 import { SurrogateProxy } from '../../proxy';
 import { MethodNext } from './methodNext';
 import { FinalNext } from './finalNext';
-import { Context } from '../../context';
 import { INext } from '../interfaces';
 import { Which } from '../../which';
 
 export class PreMethodNext<T extends object> extends FinalNext<T> implements INext {
   constructor(
-    proxy: SurrogateProxy<T>,
-    context: Context<T>,
     controller: ContextController<T>,
+    proxy: SurrogateProxy<T>,
     container: IContainer<T>,
     hookType: Which,
-    args: any[],
   ) {
-    super(proxy, context, controller, container, hookType);
+    super(controller, proxy, container, hookType);
 
-    this.nextNode = new MethodNext(
-      proxy,
-      context,
-      controller,
-      new MethodContainer(context.original, args, container.options),
-      hookType,
-    );
+    this.nextNode = new MethodNext(controller, proxy, hookType);
   }
 
   handleNext(): void {

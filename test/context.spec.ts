@@ -9,7 +9,13 @@ describe('Context', () => {
 
   beforeEach(() => {
     network = new Network();
-    context = new Context(network, network as Surrogate<Network>, 'connect', network.connect);
+    context = new Context(
+      network,
+      network as unknown as Surrogate<Network>,
+      'connect',
+      network.connect,
+      [],
+    );
   });
 
   it('should be an instance of Context', () => {

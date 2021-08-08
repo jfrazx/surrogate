@@ -14,6 +14,7 @@ const defaultMethodOptions: Required<SurrogateHandlerOptions<any>> = {
   priority: 0,
   noArgs: false,
   useNext: true,
+  provide: null,
   runOnBail: [],
   runOnError: [],
   runConditions: [],

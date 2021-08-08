@@ -17,7 +17,7 @@ class Network implements INetwork {
 
   init() {
     this.getSurrogate()
-      .registerPreHook('connect', this.preConnectionCheck)
+      .registerPreHook('connect', 'preConnectionCheck')
       .registerPreHook(
         'disconnect',
         ({ next }: NextParameters<Network>) => next.next({ bail: true }),

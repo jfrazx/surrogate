@@ -19,3 +19,9 @@ export type SurrogateUnwrapped<T extends object> = Omit<
 export type SurrogateHandler<T extends object> = (
   nextParameters?: NextParameters<T>,
 ) => unknown;
+
+export type SurrogateHandlerTypes<T extends object> = SurrogateHandler<T> | keyof T | string;
+
+export type SurrogateHandlers<T extends object> =
+  | SurrogateHandlerTypes<T>
+  | SurrogateHandlerTypes<T>[];
