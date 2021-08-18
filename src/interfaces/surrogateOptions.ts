@@ -19,6 +19,27 @@ export interface SurrogateOptions extends SurrogateGlobalOptions {
 
 export interface SurrogateGlobalOptions {
   /**
+   * @description Pass Next object to the Surrogate Handler
+   *
+   * @default true
+   */
+  useNext?: boolean;
+
+  /**
+   * @description Specify that nothing should be passed to handler
+   *
+   * @default false
+   */
+  noArgs?: boolean;
+
+  /**
+   * @description Should errors be thrown or ignored when passed via next()?
+   *
+   * @default false
+   */
+  ignoreErrors?: boolean;
+
+  /**
    * @description Specifies the context in which to call a handler. Method defined contexts take precedence.
    *
    * @options
