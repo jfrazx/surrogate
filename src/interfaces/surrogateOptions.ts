@@ -15,6 +15,14 @@ export interface SurrogateOptions extends SurrogateGlobalOptions {
    * @memberof SurrogateOptions
    */
   useSingleton?: boolean;
+
+  /**
+   * @description Will force Surrogate to run specified methods with or without hooks.
+   * @default false
+   * @Type {boolean|string|string[]}
+   * @memberof SurrogateOptions
+   */
+  maintainContext?: boolean | string | string[];
 }
 
 export interface SurrogateGlobalOptions {

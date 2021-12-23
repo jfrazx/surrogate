@@ -1,8 +1,8 @@
 import { SurrogateOptions, SurrogateEventManager } from '../interfaces';
+import { MethodIdentifier } from '../identifier';
 import { wrapDefaults } from '@status/defaults';
 import { Which, POST, PRE } from '../which';
 import { SurrogateProxy } from '../proxy';
-import { isFunction } from '../helpers';
 import {
   Constructor,
   SurrogateDecorateOptions,
@@ -31,40 +31,23 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
       this.options,
     );
 
-    const methods = this.getPropertyNames(wrappedInstance);
     const eventManager = wrappedInstance.getSurrogate();
+    const identifier = new MethodIdentifier(wrappedInstance);
 
-    this.applyDecorators(eventManager, decoratorMap, methods);
+    this.applyDecorators(eventManager, decoratorMap, identifier);
 
     return wrappedInstance;
-  }
-
-  private getPropertyNames(instance: T): string[] {
-    const objectProto = Object.getPrototypeOf({});
-    const props: string[][] = [];
-    let current = instance;
-
-    do {
-      props.push(Object.getOwnPropertyNames(current));
-    } while (
-      Object.getPrototypeOf(current) !== objectProto &&
-      (current = Object.getPrototypeOf(current))
-    );
-
-    const properties = new Set(props.flatMap((p) => p));
-
-    return [...properties.values()]
-      .filter((prop) => prop !== 'constructor')
-      .filter((name) => isFunction(Reflect.get(instance, name)));
   }
 
   private applyDecorators(
     eventManager: SurrogateEventManager<T>,
     decoratorMap: DecoratedEventMap,
-    methods: string[],
+    identifier: MethodIdentifier<T>,
   ) {
+    const methods = identifier.instancePropertyNames();
+
     Object.entries(decoratorMap).forEach(([action, options]) => {
-      const events = this.getApplicableMethods(action, methods);
+      const events = identifier.getApplicableMethods(action, methods);
 
       Object.entries(options).forEach(([which, handlerOptions]) => {
         events.forEach((event) => {
@@ -72,14 +55,6 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
         });
       });
     });
-  }
-
-  private getApplicableMethods(event: string, methods: string[]): string[] {
-    const methodTest = new RegExp(event);
-
-    return methods.includes(event)
-      ? [event]
-      : methods.filter((method) => methodTest.test(method));
   }
 
   private registerHandlers(
