@@ -12,7 +12,7 @@ export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
 
       try {
         this.runNext(this.nextNode);
-      } catch (error) {
+      } catch (error: any) {
         this.handleError(error);
       }
     });
@@ -31,7 +31,7 @@ export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
 
       this.setReturnValue(result);
       this.runNext(node.nextNode);
-    } catch (error) {
+    } catch (error: any) {
       this.handleError(error);
     }
   }

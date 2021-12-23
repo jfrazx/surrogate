@@ -58,7 +58,7 @@ class AsyncHandlerRunner<T extends object> extends HandlerRunner<T> {
       const result = await this.findRule().run(nextProvider);
 
       this.node.next({ using: asArray(result) });
-    } catch (error) {
+    } catch (error: any) {
       this.node.next({ error });
     }
   }
@@ -66,7 +66,7 @@ class AsyncHandlerRunner<T extends object> extends HandlerRunner<T> {
   protected async runWithNext(nextProvider: NextProvider<T>) {
     try {
       await this.findRule().run(nextProvider);
-    } catch (error) {
+    } catch (error: any) {
       this.node.next({ error });
     }
   }
@@ -78,7 +78,7 @@ class SyncHandlerRunner<T extends object> extends HandlerRunner<T> {
       const result = this.findRule().run(nextProvider);
 
       this.node.next({ using: asArray(result) });
-    } catch (error) {
+    } catch (error: any) {
       this.node.next({ error });
     }
   }
@@ -86,7 +86,7 @@ class SyncHandlerRunner<T extends object> extends HandlerRunner<T> {
   protected runWithNext(nextProvider: NextProvider<T>): void {
     try {
       this.findRule().run(nextProvider);
-    } catch (error) {
+    } catch (error: any) {
       this.node.next({ error });
     }
   }
