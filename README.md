@@ -30,11 +30,12 @@ Check [examples](./examples) for expanded samples.
 
 ### SurrogateOptions
 
-| Option        | Type    | Default Value | Description                                                                                         |
-| ------------- | ------- | :-----------: | --------------------------------------------------------------------------------------------------- |
-| useSingleton? | boolean |     true      | Informs Surrogate to operate as a Singleton                                                         |
-| useContext?   | any     |       T       | The context in which to call surrogate handlers. Handler specific contexts take precedence.         |
-| provide       | any     |     null      | User provided content to pass to handlers and conditionals. Handler specific values take precedence |
+| Option           | Type                          | Default Value | Description                                                                                         |
+| ---------------- | ----------------------------- | :-----------: | --------------------------------------------------------------------------------------------------- |
+| useSingleton?    | boolean                       |     true      | Informs Surrogate to operate as a Singleton                                                         |
+| useContext?      | any                           |       T       | The context in which to call surrogate handlers. Handler specific contexts take precedence.         |
+| provide?         | any                           |     null      | User provided content to pass to handlers and conditionals. Handler specific values take precedence |
+| maintainContext? | boolean \| string \| string[] |     false     | Maintain context for methods without hooks. Can be a method name or array of method names           |
 
 ### SurrogateMethods
 
@@ -157,7 +158,7 @@ A RunCondition is a function that receives `RunConditionParameters`, which inclu
 
 | Property          | Member Of           | Type    | Description                                |
 | ----------------- | ------------------- | ------- | ------------------------------------------ |
-| bailWith()        | RunOnBailParameters | any     | Function that accepts a value ti bail with |
+| bailWith()        | RunOnBailParameters | any     | Function that accepts a value to bail with |
 | recoverFromBail() | RunOnBailParameters | boolean | Function to recover from a bailing handler |
 
 ---
@@ -187,7 +188,7 @@ import { SurrogateDelegate } from 'surrogate';
 class Guitar {}
 ```
 
-If you wish to use `Surrogate` [methods](#-SurrogateMethods) on your class instance you must extend `SurrogateMethods` interface.
+If you wish to use `Surrogate` [methods](#-SurrogateMethods) inside this instance of your class you must extend `SurrogateMethods` interface.
 
 ```typescript
 import { SurrogateDelegate, SurrogateMethods } from 'surrogate';

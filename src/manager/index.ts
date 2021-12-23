@@ -6,10 +6,10 @@ import { asArray } from '@jfrazx/asarray';
 import {
   EventMap,
   WhichContainers,
+  SurrogateOptions,
   SurrogateHandlers,
   SurrogateEventManager,
   SurrogateHandlerTypes,
-  SurrogateGlobalOptions,
   SurrogateHandlerOptions,
 } from '../interfaces';
 
@@ -23,7 +23,7 @@ export class EventManager<T extends object = any> implements SurrogateEventManag
     shallowCopy: false,
   });
 
-  constructor(private globalOptions: SurrogateGlobalOptions = {}) {}
+  constructor(public globalOptions: SurrogateOptions = {}) {}
 
   getEventMap() {
     return this.events;

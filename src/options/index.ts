@@ -1,30 +1,7 @@
-import {
-  MethodWrapper,
-  SurrogateContext,
-  SurrogateGlobalOptions,
-  SurrogateHandlerOptions,
-} from '../interfaces';
+import { CombinedOptions, GlobalHandlerOptions } from './interfaces';
+import { defaultGlobalOptions, defaultMethodOptions } from './lib';
 
-interface GlobalHandlerOptions<T extends object> {
-  handler?: SurrogateHandlerOptions<T>;
-  global?: SurrogateGlobalOptions;
-}
-
-const defaultMethodOptions: Required<SurrogateHandlerOptions<any>> = {
-  priority: 0,
-  noArgs: false,
-  useNext: true,
-  provide: null,
-  runOnBail: [],
-  runOnError: [],
-  runConditions: [],
-  ignoreErrors: false,
-  wrapper: MethodWrapper.Sync,
-  useContext: SurrogateContext.Instance,
-};
-
-export interface OptionsHandler<T extends object>
-  extends Required<SurrogateHandlerOptions<T>> {}
+export interface OptionsHandler<T extends object> extends CombinedOptions<T> {}
 
 export class OptionsHandler<T extends object> {
   constructor(protected combinedOptions: GlobalHandlerOptions<T> = {}) {
@@ -41,7 +18,7 @@ export class OptionsHandler<T extends object> {
   private mergeOptions({
     handler = {},
     global = {},
-  }: GlobalHandlerOptions<T>): Required<SurrogateHandlerOptions<T>> {
-    return { ...defaultMethodOptions, ...global, ...handler };
+  }: GlobalHandlerOptions<T>): CombinedOptions<T> {
+    return { ...defaultMethodOptions, ...defaultGlobalOptions, ...global, ...handler };
   }
 }
