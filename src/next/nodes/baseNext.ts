@@ -24,7 +24,7 @@ export abstract class BaseNext<T extends object> implements INext {
 
   constructor(
     public controller: ContextController<T>,
-    protected proxy: SurrogateProxy<T>,
+    public proxy: SurrogateProxy<T>,
     public container: IContainer<T>,
     public hookFor: Which,
   ) {
@@ -32,7 +32,7 @@ export abstract class BaseNext<T extends object> implements INext {
   }
 
   skip(times: number = 1): void {
-    return this.nextNode.skipWith(times);
+    return this.skipWith(times);
   }
 
   next({ using = [], ...options }: NextOptions = {}): void {

@@ -1,4 +1,4 @@
-import { RunOnErrorParameters } from '../../interfaces';
+import { RunOnErrorParameters } from 'interfaces';
 import { NextNode } from '../../next';
 import { Provider } from '../base';
 

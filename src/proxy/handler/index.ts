@@ -12,9 +12,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   private static instance: SurrogateProxy<any>;
 
   constructor(target: T, { useSingleton = true, ...globalOptions }: SurrogateOptions) {
-    const instance = this.useInstance(useSingleton);
-
-    return instance.setTarget(target, globalOptions);
+    return this.useInstance(useSingleton).setTarget(target, globalOptions);
   }
 
   get<K extends keyof T>(
@@ -41,7 +39,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     );
   }
 
-  bindHandler(event: string, target: T, receiver: Surrogate<T>) {
+  bindHandler(event: string, target: T, receiver: Surrogate<T>): Function {
     const func = Reflect.get(target, event, receiver);
 
     return {

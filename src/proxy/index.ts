@@ -1,5 +1,6 @@
 import { Surrogate, SurrogateOptions } from '../interfaces';
 import { SurrogateProxy } from './handler';
+import 'reflect-metadata';
 
 /**
  * Helper function to create Surrogate wrapped objects

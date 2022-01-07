@@ -7,6 +7,6 @@ export class SkipRule<T extends object> implements NextRule<T> {
   }
 
   run(node: NextNode<T>): void {
-    node.skip();
+    node.skip(0);
   }
 }

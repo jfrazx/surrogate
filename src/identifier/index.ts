@@ -24,7 +24,7 @@ export class MethodIdentifier<T extends object> {
       : methods.filter((method) => methodTest.test(method));
   }
 
-  instancePropertyNames() {
+  instancePropertyNames(): string[] {
     const properties = this.getPropertyNames();
 
     return properties

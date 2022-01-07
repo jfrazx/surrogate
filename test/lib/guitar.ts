@@ -1,9 +1,9 @@
 import {
   POST,
   NextFor,
-  NextParameters,
   SurrogatePre,
   SurrogatePost,
+  NextParameters,
   SurrogateMethods,
   SurrogateDelegate,
 } from '../../src';

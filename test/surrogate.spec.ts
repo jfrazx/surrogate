@@ -177,8 +177,8 @@ describe('SurrogateProxy', () => {
 
       sinon.assert.calledWith(log, handler1Log);
       sinon.assert.calledWith(log, handler2Log);
-      sinon.assert.called(handler1);
-      sinon.assert.called(handler2);
+      sinon.assert.calledOnce(handler1);
+      sinon.assert.calledOnce(handler2);
     });
   });
 });
