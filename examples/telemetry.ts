@@ -218,6 +218,7 @@ telemetry.trackEvent({
   name: 'TestingTrackEvent',
   properties: {
     data: 'Some Content',
+    password: 'password123',
   },
 });
 
@@ -225,6 +226,7 @@ telemetry.trackException({
   exception: new Error(`Failure`),
   properties: {
     relevantData: 'relevant data',
+    password: '123123',
   },
 });
 

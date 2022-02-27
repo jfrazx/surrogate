@@ -41,6 +41,12 @@ export class EventManager<T extends object = any> implements SurrogateEventManag
     return this.getEventHandlersFor(event, POST);
   }
 
+  eventIsHandled(event: string): boolean {
+    const { pre, post } = this.getEventHandlers(event);
+
+    return Boolean(pre?.length + post?.length);
+  }
+
   registerHook(
     event: string,
     type: Which,

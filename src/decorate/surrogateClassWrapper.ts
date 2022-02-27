@@ -44,7 +44,7 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
     decoratorMap: DecoratedEventMap,
     identifier: MethodIdentifier<T>,
   ) {
-    const methods = identifier.instancePropertyNames();
+    const methods = identifier.instanceMethodNames();
 
     Object.entries(decoratorMap).forEach(([action, options]) => {
       const events = identifier.getApplicableMethods(action, methods);

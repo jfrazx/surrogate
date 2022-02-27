@@ -107,8 +107,8 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
     console.error(`SurrogateError: ${error?.message ? error.message : JSON.stringify(error)}`);
   }
 
-  abstract runOriginal(node: NextNode<T>): void;
   abstract handleError(error?: Error): never | void;
+  abstract runOriginal(node: NextNode<T>): void;
   abstract bail(bailWith?: any): any;
   abstract complete(): void;
   abstract start(): any;

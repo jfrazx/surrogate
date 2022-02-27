@@ -27,3 +27,5 @@ export abstract class FetchRuleRunner {
       .find((rule) => rule.shouldHandle());
   }
 }
+
+export * from './interfaces';

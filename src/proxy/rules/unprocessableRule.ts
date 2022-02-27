@@ -1,17 +1,14 @@
-import { isFunction, isUndefined, isBool } from '../../helpers';
+import { isUndefined, isBool } from '../../helpers';
 import { MethodIdentifier } from '../../identifier';
 import { EventManager } from '../../manager';
-import { PRE, POST } from '../../which';
+import { asArray } from '@jfrazx/asarray';
 import { ProxyRule } from './base';
 
 export class UnprocessableRule<T extends object> extends ProxyRule<T> {
   shouldHandle(): boolean {
-    const original = Reflect.get(this.target, this.event);
     const manager = this.proxy.getEventManager(this.target);
 
-    return (
-      !isFunction(original) || isUndefined(manager) || this.shouldMaintainContext(manager)
-    );
+    return isUndefined(manager) || this.shouldMaintainContext(manager);
   }
 
   returnableValue() {
@@ -19,23 +16,23 @@ export class UnprocessableRule<T extends object> extends ProxyRule<T> {
   }
 
   private shouldMaintainContext(manager: EventManager<T>): boolean {
-    const { [PRE]: pre, [POST]: post } = manager.getEventHandlers(this.event);
-
-    return Boolean(pre?.length + post?.length)
+    return manager.eventIsHandled(this.event)
       ? false
       : this.eventSpecificContextDetermination(manager);
   }
 
   private eventSpecificContextDetermination({ globalOptions }: EventManager<T>): boolean {
+    const identifier = new MethodIdentifier(this.target);
     const { maintainContext = false } = globalOptions;
 
-    if (isBool(maintainContext)) {
-      return !maintainContext;
-    }
+    return isBool(maintainContext)
+      ? this.isNotAccessor(identifier, maintainContext)
+      : identifier.doesNotIncludeEvent(this.event, asArray(maintainContext));
+  }
 
-    const events = Array.isArray(maintainContext) ? maintainContext : [maintainContext];
-    const identifier = new MethodIdentifier(this.target);
-
-    return identifier.doesNotIncludeEvent(this.event, events);
+  private isNotAccessor(identifier: MethodIdentifier<T>, maintainContext: boolean): boolean {
+    return maintainContext
+      ? identifier.doesNotIncludeEvent(this.event, identifier.instanceMethodNames())
+      : !maintainContext;
   }
 }

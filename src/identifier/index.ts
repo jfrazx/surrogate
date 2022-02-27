@@ -1,15 +1,17 @@
-import { isFunction } from '../helpers';
+import { isUndefined } from '../helpers';
 
 export class MethodIdentifier<T extends object> {
   constructor(private instance: T) {}
 
   doesNotIncludeEvent(event: string, methods: string[]): boolean {
-    const properties = this.instancePropertyNames();
-
-    return properties.includes(event) ? !this.includesEvent(event, methods) : true;
+    return !this.doesIncludeEvent(event) || !this.matchEvent(event, methods);
   }
 
-  private includesEvent(event: string, methods: string[]): boolean {
+  doesIncludeEvent(event: string): boolean {
+    return this.instanceMethodNames().includes(event);
+  }
+
+  private matchEvent(event: string, methods: string[]): boolean {
     return methods
       .filter((v) => v)
       .map((method) => new RegExp(method))
@@ -24,26 +26,37 @@ export class MethodIdentifier<T extends object> {
       : methods.filter((method) => methodTest.test(method));
   }
 
-  instancePropertyNames(): string[] {
+  instanceMethodNames(): string[] {
+    const prototype = Reflect.getPrototypeOf(this.instance);
     const properties = this.getPropertyNames();
 
     return properties
       .filter((prop) => prop !== 'constructor')
-      .filter((name) => isFunction(Reflect.get(this.instance, name)));
+      .filter((name) => this.isNotProperty(name))
+      .filter((name) => this.isNotAccessor(name, prototype));
+  }
+
+  private isNotProperty(name: string): boolean {
+    const descriptor = Reflect.getOwnPropertyDescriptor(this.instance, name);
+
+    return isUndefined(descriptor);
+  }
+
+  private isNotAccessor(name: string, prototype: object): boolean {
+    const descriptor = Reflect.getOwnPropertyDescriptor(prototype, name);
+
+    return isUndefined(descriptor?.get) && isUndefined(descriptor?.set);
   }
 
   private getPropertyNames(): string[] {
-    const objectProto = Object.getPrototypeOf({});
     const props: string[][] = [];
-    let current = this.instance;
+
+    let current = this.instance as object;
 
     do {
       props.push(Object.getOwnPropertyNames(current));
-    } while (
-      Object.getPrototypeOf(current) !== objectProto &&
-      (current = Object.getPrototypeOf(current))
-    );
+    } while ((current = Reflect.getPrototypeOf(current)));
 
-    return [...new Set(props.flatMap((p) => p)).values()];
+    return [...new Set(props.flat()).values()];
   }
 }
