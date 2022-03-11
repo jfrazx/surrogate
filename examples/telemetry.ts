@@ -1,8 +1,11 @@
 import * as appInsights from 'applicationinsights';
+import fastRedact from 'fast-redact';
 import {
   NextPre,
   SurrogatePre,
+  SurrogatePost,
   NextParameters,
+  SurrogateContext,
   SurrogateMethods,
   SurrogateDelegate,
 } from '../build';
@@ -20,7 +23,7 @@ const configuration = {
 const NANOSECONDS_IN_SECONDS = 1000000000;
 const NANOSECONDS_IN_MILLISECONDS = 1000000;
 
-@SurrogateDelegate<Telemetry>()
+@SurrogateDelegate<Telemetry>({ useContext: SurrogateContext.Surrogate })
 export class Telemetry {
   readonly dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
   readonly instance = appInsights;
@@ -76,6 +79,7 @@ export class Telemetry {
     options: {
       noArgs: true,
       useNext: false,
+      useContext: SurrogateContext.Instance,
       runConditions: ({ instance: telemetry }) => !telemetry.telemetryStarted(),
     },
   })
@@ -152,7 +156,52 @@ export class Telemetry {
 
     return Number.isNaN(batchSize) || batchSize < 1 ? 200 : batchSize;
   }
+
+  @NextPre<Telemetry>({
+    action: ['track*'],
+    options: {
+      ignoreErrors: true,
+      useContext: SurrogateContext.Surrogate,
+    },
+  })
+  @SurrogatePost<Telemetry>({
+    handler({ originalArgs, currentArgs, next }) {
+      const [{ exception }] = originalArgs;
+      const [telemetry] = currentArgs;
+
+      next.next({ replace: { ...telemetry, exception } });
+    },
+    options: {
+      ignoreErrors: true,
+      runConditions: ({ action }) => action === 'trackException',
+    },
+  })
+  protected redact({ originalArgs, next }: NextParameters<Telemetry>) {
+    const [telemetry] = originalArgs;
+    const redacted = redact(telemetry);
+
+    next.next({ replace: redacted });
+  }
 }
+
+const redactableKeys = [
+  'token',
+  'secret',
+  'password',
+  'client_secret',
+  'encryptionPassword',
+  'credentials.password',
+  'encryptionPrivateKey',
+  'socialSecurityNumber',
+  'social_security_number',
+  'sftpCredentials.password',
+];
+
+const paths = redactableKeys.flatMap((key) => [key, `*.${key}`, `properties.*.${key}`]);
+
+const redaction = fastRedact({ paths });
+
+const redact = <T>(value: T): T => JSON.parse(redaction(value) as string);
 
 console.log(`Telemetry debugging is disabled: ${configuration.debug === false}`);
 
@@ -169,6 +218,7 @@ telemetry.trackEvent({
   name: 'TestingTrackEvent',
   properties: {
     data: 'Some Content',
+    password: 'password123',
   },
 });
 
@@ -176,5 +226,8 @@ telemetry.trackException({
   exception: new Error(`Failure`),
   properties: {
     relevantData: 'relevant data',
+    password: '123123',
   },
 });
+
+process.exit();

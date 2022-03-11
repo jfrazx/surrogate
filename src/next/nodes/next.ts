@@ -4,14 +4,14 @@ import { nextOptionDefaults } from './lib';
 import { BaseNext } from './baseNext';
 
 export class Next<T extends object> extends BaseNext<T> implements INext {
-  skipWith(times: number, ...args: any[]): void {
+  skipWith(times: number = 1, ...args: any[]): void {
     if (times > 0) {
       this.controller.setNext(this.nextNode);
 
       return this.nextNode.skipWith(times - 1, ...args);
     }
 
-    return this.handleNext({ using: args });
+    return this.nextNode.handleNext({ using: args });
   }
 
   handleNext(nextOptions: NextOptions = {}): void {

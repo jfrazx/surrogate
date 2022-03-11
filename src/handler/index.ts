@@ -44,11 +44,9 @@ export abstract class HandlerRunner<T extends object> implements SurrogateHandle
   protected abstract runWithNext(nextProvider: NextProvider<T>): void;
 
   protected shouldRunWithNext(): boolean {
-    const { container, context } = this.node;
-    const handler = container.getHandler(context);
-    const { useNext, noArgs } = container.options;
+    const { useNext, noArgs } = this.node.container.options;
 
-    return useNext && Boolean(handler.length) && !noArgs;
+    return useNext && !noArgs;
   }
 }
 

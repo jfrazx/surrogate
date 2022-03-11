@@ -1,5 +1,5 @@
-import { SurrogateDecoratorOptions, SurrogateDelegateOptions } from './interfaces';
 import { SurrogateHandlerOptions, MethodWrapper, SurrogateHandlerTypes } from '../interfaces';
+import { SurrogateDecoratorOptions, SurrogateDelegateOptions } from './interfaces';
 import { SurrogateClassWrapper } from './surrogateClassWrapper';
 import { Which, Whichever, PRE, POST, BOTH } from '../which';
 import { Constructor } from './interfaces';

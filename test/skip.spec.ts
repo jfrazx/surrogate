@@ -18,7 +18,7 @@ describe('Skip', () => {
   });
 
   it('should skip a single handler', () => {
-    const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.skip());
+    const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.skipWith());
     const func2 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
     const func3 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
 

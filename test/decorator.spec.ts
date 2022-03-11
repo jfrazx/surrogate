@@ -104,7 +104,7 @@ describe('SurrogateDecorators', () => {
     it('should pre decorate a synchronous method', () => {
       const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
         next.next(),
-      ) as any;
+      );
       const results = 'SurrogatePre';
 
       @SurrogateDelegate()
@@ -119,7 +119,8 @@ describe('SurrogateDecorators', () => {
 
       const result = test.method();
 
-      sinon.assert.called(handler as any);
+      sinon.assert.calledOnce(handler as any);
+
       expect(result).to.equal(results);
     });
   });
@@ -132,7 +133,7 @@ describe('SurrogateDecorators', () => {
     it('should post decorate a synchronous method', () => {
       const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
         next.next(),
-      ) as any;
+      );
       const results = 'SurrogatePost';
 
       @SurrogateDelegate({ useSingleton: false })
@@ -147,7 +148,7 @@ describe('SurrogateDecorators', () => {
 
       const result = test.method();
 
-      sinon.assert.called(handler as any);
+      sinon.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
   });
@@ -160,7 +161,7 @@ describe('SurrogateDecorators', () => {
     it('should post decorate an async method', async () => {
       const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
         next.next(),
-      ) as any;
+      );
       const results = 'SurrogateAsyncPost';
 
       @SurrogateDelegate()
@@ -175,7 +176,7 @@ describe('SurrogateDecorators', () => {
 
       const result = await test.method();
 
-      sinon.assert.called(handler as any);
+      sinon.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
   });
@@ -188,7 +189,7 @@ describe('SurrogateDecorators', () => {
     it('should pre decorate an async method', async () => {
       const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
         next.next(),
-      ) as any;
+      );
       const results = 'SurrogateAsyncPre';
 
       @SurrogateDelegate()
@@ -203,7 +204,7 @@ describe('SurrogateDecorators', () => {
 
       const result = await test.method();
 
-      sinon.assert.called(handler as any);
+      sinon.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
 
@@ -212,7 +213,7 @@ describe('SurrogateDecorators', () => {
         next.next({
           bail: true,
         }),
-      ) as any;
+      );
       const results = 'SurrogateAsyncPreBail';
 
       @SurrogateDelegate()
@@ -226,7 +227,7 @@ describe('SurrogateDecorators', () => {
       const test = new Test();
       const result = await test.method();
 
-      sinon.assert.called(handler as any);
+      sinon.assert.calledOnce(handler as any);
       expect(result).to.be.undefined;
     });
 
@@ -237,7 +238,7 @@ describe('SurrogateDecorators', () => {
           bail: true,
           bailWith: results,
         }),
-      ) as any;
+      );
 
       @SurrogateDelegate()
       class Test {
@@ -250,7 +251,7 @@ describe('SurrogateDecorators', () => {
       const test = new Test();
       const result = await test.method();
 
-      sinon.assert.called(handler as any);
+      sinon.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
 
@@ -270,7 +271,7 @@ describe('SurrogateDecorators', () => {
 
       const result = await test.method();
 
-      sinon.assert.called(handler as any);
+      sinon.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
 
@@ -295,7 +296,7 @@ describe('SurrogateDecorators', () => {
 
       const result = await test.method();
 
-      sinon.assert.called(handler as any);
+      sinon.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
 
@@ -320,7 +321,7 @@ describe('SurrogateDecorators', () => {
 
       const result = await test.method();
 
-      sinon.assert.called(handler as any);
+      sinon.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
 
@@ -350,7 +351,7 @@ describe('SurrogateDecorators', () => {
 
       const result = await test.method();
 
-      sinon.assert.called(handler as any);
+      sinon.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
   });

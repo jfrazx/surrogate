@@ -15,7 +15,7 @@ const generateTelemetryEvent = () => {
   };
 };
 
-const randomRuns = Math.floor(Math.random() * 100000) + 10000;
+const randomRuns = Math.floor(Math.random() * 10000) + 1000;
 console.log(`Randomized runs: ${randomRuns}`);
 
 const run = async (runsLeft = randomRuns): Promise<void> => {
@@ -23,7 +23,7 @@ const run = async (runsLeft = randomRuns): Promise<void> => {
     return console.log(`Finished!`);
   }
 
-  for (let i = 0; i < 1000000; i++) {
+  for (let i = 0; i < 100000; i++) {
     const telemetry = new Telemetry();
 
     telemetry.trackEvent(generateTelemetryEvent());

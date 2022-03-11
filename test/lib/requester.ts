@@ -1,8 +1,8 @@
 import querystring from 'querystring';
 import { memoize } from 'lodash';
 import {
-  NextParameters,
   NextAsyncPre,
+  NextParameters,
   SurrogateContext,
   SurrogateAsyncPre,
   SurrogateDelegate,
@@ -111,7 +111,7 @@ export class Requester {
 
   async call(url: string, requestOptions: RequestInit): Promise<Response> {
     try {
-      return this.rateLimitedCall(url, this.setToken(requestOptions));
+      return await this.rateLimitedCall(url, this.setToken(requestOptions));
     } catch (error) {
       throw error;
     }
@@ -134,8 +134,8 @@ export class Requester {
     return fetch(url, requestOptions);
   }
 
-  getConfiguration(payerId: string, type = '270', subtypeId = 'HS') {
-    return this.configurationCache(payerId, type, subtypeId);
+  getConfiguration(id: string, type = '270', subtypeId = 'HS') {
+    return this.configurationCache(id, type, subtypeId);
   }
 }
 
