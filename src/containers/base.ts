@@ -1,11 +1,11 @@
-import { SurrogateHandler, SurrogateHandlerTypes } from '../interfaces';
+import { SurrogateHandler, SurrogateHandlerTypes } from 'interfaces';
 import { HandlerRunner, SurrogateHandlerRunner } from '../handler';
-import { NextNode } from '../next/interfaces/next';
 import { OptionsHandler } from '../options';
 import { IContainer } from './interfaces';
 import { isFunction } from '../helpers';
 import { WhichMethod } from '../which';
 import { Context } from '../context';
+import { NextNode } from '../next';
 
 export abstract class BaseContainer<T extends object> implements IContainer<T> {
   constructor(
@@ -16,11 +16,12 @@ export abstract class BaseContainer<T extends object> implements IContainer<T> {
 
   getHandler(context: Context<T>): Function | SurrogateHandler<T> {
     const { target, receiver } = context;
+    const handler = this.handler as string;
 
     return this.shouldReflect
       ? this.shouldReflectSurrogate(context)
-        ? Reflect.get(receiver, this.handler as string)
-        : Reflect.get(target, this.handler as string, receiver)
+        ? Reflect.get(receiver, handler, target)
+        : Reflect.get(target, handler, receiver)
       : this.handler;
   }
 

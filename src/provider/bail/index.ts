@@ -1,4 +1,4 @@
-import { RunOnBailParameters } from '../../interfaces';
+import { RunOnBailParameters } from 'interfaces';
 import { NextNode } from '../../next';
 import { Provider } from '../base';
 

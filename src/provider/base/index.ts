@@ -1,4 +1,4 @@
-import { ProviderParameters } from '../../interfaces';
+import { ProviderParameters } from 'interfaces';
 import { Context } from '../../context';
 import { NextNode } from '../../next';
 

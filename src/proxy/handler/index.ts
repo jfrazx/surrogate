@@ -1,20 +1,18 @@
 import { Surrogate, SurrogateOptions, SurrogateGlobalOptions } from '../../interfaces';
+import { FetchRuleRunner, InternalMethods } from '../rules';
 import { ExecutionContext } from '../../next';
 import { EventManager } from '../../manager';
-import { FetchRuleRunner } from '../rules';
 import { isFunction } from '../../helpers';
 import { Context } from '../../context';
 
-type Target<T extends object> = WeakMap<any, EventManager<T>>;
+type Target<T extends object> = WeakMap<T, EventManager<T>>;
 
 export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   private readonly targets: Target<T> = new WeakMap();
   private static instance: SurrogateProxy<any>;
 
   constructor(target: T, { useSingleton = true, ...globalOptions }: SurrogateOptions) {
-    const instance = this.useInstance(useSingleton);
-
-    return instance.setTarget(target, globalOptions);
+    return this.useInstance(useSingleton).setTarget(target, globalOptions);
   }
 
   get<K extends keyof T>(
@@ -36,12 +34,12 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   }
 
   static hasTarget<T extends object>(target: T): target is Surrogate<T> {
-    return ['getSurrogate', 'disposeSurrogate'].every((key) =>
-      isFunction(target[key as keyof T]),
-    );
+    const methods = [InternalMethods.Dispose, InternalMethods.EventManager] as (keyof T)[];
+
+    return methods.every((key) => isFunction(target[key]));
   }
 
-  bindHandler(event: string, target: T, receiver: Surrogate<T>) {
+  bindHandler(event: string, target: T, receiver: Surrogate<T>): Function {
     const func = Reflect.get(target, event, receiver);
 
     return {
@@ -68,7 +66,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
 
   private setTarget(target: T, globalOptions: SurrogateGlobalOptions): SurrogateProxy<T> {
     if (!this.targets.has(target)) {
-      this.targets.set(target, new EventManager(globalOptions));
+      this.targets.set(target, new EventManager<T>(globalOptions));
     }
 
     return this;

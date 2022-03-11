@@ -7,7 +7,7 @@ export class NextContext<T extends object> extends ExecutionContext<T> {
       this.runNext();
 
       return this.complete();
-    } catch (error) {
+    } catch (error: any) {
       this.handleError(error);
     }
   }

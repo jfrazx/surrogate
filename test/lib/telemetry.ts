@@ -1,7 +1,10 @@
+import fastRedact from 'fast-redact';
 import * as sinon from 'sinon';
 import {
   NextPre,
   SurrogatePre,
+  SurrogatePost,
+  NextParameters,
   SurrogateMethods,
   SurrogateContext,
   SurrogateDelegate,
@@ -30,11 +33,13 @@ export class Telemetry {
     this.getClient()?.trackEvent(event);
   }
 
+  trackException(event: any) {
+    this.getClient()?.trackException(event);
+  }
+
   @SurrogatePre<Telemetry>({
     handler: ({ next }) => next.next({ bail: true }),
-    options: {
-      runConditions: bootstrapRunCondition,
-    },
+    options: { runConditions: bootstrapRunCondition },
   })
   @NextPre<Telemetry>({
     action: 'getClient',
@@ -52,4 +57,46 @@ export class Telemetry {
   telemetryStarted() {
     return this.isInitialized;
   }
+
+  @NextPre<Telemetry>({
+    action: ['track*'],
+    options: { ignoreErrors: true },
+  })
+  @SurrogatePost<Telemetry>({
+    handler({ originalArgs, currentArgs, next }) {
+      const [{ exception }] = originalArgs;
+      const [telemetry] = currentArgs;
+
+      next.next({ replace: { ...telemetry, exception } });
+    },
+    options: {
+      ignoreErrors: true,
+      runConditions: ({ action }) => action === 'trackException',
+    },
+  })
+  protected redact({ originalArgs, next }: NextParameters<Telemetry>) {
+    const [telemetry] = originalArgs;
+    const redacted = redact(telemetry);
+
+    next.next({ replace: redacted });
+  }
 }
+
+const redactableKeys = [
+  'token',
+  'secret',
+  'password',
+  'client_secret',
+  'encryptionPassword',
+  'credentials.password',
+  'encryptionPrivateKey',
+  'socialSecurityNumber',
+  'social_security_number',
+  'sftpCredentials.password',
+];
+
+const paths = redactableKeys.flatMap((key) => [key, `*.${key}`, `properties.*.${key}`]);
+
+const redaction = fastRedact({ paths });
+
+const redact = <T>(value: T): T => JSON.parse(redaction(value) as string);

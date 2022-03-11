@@ -15,9 +15,38 @@ export interface SurrogateOptions extends SurrogateGlobalOptions {
    * @memberof SurrogateOptions
    */
   useSingleton?: boolean;
+
+  /**
+   * @description Will force Surrogate to run specified methods with or without hooks.
+   * @default false
+   * @Type {boolean|string|string[]}
+   * @memberof SurrogateOptions
+   */
+  maintainContext?: boolean | string | string[];
 }
 
 export interface SurrogateGlobalOptions {
+  /**
+   * @description Pass Next object to the Surrogate Handler
+   *
+   * @default true
+   */
+  useNext?: boolean;
+
+  /**
+   * @description Specify that nothing should be passed to handler
+   *
+   * @default false
+   */
+  noArgs?: boolean;
+
+  /**
+   * @description Should errors be thrown or ignored when passed via next()?
+   *
+   * @default false
+   */
+  ignoreErrors?: boolean;
+
   /**
    * @description Specifies the context in which to call a handler. Method defined contexts take precedence.
    *

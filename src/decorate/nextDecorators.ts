@@ -19,10 +19,11 @@ type PropertyDecorator<T extends object> = (
  * @param {(NextForOptions<T> | NextForOptions<T>[])} nextOptions
  * @returns {PropertyDecorator<T>}
  */
-export const NextFor = <T extends object>(
-  nextOptions: NextForOptions<T> | NextForOptions<T>[],
-): PropertyDecorator<T> => {
-  return (target: T, event: string): void => {
+export const NextFor =
+  <T extends object>(
+    nextOptions: NextForOptions<T> | NextForOptions<T>[],
+  ): PropertyDecorator<T> =>
+  (target: T, event: string): void =>
     asArray(nextOptions).forEach((nextOption) => {
       const { type, action, options } = nextOption;
       const which: Which[] = determineWhich(type);
@@ -30,15 +31,13 @@ export const NextFor = <T extends object>(
 
       which.forEach((type) =>
         actions.forEach((action) =>
-          manageDecorator(type, {
+          manageDecorator<T>(type, {
             handler: event,
             options,
           })(target, action),
         ),
       );
     });
-  };
-};
 
 /**
  * Designate decorated methods as async pre hooks.
@@ -95,11 +94,13 @@ const nextAsyncHelper = <T extends object>(
 ): PropertyDecorator<T> => {
   return (target: T, event: string, descriptor: PropertyDescriptor): void =>
     asArray(nextOptions).forEach(({ action, options }) =>
-      NextFor({
-        action,
+      nextHelper<T>(
+        {
+          action,
+          options: { ...options, wrapper: MethodWrapper.Async },
+        },
         type,
-        options: { ...options, wrapper: MethodWrapper.Async },
-      })(target, event, descriptor),
+      )(target, event, descriptor),
     );
 };
 
@@ -148,7 +149,7 @@ export const NextPreAndPost = <T extends object>(
   const which: Which[] = [PRE, POST];
 
   return (target: T, event: string, descriptor: PropertyDescriptor): void => {
-    which.forEach((type) => nextHelper(nextOptions, type)(target, event, descriptor));
+    which.forEach((type) => nextHelper<T>(nextOptions, type)(target, event, descriptor));
   };
 };
 
@@ -158,7 +159,7 @@ const nextHelper = <T extends object>(
 ): PropertyDecorator<T> => {
   return (target: T, event: string, descriptor: PropertyDescriptor): void =>
     asArray(hookOptions).forEach(({ action, options }) =>
-      NextFor({
+      NextFor<T>({
         action,
         type,
         options,
