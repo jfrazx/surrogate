@@ -154,7 +154,7 @@ describe('SurrogateProxy', () => {
       expect(end - start).to.be.gte(1000);
     });
 
-    it('should determine to ignore next when missing the option and no parameters', () => {
+    it('should determine to ignore next when missing the option and no arguments', () => {
       const returnValue = 'NoNextParams';
       const handler1Log = 'Log 1 was called';
       const handler1 = sinon.spy(() => console.log(handler1Log));
@@ -169,7 +169,7 @@ describe('SurrogateProxy', () => {
 
       const test = wrapSurrogate(new NoNextTest());
 
-      test.getSurrogate().registerPreHook('method', [handler1, handler2]);
+      test.getSurrogate().registerPreHook('method', [handler1, handler2], { noArgs: true });
 
       const result = test.method();
 
