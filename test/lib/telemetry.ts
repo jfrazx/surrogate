@@ -3,7 +3,6 @@ import * as sinon from 'sinon';
 import {
   NextPre,
   SurrogatePre,
-  SurrogatePost,
   NextParameters,
   SurrogateMethods,
   SurrogateContext,
@@ -13,11 +12,9 @@ import {
 export interface Telemetry extends SurrogateMethods<Telemetry> {}
 
 export const getClientRunCondition = sinon.spy(({ instance: telemetry }) => {
-  console.log(`get client run condition`);
   return !telemetry.telemetryStarted();
 });
 export const bootstrapRunCondition = sinon.spy(({ instance: telemetry }) => {
-  console.log(`bootstrap run condition`);
   return telemetry.telemetryStarted();
 });
 
@@ -33,6 +30,18 @@ export class Telemetry {
     this.getClient()?.trackEvent(event);
   }
 
+  @SurrogatePre<Telemetry>({
+    handler({ originalArgs, currentArgs, next }) {
+      const [{ exception }] = originalArgs;
+      const [telemetry] = currentArgs;
+
+      next.next({ replace: { ...telemetry, exception } });
+    },
+    options: {
+      priority: -1,
+      ignoreErrors: true,
+    },
+  })
   trackException(event: any) {
     this.getClient()?.trackException(event);
   }
@@ -61,18 +70,6 @@ export class Telemetry {
   @NextPre<Telemetry>({
     action: ['track*'],
     options: { ignoreErrors: true },
-  })
-  @SurrogatePost<Telemetry>({
-    handler({ originalArgs, currentArgs, next }) {
-      const [{ exception }] = originalArgs;
-      const [telemetry] = currentArgs;
-
-      next.next({ replace: { ...telemetry, exception } });
-    },
-    options: {
-      ignoreErrors: true,
-      runConditions: ({ action }) => action === 'trackException',
-    },
   })
   protected redact({ originalArgs, next }: NextParameters<Telemetry>) {
     const [telemetry] = originalArgs;

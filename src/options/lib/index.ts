@@ -14,6 +14,7 @@ export const defaultMethodOptions: Required<SurrogateHandlerOptions<any>> = {
   runOnError: [],
   runConditions: [],
   ignoreErrors: false,
+  silenceErrors: false,
   wrapper: MethodWrapper.Sync,
   useContext: SurrogateContext.Instance,
 };

@@ -1,10 +1,12 @@
 import { wrapSurrogate, Surrogate, NextParameters } from '../src';
+import { EventManager } from '../src/manager';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { EventManager } from '../src/manager/index';
 
 describe('SurrogateProxy', () => {
+  const sandbox = sinon.createSandbox();
+
   let log: sinon.SinonStub<any, void>;
   let clock: sinon.SinonFakeTimers;
   let network: Surrogate<Network>;
@@ -15,12 +17,12 @@ describe('SurrogateProxy', () => {
 
   beforeEach(() => {
     network = wrapSurrogate(new Network());
-    log = sinon.stub(console, 'log');
-    clock = sinon.useFakeTimers();
+    log = sandbox.stub(console, 'log');
+    clock = sandbox.useFakeTimers();
   });
 
   afterEach(() => {
-    sinon.restore();
+    sandbox.restore();
     network.disposeSurrogate();
   });
 

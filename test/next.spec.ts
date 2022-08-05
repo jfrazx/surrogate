@@ -6,15 +6,18 @@ import { expect } from 'chai';
 
 describe('Next', () => {
   let network: Surrogate<Network>;
+  const sandbox = sinon.createSandbox();
+
+  let consoleError: sinon.SinonStub;
 
   beforeEach(() => {
     network = wrapSurrogate(new Network());
-    sinon.stub(console, 'error');
-    sinon.stub(console, 'log');
+    consoleError = sandbox.stub(console, 'error');
+    sandbox.stub(console, 'log');
   });
 
   afterEach(() => {
-    sinon.restore();
+    sandbox.restore();
     network.disposeSurrogate();
   });
 
@@ -128,44 +131,44 @@ describe('Next', () => {
     it('should throw error received from Next(PRE)', () => {
       const error = new Error('fail');
 
-      const func1 = sinon.spy(({ next }: NextParameters<Network>) => {
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => {
         expect(next).to.be.instanceOf(Next);
 
         next.next({ error });
       });
-      const func2 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
+      const func2 = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
 
       network.getSurrogate().registerPreHook('connect', [func1, func2]);
 
       expect(() => network.connect()).to.throw(error.message);
-      sinon.assert.calledOnce(func1);
-      sinon.assert.notCalled(func2);
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.notCalled(func2);
     });
 
     it('should throw an error on FinalNext(PRE)', () => {
       const error = new Error('fail');
 
-      const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
-      const func2 = sinon.spy(({ next }: NextParameters<Network>) => {
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
+      const func2 = sandbox.spy(({ next }: NextParameters<Network>) => {
         next.next({ error });
       });
 
       network.getSurrogate().registerPreHook('connect', [func1, func2]);
 
       expect(() => network.connect()).to.throw(error.message);
-      sinon.assert.calledOnce(func1);
-      sinon.assert.calledOnce(func2);
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.calledOnce(func2);
     });
 
     it('should ignore error received from Next(PRE)', () => {
       const error = new Error('fail');
 
-      const func1 = sinon.spy(({ next }: NextParameters<Network>) => {
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => {
         expect(next).to.be.instanceOf(Next);
 
         next.next({ error });
       });
-      const func2 = sinon.spy(({ next, error: passedError }: NextParameters<Network>) => {
+      const func2 = sandbox.spy(({ next, error: passedError }: NextParameters<Network>) => {
         expect(passedError).to.equal(error);
 
         next.next();
@@ -177,40 +180,40 @@ describe('Next', () => {
 
       network.connect();
 
-      sinon.assert.calledOnce(func1);
-      sinon.assert.calledOnce(func2);
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.calledOnce(func2);
     });
 
     it('should throw error received from Next(POST)', () => {
       const error = new Error('fail');
 
-      const func1 = sinon.spy(({ next }: NextParameters<Network>) => {
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => {
         expect(next).to.be.instanceOf(Next);
 
         next.next({ error });
       });
-      const func2 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
+      const func2 = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
 
       network.getSurrogate().registerPostHook('connect', [func1, func2]);
 
       expect(() => network.connect()).to.throw(error.message);
 
-      sinon.assert.calledOnce(func1);
-      sinon.assert.notCalled(func2);
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.notCalled(func2);
     });
 
     it('should catch and throw inside handler when using ASYNC wrapper and NOT using Next', async () => {
       const error = new Error('fail');
       let errorThrown = false;
 
-      const connect = sinon.spy(network, 'asyncConnect');
+      const connect = sandbox.spy(network, 'asyncConnect');
 
-      const func1 = sinon.spy(async ({ next }: NextParameters<Network>) => {
+      const func1 = sandbox.spy(async ({ next }: NextParameters<Network>) => {
         expect(next).to.be.instanceOf(Next);
 
         throw error;
       });
-      const func2 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
+      const func2 = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
 
       network
         .getSurrogate()
@@ -224,9 +227,9 @@ describe('Next', () => {
         errorThrown = true;
       }
 
-      sinon.assert.calledOnce(func1);
-      sinon.assert.notCalled(func2);
-      sinon.assert.notCalled(connect);
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.notCalled(func2);
+      sandbox.assert.notCalled(connect);
 
       expect(errorThrown).to.be.true;
     });
@@ -234,12 +237,12 @@ describe('Next', () => {
     it('should catch and throw when running original method', async () => {
       let errorThrown = false;
 
-      const asyncError = sinon.spy(network, 'asyncError');
+      const asyncError = sandbox.spy(network, 'asyncError');
 
-      const func1 = sinon.spy(async ({ next }: NextParameters<Network>) => {
+      const func1 = sandbox.spy(async ({ next }: NextParameters<Network>) => {
         expect(next).to.be.instanceOf(Next);
       });
-      const func2 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
+      const func2 = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
 
       network
         .getSurrogate()
@@ -248,14 +251,14 @@ describe('Next', () => {
 
       try {
         await network.asyncError();
-      } catch (err) {
+      } catch (err: any) {
         expect(err.message).to.equal('async error');
         errorThrown = true;
       }
 
-      sinon.assert.calledOnce(func1);
-      sinon.assert.calledOnce(func2);
-      sinon.assert.calledOnce(asyncError);
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.calledOnce(func2);
+      sandbox.assert.calledOnce(asyncError);
 
       expect(errorThrown).to.be.true;
     });
@@ -264,14 +267,14 @@ describe('Next', () => {
       const error = new Error('fail');
       let errorThrown = false;
 
-      const connect = sinon.spy(network, 'connect');
+      const connect = sandbox.spy(network, 'connect');
 
-      const func1 = sinon.spy(({ next }: NextParameters<Network>) => {
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => {
         expect(next).to.be.instanceOf(Next);
 
         next.next({ error });
       });
-      const func2 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
+      const func2 = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
 
       network.getSurrogate().registerPostHook('connect', [func1, func2], { wrapper: 'async' });
 
@@ -280,36 +283,36 @@ describe('Next', () => {
       } catch {
         errorThrown = true;
       }
-      sinon.assert.calledOnce(connect);
-      sinon.assert.calledOnce(func1);
-      sinon.assert.notCalled(func2);
+      sandbox.assert.calledOnce(connect);
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.notCalled(func2);
       expect(errorThrown).to.be.true;
     });
 
     it('should throw an error on FinalNext(POST)', () => {
       const error = new Error('fail');
 
-      const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
-      const func2 = sinon.spy(({ next }: NextParameters<Network>) => {
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
+      const func2 = sandbox.spy(({ next }: NextParameters<Network>) => {
         next.next({ error });
       });
 
       network.getSurrogate().registerPostHook('connect', [func1, func2]);
 
       expect(() => network.connect()).to.throw(error.message);
-      sinon.assert.calledOnce(func1);
-      sinon.assert.calledOnce(func2);
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.calledOnce(func2);
     });
 
     it('should ignore error received from Next(POST)', () => {
       const error = new Error('fail');
 
-      const func1 = sinon.spy(({ next }: NextParameters<Network>) => {
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => {
         expect(next).to.be.instanceOf(Next);
 
         next.next({ error });
       });
-      const func2 = sinon.spy(
+      const func2 = sandbox.spy(
         ({ next, instance, error: passedError }: NextParameters<Network>) => {
           expect(passedError).to.equal(error);
           expect(instance).to.equal(network.bypassSurrogate());
@@ -324,18 +327,18 @@ describe('Next', () => {
 
       network.connect();
 
-      sinon.assert.calledOnce(func1);
-      sinon.assert.calledOnce(func2);
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.calledOnce(func2);
     });
 
     it(`should throw an error when async and next`, async () => {
       const error = new Error('fail');
       let errorThrown = false;
 
-      const func1 = sinon.spy((_nextParams) => {
+      const func1 = sandbox.spy((_nextParams) => {
         throw error;
       });
-      const func2 = sinon.spy(async ({ next }: NextParameters<Network>) => next.next());
+      const func2 = sandbox.spy(async ({ next }: NextParameters<Network>) => next.next());
 
       network
         .getSurrogate()
@@ -349,8 +352,138 @@ describe('Next', () => {
       }
 
       expect(errorThrown).to.be.true;
-      sinon.assert.calledOnce(func1);
-      sinon.assert.notCalled(func2);
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.notCalled(func2);
+    });
+  });
+
+  describe(`ErrorOutput`, () => {
+    it('should output error received from Next(POST)', () => {
+      const error = new Error('fail');
+
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => {
+        expect(next).to.be.instanceOf(Next);
+
+        next.next({ error });
+      });
+
+      network.getSurrogate().registerPostHook('connect', [func1]);
+
+      sandbox.assert.notCalled(consoleError);
+      sandbox.assert.notCalled(func1);
+
+      expect(() => network.connect()).to.throw(error.message);
+
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.calledOnce(consoleError);
+    });
+
+    it('should NOT output error received from Next(POST)', () => {
+      const error = new Error('fail');
+
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => {
+        expect(next).to.be.instanceOf(Next);
+
+        next.next({ error });
+      });
+
+      network.getSurrogate().registerPostHook('connect', [func1], { silenceErrors: true });
+
+      sandbox.assert.notCalled(consoleError);
+      sandbox.assert.notCalled(func1);
+
+      expect(() => network.connect()).to.throw(error.message);
+
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.notCalled(consoleError);
+    });
+
+    it('should NOT output error received from Next(POST) global options', () => {
+      const network = wrapSurrogate(new Network(), { silenceErrors: true });
+      const error = new Error('fail');
+
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => {
+        expect(next).to.be.instanceOf(Next);
+
+        next.next({ error });
+      });
+
+      network.getSurrogate().registerPostHook('connect', [func1]);
+
+      sandbox.assert.notCalled(consoleError);
+      sandbox.assert.notCalled(func1);
+
+      expect(() => network.connect()).to.throw(error.message);
+
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.notCalled(consoleError);
+    });
+
+    it('should output error received from Next(PRE) global options', () => {
+      const network = wrapSurrogate(new Network(), { silenceErrors: true });
+      const error = new Error('fail');
+
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => {
+        expect(next).to.be.instanceOf(Next);
+
+        next.next({ error });
+      });
+
+      network.getSurrogate().registerPreHook('connect', [func1], { silenceErrors: false });
+
+      sandbox.assert.notCalled(consoleError);
+      sandbox.assert.notCalled(func1);
+
+      expect(() => network.connect()).to.throw(error.message);
+
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.calledOnce(consoleError);
+    });
+
+    it('should NOT output error received from Next(PRE) with a supplied function', () => {
+      const network = wrapSurrogate(new Network(), { silenceErrors: true });
+      const error = new Error('fail');
+
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => {
+        expect(next).to.be.instanceOf(Next);
+
+        next.next({ error });
+      });
+
+      network.getSurrogate().registerPreHook('connect', [func1], {
+        silenceErrors: (error: Error) => error.message === 'fail',
+      });
+
+      sandbox.assert.notCalled(consoleError);
+      sandbox.assert.notCalled(func1);
+
+      expect(() => network.connect()).to.throw(error.message);
+
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.notCalled(consoleError);
+    });
+
+    it('should  output error received from Next(PRE) with a supplied function', () => {
+      const network = wrapSurrogate(new Network(), { silenceErrors: true });
+      const error = new Error('fail');
+
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => {
+        expect(next).to.be.instanceOf(Next);
+
+        next.next({ error });
+      });
+
+      network.getSurrogate().registerPreHook('connect', [func1], {
+        silenceErrors: (error: Error) => error.message !== 'fail',
+      });
+
+      sandbox.assert.notCalled(consoleError);
+      sandbox.assert.notCalled(func1);
+
+      expect(() => network.connect()).to.throw(error.message);
+
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.calledOnce(consoleError);
     });
   });
 });

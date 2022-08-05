@@ -1,5 +1,6 @@
 import { ExecutionContext } from './executionContext';
 import { MethodNext } from '../nodes';
+import { NextNode } from '../../next';
 
 export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
   private rejecter: (reason: any) => void;
@@ -32,12 +33,12 @@ export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
       this.setReturnValue(result);
       this.runNext(node.nextNode);
     } catch (error: any) {
-      this.handleError(error);
+      this.handleError(this.nextNode, error);
     }
   }
 
-  handleError(error?: Error) {
-    this.logError(error);
+  handleError(node: NextNode<T>, error?: Error) {
+    this.logError(node, error);
     this.rejecter(error);
   }
 

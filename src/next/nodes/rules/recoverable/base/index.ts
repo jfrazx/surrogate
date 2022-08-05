@@ -1,6 +1,6 @@
-import { RecoverableProvider, Contexts } from '../../../../../interfaces';
-import { NextNode, NextOptions } from '../../../../interfaces';
-import { NextRule, Recoverable } from '../../interfaces';
+import type { RecoverableProvider, Contexts } from '../../../../../interfaces';
+import type { NextNode, NextOptions } from '../../../../interfaces';
+import type { NextRule, Recoverable } from '../../interfaces';
 import { asArray } from '@jfrazx/asarray';
 
 export abstract class RecoverableRule<T extends object> implements NextRule<T> {

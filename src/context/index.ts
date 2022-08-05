@@ -19,11 +19,11 @@ export class Context<T extends object> {
       : useContext;
   }
 
-  useInstance(context: SurrogateHandlerOptions<T>['useContext']) {
+  useInstance(context: Contexts): boolean {
     return context === SurrogateContext.Instance;
   }
 
-  useSurrogate(context: SurrogateHandlerOptions<T>['useContext']) {
+  useSurrogate(context: Contexts): boolean {
     return context === SurrogateContext.Surrogate;
   }
 }

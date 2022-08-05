@@ -1,12 +1,12 @@
 import { ErrorRule, BailRule, NextRule, ProgressRule } from './rules';
-import { SurrogateUnwrapped, HookType } from '../../interfaces';
 import { INext, NextOptions, NextNode } from '../interfaces';
 import { RunConditionProvider } from '../../provider';
+import { SurrogateUnwrapped } from '../../interfaces';
 import { SurrogateProxy } from '../../proxy/handler';
 import { ContextController } from '../context';
+import { Which, HookType } from '../../which';
 import { IContainer } from '../../containers';
 import { asArray } from '@jfrazx/asarray';
-import { Which, PRE } from '../../which';
 
 export interface NextConstruct<T extends object> {
   new (
@@ -68,15 +68,15 @@ export abstract class BaseNext<T extends object> implements INext {
     return this.context.target as SurrogateUnwrapped<T>;
   }
 
-  get hookType() {
-    return this.hookFor === PRE ? HookType.PRE : HookType.POST;
+  get hookType(): HookType {
+    return this.hookFor === HookType.PRE ? HookType.PRE : HookType.POST;
   }
 
   get context() {
     return this.controller.context;
   }
 
-  addNext(next: NextNode<T>) {
+  addNext(next: NextNode<T>): void {
     if (this.nextNode) {
       return this.nextNode.addNext(next);
     }
@@ -89,11 +89,11 @@ export abstract class BaseNext<T extends object> implements INext {
     return this.context.determineContext(this.container.options);
   }
 
-  private shouldReplace(options: NextOptions) {
+  private shouldReplace(options: NextOptions): boolean {
     return 'replace' in options;
   }
 
-  protected replace(options: NextOptions) {
+  protected replace(options: NextOptions): void {
     if (this.shouldReplace(options)) {
       this.controller.updateLatestArgs(options.replace);
     }

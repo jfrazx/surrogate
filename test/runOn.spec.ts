@@ -5,23 +5,24 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 
 describe(`RunOn`, () => {
+  const sandbox = sinon.createSandbox();
   let network: Surrogate<Network>;
 
   beforeEach(() => {
     network = wrapSurrogate(new Network());
-    sinon.stub(console, 'error');
-    sinon.stub(console, 'log');
+    sandbox.stub(console, 'error');
+    sandbox.stub(console, 'log');
   });
 
   afterEach(() => {
     network.disposeSurrogate();
-    sinon.restore();
+    sandbox.restore();
   });
 
   describe(`Error`, () => {
     it(`should accept runOnError function in handler options`, () => {
-      const handler = sinon.stub();
-      const runner = sinon.stub();
+      const handler = sandbox.stub();
+      const runner = sandbox.stub();
 
       network.getSurrogate().registerPreHook('connect', handler, {
         runOnError: runner,
@@ -29,8 +30,8 @@ describe(`RunOn`, () => {
     });
 
     it('should run when an error occurs', () => {
-      const runner = sinon.stub();
-      const handler = sinon.spy(() => {
+      const runner = sandbox.stub();
+      const handler = sandbox.spy(() => {
         throw new Error('error');
       });
 
@@ -43,15 +44,15 @@ describe(`RunOn`, () => {
 
       expect(runner.called).to.be.true;
 
-      const [provider]: ErrorProvider<Network>[] = runner.getCall(0).args;
+      const [provider]: ErrorProvider<Network>[] = runner.firstCall.args;
 
       expect(provider).to.be.instanceOf(ErrorProvider);
     });
 
     it('should run multiple when an error occurs', () => {
-      const runner1 = sinon.stub();
-      const runner2 = sinon.stub();
-      const handler = sinon.spy(() => {
+      const runner1 = sandbox.stub();
+      const runner2 = sandbox.stub();
+      const handler = sandbox.spy(() => {
         throw new Error('error');
       });
 
@@ -74,8 +75,8 @@ describe(`RunOn`, () => {
     });
 
     it(`should ignore errors`, () => {
-      const runner = sinon.stub();
-      const handler = sinon.spy(() => {
+      const runner = sandbox.stub();
+      const handler = sandbox.spy(() => {
         throw new Error('error');
       });
 
@@ -91,10 +92,10 @@ describe(`RunOn`, () => {
     });
 
     it(`should recover from errors`, () => {
-      const runner = sinon.spy((provider: RunOnErrorParameters<any>) =>
+      const runner = sandbox.spy((provider: RunOnErrorParameters<any>) =>
         provider.recoverFromError(true),
       );
-      const handler = sinon.spy(() => {
+      const handler = sandbox.spy(() => {
         throw new Error('error');
       });
 
@@ -109,13 +110,13 @@ describe(`RunOn`, () => {
     });
 
     it(`should stay recovered from errors`, () => {
-      const runner1 = sinon.spy((provider: RunOnErrorParameters<any>) =>
+      const runner1 = sandbox.spy((provider: RunOnErrorParameters<any>) =>
         provider.recoverFromError(true),
       );
-      const runner2 = sinon.spy((provider: RunOnErrorParameters<any>) =>
+      const runner2 = sandbox.spy((provider: RunOnErrorParameters<any>) =>
         provider.recoverFromError(false),
       );
-      const handler = sinon.spy(() => {
+      const handler = sandbox.spy(() => {
         throw new Error('error');
       });
 
@@ -130,16 +131,16 @@ describe(`RunOn`, () => {
       expect(runner2.called).to.be.true;
     });
     it(`should recover then fail`, () => {
-      const runner1 = sinon.spy((provider: RunOnErrorParameters<any>) =>
+      const runner1 = sandbox.spy((provider: RunOnErrorParameters<any>) =>
         provider.recoverFromError(true),
       );
-      const runner2 = sinon.spy((provider: RunOnErrorParameters<any>) =>
+      const runner2 = sandbox.spy((provider: RunOnErrorParameters<any>) =>
         provider.recoverFromError(false),
       );
-      const handler1 = sinon.spy(() => {
+      const handler1 = sandbox.spy(() => {
         throw new Error('error');
       });
-      const handler2 = sinon.spy(() => {
+      const handler2 = sandbox.spy(() => {
         throw new Error('error');
       });
 
@@ -161,8 +162,8 @@ describe(`RunOn`, () => {
 
   describe(`Bail`, () => {
     it(`should accept runOnBail function in handler options`, () => {
-      const handler = sinon.stub();
-      const bailRunner = sinon.stub();
+      const handler = sandbox.stub();
+      const bailRunner = sandbox.stub();
 
       network.getSurrogate().registerPreHook('connect', handler, {
         runOnBail: bailRunner,
@@ -170,8 +171,8 @@ describe(`RunOn`, () => {
     });
 
     it('should run on bail', () => {
-      const runner = sinon.stub();
-      const handler = sinon.spy(({ next }) => next.next({ bail: true }));
+      const runner = sandbox.stub();
+      const handler = sandbox.spy(({ next }) => next.next({ bail: true }));
 
       network.getSurrogate().registerPreHook('connect', handler, {
         runOnBail: runner,
@@ -187,9 +188,9 @@ describe(`RunOn`, () => {
     });
 
     it('should run multiple when bail occurs', () => {
-      const runner1 = sinon.stub();
-      const runner2 = sinon.stub();
-      const handler = sinon.spy(({ next }) => next.next({ bail: true }));
+      const runner1 = sandbox.stub();
+      const runner2 = sandbox.stub();
+      const handler = sandbox.spy(({ next }) => next.next({ bail: true }));
 
       network.getSurrogate().registerPreHook('connect', handler, {
         runOnBail: [runner1, runner2],
@@ -209,11 +210,11 @@ describe(`RunOn`, () => {
     });
 
     it(`should recover from bail`, () => {
-      const runner = sinon.spy((provider: RunOnBailParameters<any>) =>
+      const runner = sandbox.spy((provider: RunOnBailParameters<any>) =>
         provider.recoverFromBail(true),
       );
-      const handler1 = sinon.spy(({ next }) => next.next({ bail: true }));
-      const handler2 = sinon.stub();
+      const handler1 = sandbox.spy(({ next }) => next.next({ bail: true }));
+      const handler2 = sandbox.stub();
 
       network
         .getSurrogate()
@@ -232,14 +233,14 @@ describe(`RunOn`, () => {
     });
 
     it(`should stay recovered from bail`, () => {
-      const runner1 = sinon.spy((provider: RunOnBailParameters<any>) =>
+      const runner1 = sandbox.spy((provider: RunOnBailParameters<any>) =>
         provider.recoverFromBail(true),
       );
-      const runner2 = sinon.spy((provider: RunOnBailParameters<any>) =>
+      const runner2 = sandbox.spy((provider: RunOnBailParameters<any>) =>
         provider.recoverFromBail(false),
       );
-      const handler1 = sinon.spy(({ next }) => next.next({ bail: true }));
-      const handler2 = sinon.stub();
+      const handler1 = sandbox.spy(({ next }) => next.next({ bail: true }));
+      const handler2 = sandbox.stub();
 
       network
         .getSurrogate()
@@ -260,8 +261,8 @@ describe(`RunOn`, () => {
 
     it(`should bailWith value from a handler`, () => {
       const bailWith = 'bailWith';
-      const handler = sinon.spy(({ next }) => next.next({ bail: true, bailWith }));
-      const handler2 = sinon.stub();
+      const handler = sandbox.spy(({ next }) => next.next({ bail: true, bailWith }));
+      const handler2 = sandbox.stub();
 
       network
         .getSurrogate()
@@ -283,11 +284,11 @@ describe(`RunOn`, () => {
       const bailWith = 'bailWith';
       const bailOverride = 'bailOverride';
 
-      const handler = sinon.spy(({ next }) => next.next({ bail: true, bailWith }));
-      const runner = sinon.spy((provider: RunOnBailParameters<any>) =>
+      const handler = sandbox.spy(({ next }) => next.next({ bail: true, bailWith }));
+      const runner = sandbox.spy((provider: RunOnBailParameters<any>) =>
         provider.bailWith(bailOverride),
       );
-      const handler2 = sinon.stub();
+      const handler2 = sandbox.stub();
 
       network
         .getSurrogate()
@@ -311,13 +312,13 @@ describe(`RunOn`, () => {
       const bailOverride = 'bailOverride';
       const bailOverrideOverride = 'bailOverrideOverride';
 
-      const handler = sinon.spy(({ next }) => next.next({ bail: true, bailWith }));
-      const handler2 = sinon.stub();
+      const handler = sandbox.spy(({ next }) => next.next({ bail: true, bailWith }));
+      const handler2 = sandbox.stub();
 
-      const runner1 = sinon.spy((provider: RunOnBailParameters<any>) =>
+      const runner1 = sandbox.spy((provider: RunOnBailParameters<any>) =>
         provider.bailWith(bailOverride),
       );
-      const runner2 = sinon.spy((provider: RunOnBailParameters<any>) =>
+      const runner2 = sandbox.spy((provider: RunOnBailParameters<any>) =>
         provider.bailWith(bailOverrideOverride),
       );
 
@@ -340,9 +341,9 @@ describe(`RunOn`, () => {
     });
 
     it(`should not call runOnBail with error interrupt`, () => {
-      const errorRunner = sinon.stub();
-      const bailRunner = sinon.stub();
-      const handler = sinon.spy(({ next }) =>
+      const errorRunner = sandbox.stub();
+      const bailRunner = sandbox.stub();
+      const handler = sandbox.spy(({ next }) =>
         next.next({ error: new Error('error'), bail: true }),
       );
 
@@ -359,13 +360,13 @@ describe(`RunOn`, () => {
     });
 
     it(`should recover from error then bail`, () => {
-      const errorRunner = sinon.stub();
-      const bailRunner = sinon.stub();
-      const handler = sinon.spy(({ next }) =>
+      const errorRunner = sandbox.stub();
+      const bailRunner = sandbox.stub();
+      const handler = sandbox.spy(({ next }) =>
         next.next({ error: new Error('error'), bail: true }),
       );
 
-      const connect = sinon.stub(network, 'connect');
+      const connect = sandbox.stub(network, 'connect');
 
       network.getSurrogate().registerPreHook('connect', handler, {
         runOnError: errorRunner,

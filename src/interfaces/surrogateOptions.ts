@@ -1,5 +1,5 @@
+import { Contexts, ShouldSilence } from './contexts';
 import { RunOnError, RunOnBail } from './runOn';
-import { Contexts } from './contexts';
 
 /**
  * Surrogate Options
@@ -81,4 +81,14 @@ export interface SurrogateGlobalOptions {
    * @memberof SurrogateGlobalOptions
    */
   provide?: any;
+
+  /**
+   * @description Ignore error output
+   * @note If supplying a function a result of true will silence errors and false will allow output
+   * @default false
+   * @type {(boolean | ShouldSilence)}
+   * @memberof SurrogateGlobalOptions
+   */
+
+  silenceErrors?: boolean | ShouldSilence;
 }

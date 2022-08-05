@@ -48,8 +48,9 @@ export interface SurrogateHandlerOptions<T extends object> extends SurrogateGlob
   runConditions?: RunCondition<T> | RunCondition<T>[];
 
   /**
+   * @description - Specify the priority of the handler. Higher priority handlers are run first.
    *
-   * @description - Specify the priority of the handler.
+   * @default 0
    */
   priority?: number;
 }
