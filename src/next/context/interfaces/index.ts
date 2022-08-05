@@ -16,8 +16,8 @@ export interface ContextController<T extends object> {
   addNext(next: NextNode<T>): void;
   setNext(next: NextNode<T>): void;
   runOriginal(node: NextNode<T>): void;
-  handleError(error?: Error): never | void;
   updateLatestArgs(updatedArgs: any): void;
+  handleError(node: NextNode<T>, error?: Error): never | void;
   setupPipeline(
     proxy: SurrogateProxy<T>,
     typeContainers: WhichContainers<T>,

@@ -30,12 +30,13 @@ Check [examples](./examples) for expanded samples.
 
 ### SurrogateOptions
 
-| Option           | Type                          | Default Value | Description                                                                                         |
-| ---------------- | ----------------------------- | :-----------: | --------------------------------------------------------------------------------------------------- |
-| useSingleton?    | boolean                       |     true      | Informs Surrogate to operate as a Singleton                                                         |
-| useContext?      | any                           |       T       | The context in which to call surrogate handlers. Handler specific contexts take precedence.         |
-| provide?         | any                           |     null      | User provided content to pass to handlers and conditionals. Handler specific values take precedence |
-| maintainContext? | boolean \| string \| string[] |     false     | Maintain context for methods without hooks. Can be a method name or array of method names           |
+| Option           | Type                          | Default Value | Description                                                                                                                        |
+| ---------------- | ----------------------------- | :-----------: | ---------------------------------------------------------------------------------------------------------------------------------- |
+| useSingleton?    | boolean                       |     true      | Informs Surrogate to operate as a Singleton                                                                                        |
+| useContext?      | any                           |       T       | The context in which to call surrogate handlers. Handler specific contexts take precedence.                                        |
+| provide?         | any                           |     null      | User provided content to pass to handlers and conditionals. Handler specific values take precedence                                |
+| silenceErrors?   | boolean \| SilenceErrors      |     false     | Specify if Surrogate error output should be silenced. Accepts boolean or function that will receive the error and return a boolean |
+| maintainContext? | boolean \| string \| string[] |     false     | Maintain context for methods without hooks. Can be a method name or array of method names                                          |
 
 ### SurrogateMethods
 

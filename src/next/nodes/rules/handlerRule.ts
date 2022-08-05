@@ -9,8 +9,9 @@ export class HandlerRule<T extends object> implements NextRule<T> {
   }
 
   run(node: NextNode<T>): void {
-    const handler = node.container.getHandlerRunner(node);
+    const { container, didError } = node;
+    const handler = container.getHandlerRunner(node);
 
-    handler.run(this.using, node.didError);
+    handler.run(this.using, didError);
   }
 }

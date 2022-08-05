@@ -5,22 +5,23 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 
 describe('NextParameters', () => {
+  const sandbox = sinon.createSandbox();
   let network: Surrogate<Network>;
   let log: sinon.SinonStub<any, void>;
 
   beforeEach(() => {
     network = wrapSurrogate(new Network());
-    log = sinon.stub(console, 'log');
-    sinon.stub(console, 'error');
+    log = sandbox.stub(console, 'log');
+    sandbox.stub(console, 'error');
   });
 
   afterEach(() => {
-    sinon.restore();
+    sandbox.restore();
     network.disposeSurrogate();
   });
 
   it('should be an instance of NextProvider', () => {
-    const handler = sinon.stub();
+    const handler = sandbox.stub();
 
     network.getSurrogate().registerPostHook('connect', [handler], { useNext: false });
 
@@ -32,22 +33,22 @@ describe('NextParameters', () => {
   });
 
   it('should pass NextParameters objects to handlers', () => {
-    const func1 = sinon.stub();
-    const func2 = sinon.stub();
+    const func1 = sandbox.stub();
+    const func2 = sandbox.stub();
 
     network.getSurrogate().registerPreHook('connect', [func1, func2], { useNext: false });
     network.connect();
 
-    sinon.assert.calledOnce(func1);
-    sinon.assert.calledOnce(func2);
-    sinon.assert.calledOnce(log);
+    sandbox.assert.calledOnce(func1);
+    sandbox.assert.calledOnce(func2);
+    sandbox.assert.calledOnce(log);
   });
 
   it('should pass arguments from one handler to the next', () => {
-    const func1 = sinon.spy(({ next }: NextParameters<Network>) =>
+    const func1 = sandbox.spy(({ next }: NextParameters<Network>) =>
       next.next({ using: [0, 1, 2, 3] }),
     );
-    const func2 = sinon.stub();
+    const func2 = sandbox.stub();
 
     network
       .getSurrogate()
@@ -69,7 +70,7 @@ describe('NextParameters', () => {
 
   it('should pass the current target method (action)', () => {
     const serverName = 'server name';
-    const handler = sinon.stub();
+    const handler = sandbox.stub();
 
     network.getSurrogate().registerPreHook('checkServer', handler, {
       useNext: false,
@@ -85,7 +86,7 @@ describe('NextParameters', () => {
 
   it('should pass the current hook', () => {
     const serverName = 'server name';
-    const handler = sinon.stub();
+    const handler = sandbox.stub();
 
     network
       .getSurrogate()
@@ -108,7 +109,7 @@ describe('NextParameters', () => {
 
   it('should pass the result', () => {
     const serverName = 'server name result';
-    const handler = sinon.stub();
+    const handler = sandbox.stub();
 
     network
       .getSurrogate()

@@ -19,6 +19,7 @@ export class PreMethodNext<T extends object> extends FinalNext<T> implements INe
   }
 
   handleNext(): void {
+    this.controller.setNext(this.nextNode);
     this.controller.runOriginal(this.nextNode);
   }
 }

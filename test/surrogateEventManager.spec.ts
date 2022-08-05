@@ -5,16 +5,17 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 
 describe('Surrogate Event Manager', () => {
+  const sandbox = sinon.createSandbox();
   let network: Surrogate<Network>;
   let log: sinon.SinonStub<any, void>;
 
   beforeEach(() => {
     network = wrapSurrogate(new Network());
-    log = sinon.stub(console, 'log');
+    log = sandbox.stub(console, 'log');
   });
 
   afterEach(() => {
-    sinon.restore();
+    sandbox.restore();
     network.disposeSurrogate();
   });
 
@@ -75,21 +76,21 @@ describe('Surrogate Event Manager', () => {
 
   describe('Register', () => {
     it('should register a single pre hook', () => {
-      const func = sinon.spy(function () {});
+      const func = sandbox.spy(function () {});
 
       network.getSurrogate().registerPreHook('connect', func, {
         useNext: false,
       });
       network.connect();
 
-      sinon.assert.calledOnce(func);
-      sinon.assert.calledOnce(log);
+      sandbox.assert.calledOnce(func);
+      sandbox.assert.calledOnce(log);
     });
 
     it('should register multiple pre hooks', () => {
       const name = network.connect.name as keyof Network;
-      const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
-      const func2 = sinon.spy(() => {});
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
+      const func2 = sandbox.spy(() => {});
 
       network
         .getSurrogate()
@@ -98,25 +99,25 @@ describe('Surrogate Event Manager', () => {
 
       network.connect();
 
-      sinon.assert.calledOnce(func1);
-      sinon.assert.calledOnce(func2);
-      sinon.assert.calledOnce(log);
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.calledOnce(func2);
+      sandbox.assert.calledOnce(log);
     });
 
     it('should register a single post hook', () => {
-      const func = sinon.spy(() => {});
+      const func = sandbox.spy(() => {});
 
       network.getSurrogate().registerPostHook('connect', func, { useNext: false });
       network.connect();
 
-      sinon.assert.calledOnce(func);
-      sinon.assert.calledOnce(log);
+      sandbox.assert.calledOnce(func);
+      sandbox.assert.calledOnce(log);
     });
 
     it('should register multiple post hooks', () => {
       const name = network.disconnect.name as keyof Network;
-      const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
-      const func2 = sinon.spy(() => {});
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
+      const func2 = sandbox.spy(() => {});
 
       network
         .getSurrogate()
@@ -125,19 +126,19 @@ describe('Surrogate Event Manager', () => {
 
       network.disconnect();
 
-      sinon.assert.calledOnce(func1);
-      sinon.assert.calledOnce(func2);
-      sinon.assert.calledOnce(log);
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.calledOnce(func2);
+      sandbox.assert.calledOnce(log);
     });
 
     it('should register multiple pre and post hooks', () => {
       const name = network.connect.name as keyof Network;
-      const func1 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
-      const func2 = sinon.spy(({ next }: NextParameters<Network>) => next.next());
-      const func3 = sinon.spy(function ({ next }: NextParameters<Network>) {
+      const func1 = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
+      const func2 = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
+      const func3 = sandbox.spy(function ({ next }: NextParameters<Network>) {
         next.next();
       });
-      const func4 = sinon.spy(function () {});
+      const func4 = sandbox.spy(function () {});
 
       network
         .getSurrogate()
@@ -146,12 +147,12 @@ describe('Surrogate Event Manager', () => {
 
       network.connect();
 
-      sinon.assert.calledOnce(func1);
-      sinon.assert.calledOnce(func2);
-      sinon.assert.calledOnce(func3);
-      sinon.assert.calledOnce(func4);
-      sinon.assert.calledOnce(log);
-      sinon.assert.calledWith(log, 'connecting to somewhere...');
+      sandbox.assert.calledOnce(func1);
+      sandbox.assert.calledOnce(func2);
+      sandbox.assert.calledOnce(func3);
+      sandbox.assert.calledOnce(func4);
+      sandbox.assert.calledOnce(log);
+      sandbox.assert.calledWith(log, 'connecting to somewhere...');
     });
   });
 

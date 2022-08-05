@@ -20,7 +20,7 @@ export abstract class BaseContainer<T extends object> implements IContainer<T> {
 
     return this.shouldReflect
       ? this.shouldReflectSurrogate(context)
-        ? Reflect.get(receiver, handler, target)
+        ? Reflect.get(receiver, handler, receiver)
         : Reflect.get(target, handler, receiver)
       : this.handler;
   }

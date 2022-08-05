@@ -11,6 +11,7 @@ export class ErrorRule<T extends object> extends RecoverableRule<T> implements N
   run(node: NextNode<T>): void {
     const { options } = node.container;
     const { error, using } = this.nextOptions;
+
     const provider = new ErrorProvider(node, using, error as Error);
 
     const shouldRecover = this.attemptRecovery(
@@ -21,6 +22,6 @@ export class ErrorRule<T extends object> extends RecoverableRule<T> implements N
 
     shouldRecover
       ? this.recover(node, { error: null })
-      : node.controller.handleError(error as Error);
+      : node.controller.handleError(node, error as Error);
   }
 }

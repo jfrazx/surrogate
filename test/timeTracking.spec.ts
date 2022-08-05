@@ -9,6 +9,8 @@ import {
 } from '../src/timeTracker/trackers';
 
 describe('TimeTracking', () => {
+  const sandbox = sinon.createSandbox();
+
   let clock: sinon.SinonFakeTimers;
   let network: Surrogate<Network>;
 
@@ -20,12 +22,12 @@ describe('TimeTracking', () => {
 
   beforeEach(() => {
     network = wrapSurrogate(new Network());
-    clock = sinon.useFakeTimers();
-    sinon.stub(console, 'error');
+    clock = sandbox.useFakeTimers();
+    sandbox.stub(console, 'error');
   });
 
   afterEach(() => {
-    sinon.restore();
+    sandbox.restore();
     network.disposeSurrogate();
   });
 

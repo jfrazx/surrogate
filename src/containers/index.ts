@@ -16,6 +16,6 @@ export abstract class Tail {
 }
 
 export * from './interfaces';
-export * from './empty';
 export * from './handler';
 export * from './method';
+export * from './empty';

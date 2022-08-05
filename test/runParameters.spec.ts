@@ -5,10 +5,12 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 
 describe('RunParameters', () => {
+  const sandbox = sinon.createSandbox();
+
   it('should run before provided handler', () => {
-    const handler = sinon.spy();
+    const handler = sandbox.spy();
     const someValue = 'someValue';
-    const runCondition = sinon.stub().returns(true);
+    const runCondition = sandbox.stub().returns(true);
 
     @SurrogateDelegate()
     class RunBeforeHandler {
@@ -27,17 +29,17 @@ describe('RunParameters', () => {
     const runner = new RunBeforeHandler();
     const result = runner.runs();
 
-    sinon.assert.calledOnce(handler);
-    sinon.assert.calledOnce(runCondition);
+    sandbox.assert.calledOnce(handler);
+    sandbox.assert.calledOnce(runCondition);
 
     expect(result).to.equal(someValue);
     expect(runCondition.calledBefore(handler)).to.be.true;
   });
 
   it('should determine a handler will not run', () => {
-    const handler = sinon.spy();
+    const handler = sandbox.spy();
     const someValue = 'someValue';
-    const runCondition = sinon.stub().returns(false);
+    const runCondition = sandbox.stub().returns(false);
 
     @SurrogateDelegate()
     class RunBeforeHandler {
@@ -56,17 +58,17 @@ describe('RunParameters', () => {
     const runner = new RunBeforeHandler();
     const result = runner.runs();
 
-    sinon.assert.notCalled(handler);
-    sinon.assert.calledOnce(runCondition);
+    sandbox.assert.notCalled(handler);
+    sandbox.assert.calledOnce(runCondition);
 
     expect(result).to.equal(someValue);
     expect(runCondition.calledBefore(handler)).to.be.true;
   });
 
   it('should run before the decorated method', () => {
-    const handler = sinon.spy();
+    const handler = sandbox.spy();
     const someValue = 'someValue';
-    const runCondition = sinon.stub().returns(true);
+    const runCondition = sandbox.stub().returns(true);
 
     @SurrogateDelegate()
     class RunBeforeMethod {
@@ -83,12 +85,12 @@ describe('RunParameters', () => {
     }
 
     const runner = new RunBeforeMethod();
-    const stubbed = sinon.stub(runner, 'runs').returns(someValue);
+    const stubbed = sandbox.stub(runner, 'runs').returns(someValue);
     const result = runner.runs();
 
-    sinon.assert.calledOnce(handler);
-    sinon.assert.calledOnce(stubbed);
-    sinon.assert.calledOnce(runCondition);
+    sandbox.assert.calledOnce(handler);
+    sandbox.assert.calledOnce(stubbed);
+    sandbox.assert.calledOnce(runCondition);
 
     expect(result).to.equal(someValue);
     expect(stubbed.calledImmediatelyAfter(handler)).to.be.true;
@@ -98,9 +100,9 @@ describe('RunParameters', () => {
   });
 
   it('should run in the objects context', () => {
-    const handler = sinon.spy();
+    const handler = sandbox.spy();
     const someValue = 'someValue';
-    const runCondition = sinon.stub().returns(true);
+    const runCondition = sandbox.stub().returns(true);
 
     interface RunInContext extends SurrogateMethods<RunInContext> {}
 
@@ -121,17 +123,17 @@ describe('RunParameters', () => {
     const runner = new RunInContext();
     const result = runner.runs();
 
-    sinon.assert.calledOnce(handler);
-    sinon.assert.calledOnce(runCondition);
+    sandbox.assert.calledOnce(handler);
+    sandbox.assert.calledOnce(runCondition);
 
     expect(result).to.equal(someValue);
     expect(runCondition.calledOn(runner.bypassSurrogate())).to.be.true;
   });
 
   it('should run in the context of surrogate', () => {
-    const handler = sinon.spy();
+    const handler = sandbox.spy();
     const someValue = 'someValue';
-    const runCondition = sinon.stub().returns(true);
+    const runCondition = sandbox.stub().returns(true);
 
     @SurrogateDelegate({ useContext: SurrogateContext.Surrogate })
     class RunInSurrogate {
@@ -150,17 +152,17 @@ describe('RunParameters', () => {
     const runner = new RunInSurrogate();
     const result = runner.runs();
 
-    sinon.assert.calledOnce(handler);
-    sinon.assert.calledOnce(runCondition);
+    sandbox.assert.calledOnce(handler);
+    sandbox.assert.calledOnce(runCondition);
 
     expect(result).to.equal(someValue);
     expect(runCondition.calledOn(runner)).to.be.true;
   });
 
   it('should receive run a condition provider object', () => {
-    const handler = sinon.spy();
+    const handler = sandbox.spy();
     const someValue = 'someValue';
-    const runCondition = sinon.stub().returns(true);
+    const runCondition = sandbox.stub().returns(true);
 
     @SurrogateDelegate()
     class RunConditionProviderTest {
@@ -181,17 +183,17 @@ describe('RunParameters', () => {
 
     const call = runCondition.getCall(0);
 
-    sinon.assert.calledOnce(handler);
-    sinon.assert.calledOnce(runCondition);
+    sandbox.assert.calledOnce(handler);
+    sandbox.assert.calledOnce(runCondition);
 
     expect(result).to.equal(someValue);
     expect(call.args[0]).to.be.instanceOf(RunConditionProvider);
   });
 
   it('should have run condition provider values', () => {
-    const handler = sinon.spy();
+    const handler = sandbox.spy();
     const someValue = 'someValue';
-    const runCondition = sinon.stub().returns(true);
+    const runCondition = sandbox.stub().returns(true);
 
     interface RunConditionProviderTest extends SurrogateMethods<RunConditionProviderTest> {}
 
@@ -232,9 +234,9 @@ describe('RunParameters', () => {
   });
 
   it('should pass values between run conditions', () => {
-    const handler = sinon.spy();
+    const handler = sandbox.spy();
     const someValue = 'someValue';
-    const runCondition = sinon.stub().returns(true);
+    const runCondition = sandbox.stub().returns(true);
     const runConditionPassingValue = 'run condition passing';
 
     @SurrogateDelegate()
