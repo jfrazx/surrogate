@@ -1,14 +1,17 @@
-import { MethodWrapper, WhichContainers } from '../../interfaces';
 import { SurrogateHandlerContainer } from '../../containers';
+import type { WhichContainers } from '../../interfaces';
+import type { ContextController } from './interfaces';
+import type { SurrogateProxy } from '../../proxy';
 import { TimeTrackable } from '../../timeTracker';
-import { ContextController } from './interfaces';
-import { SurrogateProxy } from '../../proxy';
+import { MethodWrapper } from '../../interfaces';
+import type { NextNode } from '../interfaces';
+import type { Context } from '../../context';
+import { isFunction } from '../../helpers';
+import { containerSorter } from './utils';
 import { asArray } from '@jfrazx/asarray';
-import { NextNode } from '../interfaces';
-import { PRE, POST } from '../../which';
-import { Context } from '../../context';
 import { isAsync } from '../../helpers';
 import { Tail } from '../../containers';
+import { HookType } from '../../which';
 import { v4 as uuid } from 'uuid';
 import { Next } from '../nodes';
 
@@ -16,18 +19,9 @@ interface ExecutionConstruct<T extends object> {
   new (context: Context<T>): ContextController<T>;
 }
 
-const containerSorter = <T extends object>(
-  a: SurrogateHandlerContainer<T>,
-  b: SurrogateHandlerContainer<T>,
-) =>
-  a.options.priority === b.options.priority
-    ? 0
-    : a.options.priority > b.options.priority
-    ? -1
-    : 1;
-
 export abstract class ExecutionContext<T extends object> implements ContextController<T> {
   private utilizeLatest = false;
+  private hasThrown = false;
 
   protected nextNode: NextNode<T>;
 
@@ -48,9 +42,9 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
   }
 
   setupPipeline(proxy: SurrogateProxy<T>, typeContainers: WhichContainers<T>) {
-    const which = [PRE, POST] as const;
+    const which = [HookType.PRE, HookType.POST] as const;
 
-    which.forEach((type) => {
+    which.forEach((type: Which) => {
       const containers = [...typeContainers[type]];
 
       containers
@@ -103,11 +97,31 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
     return node.handleNext();
   }
 
-  protected logError(error?: Error): void {
-    console.error(`SurrogateError: ${error?.message ? error.message : JSON.stringify(error)}`);
+  protected logError(node: NextNode<T>, error?: Error): void {
+    const { silenceErrors } = node.container.options;
+
+    const silence = isFunction(silenceErrors) ? silenceErrors(error) : silenceErrors;
+
+    if (!silence && !this.hasThrown) {
+      this.hasThrown = true;
+
+      console.error(
+        `SurrogateError: ${error?.message ? error.message : JSON.stringify(error)}`,
+      );
+    }
   }
 
-  abstract handleError(error?: Error): never | void;
+  abstract handleError(node: NextNode<T>, error?: Error): never | void;
+
+  /**
+   * @description Runs the target method after pre hooks and before post hooks.
+   *
+   * @note Original method could be an instance method of the proxied class if it is a member of hook pipeline
+   *
+   * @abstract
+   * @param {NextNode<T>} node
+   * @memberof ExecutionContext
+   */
   abstract runOriginal(node: NextNode<T>): void;
   abstract bail(bailWith?: any): any;
   abstract complete(): void;
@@ -116,3 +130,4 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
 
 import { NextAsyncContext } from './nextAsyncContext';
 import { NextContext } from './nextContext';
+import { Which } from 'which';

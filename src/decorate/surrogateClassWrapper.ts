@@ -62,7 +62,7 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
     handlerOptions: SurrogateDecoratorOptions<T>[],
     hook: Which,
     event: string | keyof T,
-  ) {
+  ): void {
     handlerOptions.forEach(({ handler, options }) => {
       eventManager.registerHook(event, hook, handler, options);
     });

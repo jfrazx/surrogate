@@ -1,25 +1,26 @@
+import { Surrogate, wrapSurrogate } from '../src/';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
-import { Surrogate, wrapSurrogate } from '../src/';
 
 describe(`Provide`, () => {
+  const sandbox = sinon.createSandbox();
   let network: Surrogate<Network>;
 
   beforeEach(() => {
     network = wrapSurrogate(new Network());
 
-    sinon.stub(console, 'error');
-    sinon.stub(console, 'log');
+    sandbox.stub(console, 'error');
+    sandbox.stub(console, 'log');
   });
 
   afterEach(() => {
-    sinon.restore();
+    sandbox.restore();
     network.disposeSurrogate();
   });
 
   it(`should provide handlers user designated values`, () => {
-    const handler = sinon.stub();
+    const handler = sandbox.stub();
     const provide = { test: 'test' };
 
     network.getSurrogate().registerPreHook('connect', handler, {
@@ -39,7 +40,7 @@ describe(`Provide`, () => {
 
   it(`should provide handlers user designated values from global options`, () => {
     const provide = { test: 'test' };
-    const handler = sinon.stub();
+    const handler = sandbox.stub();
 
     const network = wrapSurrogate(new Network(), { provide });
 
@@ -60,7 +61,7 @@ describe(`Provide`, () => {
   it(`should utilize handler designated values over global`, () => {
     const provide1 = { test: 'test1' };
     const provide2 = { test: 'test2' };
-    const handler = sinon.stub();
+    const handler = sandbox.stub();
 
     const network = wrapSurrogate(new Network(), { provide: provide1 });
 
@@ -80,9 +81,9 @@ describe(`Provide`, () => {
   });
 
   it(`should provide conditionals user designated values`, () => {
-    const runConditions = sinon.stub().returns(true);
+    const runConditions = sandbox.stub().returns(true);
     const provide = { test: 'test' };
-    const handler = sinon.stub();
+    const handler = sandbox.stub();
 
     network.getSurrogate().registerPreHook('connect', handler, {
       useNext: false,

@@ -1,15 +1,12 @@
 import { ExecutionContext } from './executionContext';
+import { NextNode } from '../../next/';
 import { MethodNext } from '../nodes';
 
 export class NextContext<T extends object> extends ExecutionContext<T> {
   start() {
-    try {
-      this.runNext();
+    this.runNext();
 
-      return this.complete();
-    } catch (error: any) {
-      this.handleError(error);
-    }
+    return this.complete();
   }
 
   complete() {
@@ -30,8 +27,8 @@ export class NextContext<T extends object> extends ExecutionContext<T> {
     this.setReturnValue(bailWith);
   }
 
-  handleError(error?: Error): never {
-    this.logError(error);
+  handleError(node: NextNode<T>, error?: Error): never {
+    this.logError(node, error);
 
     throw error;
   }

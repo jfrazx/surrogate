@@ -20,14 +20,15 @@ import {
 } from '../src';
 
 describe('SurrogateDecorators', () => {
+  const sandbox = sinon.createSandbox();
   let log: sinon.SinonStub<any, void>;
 
   beforeEach(() => {
-    log = sinon.stub(console, 'log');
+    log = sandbox.stub(console, 'log');
   });
 
   afterEach(() => {
-    sinon.restore();
+    sandbox.restore();
   });
 
   describe('SurrogateDelegate', () => {
@@ -62,7 +63,7 @@ describe('SurrogateDecorators', () => {
       const result = test.testMethod();
 
       expect(result).to.equal(value);
-      sinon.assert.calledTwice(log);
+      sandbox.assert.calledTwice(log);
     });
   });
 
@@ -92,7 +93,7 @@ describe('SurrogateDecorators', () => {
       const result = await test.testMethod();
 
       expect(result).to.equal(value);
-      sinon.assert.calledTwice(log);
+      sandbox.assert.calledTwice(log);
     });
   });
 
@@ -102,7 +103,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should pre decorate a synchronous method', () => {
-      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
+      const handler: SurrogateHandler<Test> = sandbox.spy(({ next }: NextParameters<Test>) =>
         next.next(),
       );
       const results = 'SurrogatePre';
@@ -119,7 +120,7 @@ describe('SurrogateDecorators', () => {
 
       const result = test.method();
 
-      sinon.assert.calledOnce(handler as any);
+      sandbox.assert.calledOnce(handler as any);
 
       expect(result).to.equal(results);
     });
@@ -131,7 +132,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should post decorate a synchronous method', () => {
-      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
+      const handler: SurrogateHandler<Test> = sandbox.spy(({ next }: NextParameters<Test>) =>
         next.next(),
       );
       const results = 'SurrogatePost';
@@ -148,7 +149,7 @@ describe('SurrogateDecorators', () => {
 
       const result = test.method();
 
-      sinon.assert.calledOnce(handler as any);
+      sandbox.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
   });
@@ -159,7 +160,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should post decorate an async method', async () => {
-      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
+      const handler: SurrogateHandler<Test> = sandbox.spy(({ next }: NextParameters<Test>) =>
         next.next(),
       );
       const results = 'SurrogateAsyncPost';
@@ -176,7 +177,7 @@ describe('SurrogateDecorators', () => {
 
       const result = await test.method();
 
-      sinon.assert.calledOnce(handler as any);
+      sandbox.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
   });
@@ -187,7 +188,7 @@ describe('SurrogateDecorators', () => {
     });
 
     it('should pre decorate an async method', async () => {
-      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
+      const handler: SurrogateHandler<Test> = sandbox.spy(({ next }: NextParameters<Test>) =>
         next.next(),
       );
       const results = 'SurrogateAsyncPre';
@@ -204,12 +205,12 @@ describe('SurrogateDecorators', () => {
 
       const result = await test.method();
 
-      sinon.assert.calledOnce(handler as any);
+      sandbox.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
 
     it('should pre decorate an async method and bail', async () => {
-      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
+      const handler: SurrogateHandler<Test> = sandbox.spy(({ next }: NextParameters<Test>) =>
         next.next({
           bail: true,
         }),
@@ -227,13 +228,13 @@ describe('SurrogateDecorators', () => {
       const test = new Test();
       const result = await test.method();
 
-      sinon.assert.calledOnce(handler as any);
+      sandbox.assert.calledOnce(handler as any);
       expect(result).to.be.undefined;
     });
 
     it('should pre decorate an async method and bail with', async () => {
       const results = 'SurrogateAsyncPreBailWith';
-      const handler: SurrogateHandler<Test> = sinon.spy(({ next }: NextParameters<Test>) =>
+      const handler: SurrogateHandler<Test> = sandbox.spy(({ next }: NextParameters<Test>) =>
         next.next({
           bail: true,
           bailWith: results,
@@ -251,12 +252,12 @@ describe('SurrogateDecorators', () => {
       const test = new Test();
       const result = await test.method();
 
-      sinon.assert.calledOnce(handler as any);
+      sandbox.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
 
     it('should pre decorate an async method without using next', async () => {
-      const handler: SurrogateHandler<Test> = sinon.spy(() => Promise.resolve());
+      const handler: SurrogateHandler<Test> = sandbox.spy(() => Promise.resolve());
       const results = 'SurrogateAsyncPreWithoutNext';
 
       @SurrogateDelegate()
@@ -271,12 +272,12 @@ describe('SurrogateDecorators', () => {
 
       const result = await test.method();
 
-      sinon.assert.calledOnce(handler as any);
+      sandbox.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
 
     it('should pre decorate an async method without using next passing instance', async () => {
-      const handler: SurrogateHandler<Test> = sinon.spy(async ({ instance }) => {
+      const handler: SurrogateHandler<Test> = sandbox.spy(async ({ instance }) => {
         expect(instance).to.not.equal(test);
         expect(instance).to.be.instanceOf(Test);
 
@@ -296,13 +297,13 @@ describe('SurrogateDecorators', () => {
 
       const result = await test.method();
 
-      sinon.assert.calledOnce(handler as any);
+      sandbox.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
 
     it('should pre decorate an async method without using next passing surrogate', async () => {
       const results = 'SurrogateAsyncPreWithoutNextWithSurrogate';
-      const handler: SurrogateHandler<Test> = sinon.spy(async ({ surrogate }) => {
+      const handler: SurrogateHandler<Test> = sandbox.spy(async ({ surrogate }) => {
         expect(surrogate).to.equal(test);
         expect(surrogate).to.be.instanceOf(Test);
 
@@ -321,13 +322,13 @@ describe('SurrogateDecorators', () => {
 
       const result = await test.method();
 
-      sinon.assert.calledOnce(handler as any);
+      sandbox.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
 
     it('should pre decorate an async method without using next passing instance and surrogate', async () => {
       const results = 'SurrogateAsyncPreWithoutNextWithInstanceAndSurrogate';
-      const handler: SurrogateHandler<Test> = sinon.spy(async ({ instance, surrogate }) => {
+      const handler: SurrogateHandler<Test> = sandbox.spy(async ({ instance, surrogate }) => {
         expect(surrogate).to.equal(test);
         expect(instance).to.not.equal(test);
         expect(surrogate).to.be.instanceOf(Test);
@@ -351,7 +352,7 @@ describe('SurrogateDecorators', () => {
 
       const result = await test.method();
 
-      sinon.assert.calledOnce(handler as any);
+      sandbox.assert.calledOnce(handler as any);
       expect(result).to.equal(results);
     });
   });
@@ -386,7 +387,7 @@ describe('SurrogateDecorators', () => {
       const result = test.testMethod();
 
       expect(result).to.equal(value);
-      sinon.assert.calledTwice(log);
+      sandbox.assert.calledTwice(log);
     });
   });
 
@@ -420,7 +421,7 @@ describe('SurrogateDecorators', () => {
       const result = await test.testMethod();
 
       expect(result).to.equal(value);
-      sinon.assert.calledTwice(log);
+      sandbox.assert.calledTwice(log);
     });
   });
 
@@ -453,7 +454,7 @@ describe('SurrogateDecorators', () => {
 
       const result = test.testMethod();
 
-      sinon.assert.calledOnce(log);
+      sandbox.assert.calledOnce(log);
       expect(result).to.equal(value);
     });
 
@@ -495,7 +496,7 @@ describe('SurrogateDecorators', () => {
       expect(result2).to.equal(value + '2');
       expect(result3).to.equal(value + '3');
 
-      sinon.assert.calledThrice(log);
+      sandbox.assert.calledThrice(log);
     });
   });
 
@@ -528,7 +529,7 @@ describe('SurrogateDecorators', () => {
 
       const result = test.testMethod();
 
-      sinon.assert.calledOnce(log);
+      sandbox.assert.calledOnce(log);
       expect(result).to.equal(value);
     });
 
@@ -570,7 +571,7 @@ describe('SurrogateDecorators', () => {
       expect(result2).to.equal(value + '2');
       expect(result3).to.equal(value + '3');
 
-      sinon.assert.calledThrice(log);
+      sandbox.assert.calledThrice(log);
     });
   });
 
@@ -603,7 +604,7 @@ describe('SurrogateDecorators', () => {
 
       const result = await test.testMethod();
 
-      sinon.assert.calledOnce(log);
+      sandbox.assert.calledOnce(log);
       expect(result).to.equal(value);
     });
 
@@ -644,7 +645,7 @@ describe('SurrogateDecorators', () => {
       expect(result2).to.equal(value + '2');
       expect(result3).to.equal(value + '3');
 
-      sinon.assert.calledThrice(log);
+      sandbox.assert.calledThrice(log);
     });
   });
 
@@ -677,7 +678,7 @@ describe('SurrogateDecorators', () => {
 
       const result = await test.testMethod();
 
-      sinon.assert.calledOnce(log);
+      sandbox.assert.calledOnce(log);
       expect(result).to.equal(value);
     });
 
@@ -718,7 +719,7 @@ describe('SurrogateDecorators', () => {
       expect(result2).to.equal(value + '2');
       expect(result3).to.equal(value + '3');
 
-      sinon.assert.calledThrice(log);
+      sandbox.assert.calledThrice(log);
     });
   });
 
@@ -736,8 +737,8 @@ describe('SurrogateDecorators', () => {
 
       report.report();
 
-      sinon.assert.calledOnce(logReporter);
-      [message, reported].forEach((logged) => sinon.assert.calledWith(log, logged));
+      sandbox.assert.calledOnce(logReporter);
+      [message, reported].forEach((logged) => sandbox.assert.calledWith(log, logged));
     });
   });
 });

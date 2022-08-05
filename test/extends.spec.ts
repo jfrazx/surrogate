@@ -16,14 +16,15 @@ class BassGuitar extends Guitar {
 }
 
 describe('Inheritance', () => {
+  const sandbox = sinon.createSandbox();
   let log: sinon.SinonStub<any, void>;
 
   afterEach(() => {
-    sinon.restore();
+    sandbox.restore();
   });
 
   beforeEach(() => {
-    log = sinon.stub(console, 'log');
+    log = sandbox.stub(console, 'log');
   });
 
   it('should inherit decorated methods', () => {
@@ -31,7 +32,7 @@ describe('Inheritance', () => {
 
     bassGuitar.play();
 
-    sinon.assert.callCount(log, 4);
+    sandbox.assert.callCount(log, 4);
   });
 
   it('should decorate new methods', () => {
@@ -39,6 +40,6 @@ describe('Inheritance', () => {
 
     bassGuitar.jam();
 
-    sinon.assert.callCount(log, 2);
+    sandbox.assert.callCount(log, 2);
   });
 });

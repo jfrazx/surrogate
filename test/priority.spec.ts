@@ -4,29 +4,30 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 
 describe(`PrioritySorting`, () => {
+  const sandbox = sinon.createSandbox();
   let network: Surrogate<Network>;
 
   beforeEach(() => {
     network = wrapSurrogate(new Network());
-    sinon.stub(console, 'error');
-    sinon.stub(console, 'log');
+    sandbox.stub(console, 'error');
+    sandbox.stub(console, 'log');
   });
 
   afterEach(() => {
     network.disposeSurrogate();
-    sinon.restore();
+    sandbox.restore();
   });
 
   it(`should accept 'priority' in handler options`, () => {
-    const handler = sinon.stub();
+    const handler = sandbox.stub();
 
     network.getSurrogate().registerPreHook('connect', handler, { priority: 1 });
   });
 
   it(`should run pre handlers in the order of their priority`, () => {
-    const handler1 = sinon.stub();
-    const handler2 = sinon.stub();
-    const handler3 = sinon.stub();
+    const handler1 = sandbox.stub();
+    const handler2 = sandbox.stub();
+    const handler3 = sandbox.stub();
 
     const eventHandlers: SurrogateHandlerContainer<Network>[] = network
       .getSurrogate()
@@ -53,9 +54,9 @@ describe(`PrioritySorting`, () => {
   });
 
   it(`should run post handlers in the order of their priority`, () => {
-    const handler1 = sinon.stub();
-    const handler2 = sinon.stub();
-    const handler3 = sinon.stub();
+    const handler1 = sandbox.stub();
+    const handler2 = sandbox.stub();
+    const handler3 = sandbox.stub();
 
     const eventHandlers: SurrogateHandlerContainer<Network>[] = network
       .getSurrogate()
@@ -82,10 +83,10 @@ describe(`PrioritySorting`, () => {
   });
 
   it(`should run lower priority handlers last`, () => {
-    const handler1 = sinon.stub();
-    const handler2 = sinon.stub();
-    const handler3 = sinon.stub();
-    const handler4 = sinon.stub();
+    const handler1 = sandbox.stub();
+    const handler2 = sandbox.stub();
+    const handler3 = sandbox.stub();
+    const handler4 = sandbox.stub();
 
     network
       .getSurrogate()
@@ -125,10 +126,10 @@ describe(`PrioritySorting`, () => {
   });
 
   it(`should run higher priority handlers first`, () => {
-    const handler1 = sinon.stub();
-    const handler2 = sinon.stub();
-    const handler3 = sinon.stub();
-    const handler4 = sinon.stub();
+    const handler1 = sandbox.stub();
+    const handler2 = sandbox.stub();
+    const handler3 = sandbox.stub();
+    const handler4 = sandbox.stub();
 
     network
       .getSurrogate()
@@ -168,10 +169,10 @@ describe(`PrioritySorting`, () => {
   });
 
   it(`should run pre and post priority independently`, () => {
-    const handler1 = sinon.stub();
-    const handler2 = sinon.stub();
-    const handler3 = sinon.stub();
-    const handler4 = sinon.stub();
+    const handler1 = sandbox.stub();
+    const handler2 = sandbox.stub();
+    const handler3 = sandbox.stub();
+    const handler4 = sandbox.stub();
 
     network
       .getSurrogate()

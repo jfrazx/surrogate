@@ -4,16 +4,17 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 
 describe('HandlerContext', () => {
+  const sandbox = sinon.createSandbox();
   let network: Surrogate<Network>;
 
   beforeEach(() => {
     network = wrapSurrogate(new Network());
-    sinon.stub(console, 'error');
-    sinon.stub(console, 'log');
+    sandbox.stub(console, 'error');
+    sandbox.stub(console, 'log');
   });
 
   afterEach(() => {
-    sinon.restore();
+    sandbox.restore();
     network.disposeSurrogate();
   });
 
