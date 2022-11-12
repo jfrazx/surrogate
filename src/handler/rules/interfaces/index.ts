@@ -1,5 +1,5 @@
-import { NextParameters, ShouldHandle } from '../../../interfaces';
-import { NextNode } from '../../../next';
+import type { NextParameters, ShouldHandle } from '../../../interfaces';
+import type { NextNode } from '../../../next';
 
 export interface HandlerRule<T extends object> extends ShouldHandle {
   run(nextParameters?: NextParameters<T>): any;

@@ -1,6 +1,6 @@
 export * from './surrogateDecorators';
 export * from './nextDecorators';
-export {
+export type {
   NextForOptions,
   SurrogateForOptions,
   NextDecoratorOptions,

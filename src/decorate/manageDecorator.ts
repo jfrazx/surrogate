@@ -1,10 +1,15 @@
-import { SurrogateHandlerOptions, MethodWrapper, SurrogateHandlerTypes } from '../interfaces';
-import { SurrogateDecoratorOptions, SurrogateDelegateOptions } from './interfaces';
+import type { SurrogateHandlerOptions, SurrogateHandlerTypes } from '../interfaces';
 import { SurrogateClassWrapper } from './surrogateClassWrapper';
 import { Which, Whichever, PRE, POST, BOTH } from '../which';
-import { Constructor } from './interfaces';
+import type { Constructor } from './interfaces';
+import { MethodWrapper } from '../constants';
 import { asArray } from '@jfrazx/asarray';
 import { isObject } from '../helpers';
+import type {
+  Action,
+  SurrogateDelegateOptions,
+  SurrogateDecoratorOptions,
+} from './interfaces';
 
 export const manageDecorator = <T extends object>(
   type: Which,
@@ -12,7 +17,7 @@ export const manageDecorator = <T extends object>(
 ) => {
   const decoratorOptions = organizeOptions<T>(options);
 
-  return (target: T, event: keyof T | string) => {
+  return (target: T, event: Action<T>) => {
     SurrogateClassWrapper.addDecorators(
       target.constructor as Constructor<T>,
       type,

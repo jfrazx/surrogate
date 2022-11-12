@@ -1,9 +1,9 @@
-import { SurrogateGlobalOptions } from './surrogateOptions';
-import { ProviderParameters } from './provider';
-import { RunCondition } from './runCondition';
-import { MethodWrappers } from './contexts';
-import { Surrogate } from './surrogate';
-import { INext } from '../next';
+import type { SurrogateGlobalOptions } from './surrogateOptions';
+import type { ProviderParameters } from './provider';
+import type { RunCondition } from './runCondition';
+import type { MethodWrappers } from './contexts';
+import type { Surrogate } from './surrogate';
+import type { INext } from '../next';
 
 /**
  *

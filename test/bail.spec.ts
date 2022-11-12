@@ -19,9 +19,7 @@ describe('Bail', () => {
   });
 
   it('should exit early with bail skipping handlers', () => {
-    const nextParameters = sandbox.spy(({ next }: NextParameters<Network>) =>
-      next.next({ bail: true }),
-    );
+    const nextParameters = sandbox.spy(({ next }: NextParameters<Network>) => next.bail());
     const nextParameters2 = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
 
     network.getSurrogate().registerPreHook('connect', [nextParameters, nextParameters2]);
@@ -37,9 +35,7 @@ describe('Bail', () => {
 
   it('should exit early with bail skipping main method', () => {
     const nextParameters = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
-    const nextParameters2 = sandbox.spy(({ next }: NextParameters<Network>) =>
-      next.next({ bail: true }),
-    );
+    const nextParameters2 = sandbox.spy(({ next }: NextParameters<Network>) => next.bail());
 
     network.getSurrogate().registerPreHook('connect', [nextParameters, nextParameters2]);
 
@@ -55,7 +51,7 @@ describe('Bail', () => {
   it('should ignore errors and exit early with bail skipping main method', () => {
     const nextParameters = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
     const nextParameters2 = sandbox.spy(({ next }: NextParameters<Network>) =>
-      next.next({ bail: true, error: new Error('ignore') }),
+      next.bail({ error: new Error('ignore') }),
     );
 
     network
@@ -75,7 +71,7 @@ describe('Bail', () => {
   it('should ignore errors and exit early with bailWith skipping main method ', () => {
     const nextParameters = sandbox.spy(({ next }: NextParameters<Network>) => next.next());
     const nextParameters2 = sandbox.spy(({ next }: NextParameters<Network>) =>
-      next.next({ bail: true, error: new Error('ignore'), bailWith: 'bail' }),
+      next.bail({ error: new Error('ignore'), bailWith: 'bail' }),
     );
 
     network

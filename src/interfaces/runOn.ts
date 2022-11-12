@@ -1,4 +1,4 @@
-import { ProviderParameters } from './provider';
+import type { ProviderParameters } from './provider';
 
 export interface RecoverableProvider<T extends object> extends ProviderParameters<T> {
   shouldRecover: boolean;

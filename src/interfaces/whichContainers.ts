@@ -1,5 +1,5 @@
-import { SurrogateHandlerContainer } from '../containers';
-import { PRE, POST } from '../which';
+import type { SurrogateHandlerContainer } from '../containers';
+import type { PRE, POST } from '../which';
 
 /**
  * @description Object containing PRE and POST handlers for a method

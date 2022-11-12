@@ -1,6 +1,6 @@
-import { ShouldHandleTimeTracking } from './interfaces';
+import type { ShouldHandleTimeTracking } from './interfaces';
+import type { TimeTracking } from '../../interfaces';
 import { NodeTimeTracker } from '../../trackers';
-import { TimeTracking } from '../../interfaces';
 import { isFunction } from '../../../helpers';
 
 export class NodeRule implements ShouldHandleTimeTracking {

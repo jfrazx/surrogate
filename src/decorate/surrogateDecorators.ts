@@ -2,16 +2,17 @@ import { manageDecorator, determineWhich, manageAsyncDecorator } from './manageD
 import { SurrogateClassWrapper } from './surrogateClassWrapper';
 import { POST, PRE, Which, BOTH } from '../which';
 import { asArray } from '@jfrazx/asarray';
-import {
+import type {
   SurrogateForOptions,
   SurrogateDelegateOptions,
   SurrogateDecorateOptions,
+  Action,
 } from './interfaces';
 
-type PropertyDecorator<T extends object> = (target: T, property: string | keyof T) => void;
+type PropertyDecorator<T extends object> = (target: T, property: Action<T>) => void;
 
 /**
- * Register class for automatic surrogate wrapping
+ * @description Register class for automatic surrogate wrapping
  *
  * @export
  * @decorator
@@ -24,7 +25,7 @@ export const SurrogateDelegate =
     SurrogateClassWrapper.wrap(klass, delegateOptions);
 
 /**
- * Registers hooks for decorated methods. Handler type must be assigned.
+ * @description Registers hooks for decorated methods. Handler type must be assigned.
  *
  * @export
  * @decorator
@@ -35,8 +36,8 @@ export const SurrogateDelegate =
 export const SurrogateFor = <T extends object>(
   forOptions: SurrogateForOptions<T> | SurrogateForOptions<T>[],
 ): PropertyDecorator<T> => {
-  return (target: T, event: keyof T | string) => {
-    asArray(forOptions).forEach((forOption) => {
+  return (target: T, event: Action<T>) => {
+    asArray(forOptions).forEach((forOption: SurrogateForOptions<T>) => {
       const { type, options } = forOption;
       const which: Which[] = determineWhich(type);
 
@@ -46,7 +47,7 @@ export const SurrogateFor = <T extends object>(
 };
 
 /**
- * Registers pre and post hooks for decorated methods
+ * @description Registers pre and post hooks for decorated methods
  *
  * @export
  * @decorator
@@ -57,7 +58,7 @@ export const SurrogateFor = <T extends object>(
 export const SurrogatePreAndPost = <T extends object>(
   decoratorOptions: SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[],
 ): PropertyDecorator<T> => {
-  return (target: T, event: keyof T | string) => {
+  return (target: T, event: Action<T>) => {
     asArray(decoratorOptions).forEach((options) =>
       SurrogateFor({
         options,
@@ -68,7 +69,7 @@ export const SurrogatePreAndPost = <T extends object>(
 };
 
 /**
- * Registers pre hooks for decorated methods
+ * @description Registers pre hooks for decorated methods
  *
  * @export
  * @decorator
@@ -79,7 +80,9 @@ export const SurrogatePreAndPost = <T extends object>(
 export const SurrogatePre = <T extends object>(
   decoratorOptions: SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[],
 ): PropertyDecorator<T> => {
-  const forOptions = asArray(decoratorOptions).map<SurrogateForOptions<T>>((options) => ({
+  const forOptions: SurrogateForOptions<T>[] = asArray(decoratorOptions).map<
+    SurrogateForOptions<T>
+  >((options: SurrogateDelegateOptions<T>) => ({
     options,
     type: PRE,
   }));
@@ -88,7 +91,7 @@ export const SurrogatePre = <T extends object>(
 };
 
 /**
- * Registers post hooks for decorated methods
+ * @description Registers post hooks for decorated methods
  *
  * @export
  * @decorator
@@ -99,7 +102,9 @@ export const SurrogatePre = <T extends object>(
 export const SurrogatePost = <T extends object>(
   decoratorOptions: SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[],
 ): PropertyDecorator<T> => {
-  const forOptions = asArray(decoratorOptions).map<SurrogateForOptions<T>>((options) => ({
+  const forOptions: SurrogateForOptions<T>[] = asArray(decoratorOptions).map<
+    SurrogateForOptions<T>
+  >((options: SurrogateDelegateOptions<T>) => ({
     options,
     type: POST,
   }));
@@ -108,7 +113,7 @@ export const SurrogatePost = <T extends object>(
 };
 
 /**
- * Registers async pre and post hooks for decorated methods
+ * @description Registers async pre and post hooks for decorated methods
  *
  * @export
  * @decorator
@@ -121,13 +126,13 @@ export const SurrogateAsyncPreAndPost = <T extends object>(
 ): PropertyDecorator<T> => {
   const which: Which[] = [PRE, POST];
 
-  return (target: T, event: keyof T | string) => {
+  return (target: T, event: Action<T>) => {
     which.forEach((type) => surrogateAsyncHelper(type, decoratorOptions)(target, event));
   };
 };
 
 /**
- * Registers async post hooks for decorated methods
+ * @description Registers async post hooks for decorated methods
  *
  * @export
  * @decorator
@@ -142,7 +147,7 @@ export const SurrogateAsyncPost = <T extends object>(
 };
 
 /**
- * Registers async pre hooks for decorated methods
+ * @description Registers async pre hooks for decorated methods
  *
  * @export
  * @decorator
@@ -160,8 +165,8 @@ const surrogateAsyncHelper = <T extends object>(
   type: Which,
   asyncOptions: SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[],
 ) => {
-  return (target: T, event: keyof T | string) => {
-    asArray(asyncOptions).forEach((options) => {
+  return (target: T, event: Action<T>) => {
+    asArray(asyncOptions).forEach((options: SurrogateDelegateOptions<T>) => {
       manageAsyncDecorator(type, options)(target, event);
     });
   };

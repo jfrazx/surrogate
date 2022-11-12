@@ -7,7 +7,7 @@
 
 import { exec } from 'child_process';
 
-const neverDelete = ['development', 'master'];
+const neverDelete = ['develop', 'master'];
 
 exec('git branch --merged', (error, output) => {
   if (error) {

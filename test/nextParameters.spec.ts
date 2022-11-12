@@ -121,6 +121,7 @@ describe('NextParameters', () => {
       });
 
     const name = network.checkServer(serverName);
+
     const [{ result: preResult }]: NextParameters<Network>[] = handler.getCall(0).args;
     const [{ result: postResult }]: NextParameters<Network>[] = handler.getCall(1).args;
 

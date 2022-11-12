@@ -13,9 +13,9 @@ export class MethodIdentifier<T extends object> {
 
   private matchEvent(event: string, methods: string[]): boolean {
     return methods
-      .filter((v) => v)
-      .map((method) => new RegExp(method))
-      .some((regex) => regex.test(event));
+      .filter((v: string) => v)
+      .map((method: string) => new RegExp(method))
+      .some((regex: RegExp) => regex.test(event));
   }
 
   getApplicableMethods(event: string, methods: string[]): string[] {
@@ -23,7 +23,7 @@ export class MethodIdentifier<T extends object> {
 
     return methods.includes(event)
       ? [event]
-      : methods.filter((method) => methodTest.test(method));
+      : methods.filter((method: string) => methodTest.test(method));
   }
 
   instanceMethodNames(): string[] {
@@ -31,9 +31,9 @@ export class MethodIdentifier<T extends object> {
     const properties = this.getPropertyNames();
 
     return properties
-      .filter((prop) => prop !== 'constructor')
-      .filter((name) => this.isNotProperty(name))
-      .filter((name) => this.isNotAccessor(name, prototype));
+      .filter((prop: string) => prop !== 'constructor')
+      .filter((name: string) => this.isNotProperty(name))
+      .filter((name: string) => this.isNotAccessor(name, prototype));
   }
 
   private isNotProperty(name: string): boolean {

@@ -1,9 +1,9 @@
 import { HandlerConstructor, WithArgsRule, WithoutArgsRule } from './rules';
-import { MethodWrapper } from '../interfaces';
-import { OptionsHandler } from '../options';
+import type { OptionsHandler } from '../options';
+import { MethodWrapper } from '../constants';
 import { NextProvider } from '../provider';
 import { asArray } from '@jfrazx/asarray';
-import { NextNode } from '../next';
+import type { NextNode } from '../next';
 
 export interface SurrogateHandlerRunner {
   run(args: any[], error?: Error): void;

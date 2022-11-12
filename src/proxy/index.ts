@@ -1,4 +1,4 @@
-import { Surrogate, SurrogateOptions } from '../interfaces';
+import type { Surrogate, SurrogateOptions } from '../interfaces';
 import { SurrogateProxy } from './handler';
 
 /**

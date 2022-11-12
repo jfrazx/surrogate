@@ -1,4 +1,4 @@
-import { RunConditionParameters } from 'interfaces';
+import type { RunConditionParameters } from '../../interfaces';
 import { isUndefined } from '../../helpers';
 import { Provider } from '../base';
 

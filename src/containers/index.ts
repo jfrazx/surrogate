@@ -1,5 +1,5 @@
 import { ContextController, NextConstruct, FinalNext, NextNode, PreMethodNext } from '../next';
-import { SurrogateProxy } from '../proxy';
+import type { SurrogateProxy } from '../proxy';
 import { EmptyContainer } from './empty';
 import { PRE, Which } from '../which';
 

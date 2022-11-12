@@ -3,7 +3,7 @@ import { wrapDefaults } from '@status/defaults';
 import { PRE, POST, Which } from '../which';
 import { OptionsHandler } from '../options';
 import { asArray } from '@jfrazx/asarray';
-import {
+import type {
   EventMap,
   WhichContainers,
   SurrogateOptions,
@@ -114,7 +114,7 @@ export class EventManager<T extends object = any> implements SurrogateEventManag
   }
 
   deregisterHooks(): EventManager<T> {
-    Object.keys(this.events).forEach((event) => this.deregisterHooksFor(event));
+    Object.keys(this.events).forEach((event: string) => this.deregisterHooksFor(event));
 
     return this;
   }

@@ -1,4 +1,4 @@
-import { SurrogateOptions, SurrogateEventManager } from 'interfaces';
+import type { SurrogateOptions, SurrogateEventManager } from 'interfaces';
 import { MethodIdentifier } from '../identifier';
 import { wrapDefaults } from '@status/defaults';
 import { Which, POST, PRE } from '../which';

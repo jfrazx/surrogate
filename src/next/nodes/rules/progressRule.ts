@@ -1,5 +1,5 @@
-import { NextNode, NextOptions } from 'next/interfaces';
-import { NextRule } from './interfaces';
+import type { NextNode, NextOptions } from '../../../next';
+import type { NextRule } from './interfaces';
 
 export class ProgressRule<T extends object> implements NextRule<T> {
   constructor(protected readonly nextOptions: NextOptions) {}
