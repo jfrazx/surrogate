@@ -1,11 +1,11 @@
-import { SurrogateHandler, SurrogateHandlerTypes } from 'interfaces';
+import type { SurrogateHandler, SurrogateHandlerTypes } from 'interfaces';
 import { HandlerRunner, SurrogateHandlerRunner } from '../handler';
+import type { IContainer } from './interfaces';
+import type { WhichMethod } from '../which';
 import { OptionsHandler } from '../options';
-import { IContainer } from './interfaces';
+import type { Context } from '../context';
+import type { NextNode } from '../next';
 import { isFunction } from '../helpers';
-import { WhichMethod } from '../which';
-import { Context } from '../context';
-import { NextNode } from '../next';
 
 export abstract class BaseContainer<T extends object> implements IContainer<T> {
   constructor(

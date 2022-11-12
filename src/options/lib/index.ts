@@ -1,9 +1,5 @@
-import {
-  MethodWrapper,
-  SurrogateContext,
-  SurrogateOptions,
-  SurrogateHandlerOptions,
-} from '../../interfaces';
+import type { SurrogateOptions, SurrogateHandlerOptions } from '../../interfaces';
+import { MethodWrapper, SurrogateContext } from '../../constants';
 
 export const defaultMethodOptions: Required<SurrogateHandlerOptions<any>> = {
   priority: 0,

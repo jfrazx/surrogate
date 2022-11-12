@@ -1,6 +1,6 @@
-import { SurrogateHandler, NextParameters } from '../../../interfaces';
-import { HandlerRule } from '../interfaces';
-import { NextNode } from '../../../next';
+import type { SurrogateHandler, NextParameters } from '../../../interfaces';
+import type { HandlerRule } from '../interfaces';
+import type { NextNode } from '../../../next';
 
 export abstract class HandlerBaseRule<T extends object> implements HandlerRule<T> {
   constructor(protected node: NextNode<T>) {}

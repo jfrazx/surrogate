@@ -1,5 +1,5 @@
-import { ShouldHandle } from '../../../../interfaces';
-import { TimeTracking } from '../../../interfaces';
+import type { ShouldHandle } from '../../../../interfaces';
+import type { TimeTracking } from '../../../interfaces';
 
 export interface ShouldHandleTimeTracking extends ShouldHandle {
   run(): TimeTracking;

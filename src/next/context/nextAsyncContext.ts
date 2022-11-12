@@ -1,6 +1,6 @@
 import { ExecutionContext } from './executionContext';
-import { MethodNext } from '../nodes';
-import { NextNode } from '../../next';
+import type { MethodNext } from '../nodes';
+import type { NextNode } from '../../next';
 
 export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
   private rejecter: (reason: any) => void;

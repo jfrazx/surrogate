@@ -1,6 +1,6 @@
 import { isUndefined, isBool } from '../../helpers';
 import { MethodIdentifier } from '../../identifier';
-import { EventManager } from '../../manager';
+import type { EventManager } from '../../manager';
 import { asArray } from '@jfrazx/asarray';
 import { ProxyRule } from './base';
 

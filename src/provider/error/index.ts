@@ -1,5 +1,5 @@
-import { RunOnErrorParameters } from 'interfaces';
-import { NextNode } from '../../next';
+import type { RunOnErrorParameters } from 'interfaces';
+import type { NextNode } from '../../next';
 import { Provider } from '../base';
 
 export class ErrorProvider<T extends object>

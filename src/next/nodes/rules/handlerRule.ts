@@ -1,5 +1,5 @@
-import { NextNode } from 'next/interfaces';
-import { NextRule } from './interfaces';
+import type { NextNode } from '../../../next';
+import type { NextRule } from './interfaces';
 
 export class HandlerRule<T extends object> implements NextRule<T> {
   constructor(private readonly node: NextNode<T>, private readonly using: any[]) {}

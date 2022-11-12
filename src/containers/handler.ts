@@ -1,7 +1,7 @@
-import { SurrogateHandlerTypes } from '../interfaces';
-import { OptionsHandler } from '../options';
+import type { SurrogateHandlerTypes } from '../interfaces';
+import type { OptionsHandler } from '../options';
 import { BaseContainer } from './base';
-import { Which } from '../which';
+import type { Which } from '../which';
 
 export class SurrogateHandlerContainer<T extends object> extends BaseContainer<T> {
   constructor(

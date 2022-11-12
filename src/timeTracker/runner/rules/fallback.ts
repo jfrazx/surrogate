@@ -1,6 +1,6 @@
-import { ShouldHandleTimeTracking } from './interfaces';
+import type { ShouldHandleTimeTracking } from './interfaces';
 import { FallbackTimeTracker } from '../../trackers';
-import { TimeTracking } from '../../interfaces';
+import type { TimeTracking } from '../../interfaces';
 
 export class FallbackRule implements ShouldHandleTimeTracking {
   shouldHandle(): boolean {

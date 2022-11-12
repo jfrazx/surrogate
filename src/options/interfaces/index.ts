@@ -1,4 +1,4 @@
-import { SurrogateOptions, SurrogateHandlerOptions } from '../../interfaces';
+import type { SurrogateOptions, SurrogateHandlerOptions } from '../../interfaces';
 
 export interface GlobalHandlerOptions<T extends object> {
   handler?: SurrogateHandlerOptions<T>;

@@ -1,4 +1,4 @@
-import { NextParameters } from '../../../interfaces';
+import type { NextParameters } from '../../../interfaces';
 import { HandlerBaseRule } from '../base';
 
 export class WithArgsRule<T extends object> extends HandlerBaseRule<T> {

@@ -1,4 +1,4 @@
-import { TimeTracking } from '../interfaces';
+import type { TimeTracking } from '../interfaces';
 
 export abstract class Trackable implements TimeTracking {
   protected readonly hookTimes: [number, number][] = [];

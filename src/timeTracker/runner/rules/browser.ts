@@ -1,6 +1,6 @@
-import { ShouldHandleTimeTracking } from './interfaces';
+import type { ShouldHandleTimeTracking } from './interfaces';
+import type { TimeTracking } from '../../interfaces';
 import { BrowserTimeTracker } from '../../trackers';
-import { TimeTracking } from '../../interfaces';
 import { isFunction } from '../../../helpers';
 
 export class BrowserRule implements ShouldHandleTimeTracking {

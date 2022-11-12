@@ -1,9 +1,9 @@
-import { SurrogateHandlerContainer } from '../../containers';
+import type { SurrogateHandlerContainer } from '../../containers';
 import type { WhichContainers } from '../../interfaces';
 import type { ContextController } from './interfaces';
 import type { SurrogateProxy } from '../../proxy';
 import { TimeTrackable } from '../../timeTracker';
-import { MethodWrapper } from '../../interfaces';
+import { MethodWrapper } from '../../constants';
 import type { NextNode } from '../interfaces';
 import type { Context } from '../../context';
 import { isFunction } from '../../helpers';
@@ -49,7 +49,9 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
 
       containers
         .sort(containerSorter)
-        .forEach((container) => new Next(this, proxy, container, type));
+        .forEach(
+          (container: SurrogateHandlerContainer<T>) => new Next(this, proxy, container, type),
+        );
 
       Tail.for<T>(this, proxy, type);
     });
