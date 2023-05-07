@@ -40,7 +40,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   }
 
   bindHandler(event: string, target: T, receiver: Surrogate<T>): Function {
-    const func = Reflect.get(target, event, receiver);
+    const func = Reflect.get(target, event, receiver) as Function;
 
     return {
       [event]: (...args: any[]) =>

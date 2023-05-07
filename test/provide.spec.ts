@@ -30,7 +30,7 @@ describe(`Provide`, () => {
 
     network.connect();
 
-    const provider = handler.getCall(0).firstArg;
+    const provider = handler.firstCall.firstArg;
 
     expect(handler.calledOnce).to.be.true;
     expect(provider.provide).to.be.an('object');

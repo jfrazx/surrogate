@@ -3,7 +3,6 @@ import fastRedact from 'fast-redact';
 import {
   NextPre,
   SurrogatePre,
-  SurrogatePost,
   NextParameters,
   SurrogateContext,
   SurrogateMethods,
@@ -14,9 +13,9 @@ const configuration = {
   instrumentationKey: '1aa11111-bbbb-1ccc-8ddd-eeeeffff3333',
   debugKey: '1aa11111-bbbb-1ccc-8ddd-eeeeffff3333',
   debug: Math.random() >= 0.49,
-  liveMetrics: false,
   appInstance: 'App Instance',
   name: 'TelemetryExample',
+  liveMetrics: false,
   sampleRate: 100,
   batchSize: 200,
 };
@@ -40,6 +39,15 @@ export class Telemetry {
     this.getClient().trackEvent(telemetry);
   }
 
+  @SurrogatePre<Telemetry>({
+    handler({ originalArgs, currentArgs, next }) {
+      const [{ exception }] = originalArgs;
+      const [telemetry] = currentArgs;
+
+      next.next({ replace: { ...telemetry, exception } });
+    },
+    options: { ignoreErrors: true },
+  })
   trackException(telemetry: appInsights.Contracts.ExceptionTelemetry) {
     this.getClient().trackException(telemetry);
   }
@@ -162,18 +170,6 @@ export class Telemetry {
     options: {
       ignoreErrors: true,
       useContext: SurrogateContext.Surrogate,
-    },
-  })
-  @SurrogatePost<Telemetry>({
-    handler({ originalArgs, currentArgs, next }) {
-      const [{ exception }] = originalArgs;
-      const [telemetry] = currentArgs;
-
-      next.next({ replace: { ...telemetry, exception } });
-    },
-    options: {
-      ignoreErrors: true,
-      runConditions: ({ action }) => action === 'trackException',
     },
   })
   protected redact({ originalArgs, next }: NextParameters<Telemetry>) {

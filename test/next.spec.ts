@@ -28,7 +28,7 @@ describe('Next', () => {
       network.getSurrogate().registerPreHook(
         'checkServer',
         [
-          ({ originalArgs }: NextParameters<Network>) => {
+          ({ originalArgs }: NextParameters<Network, string[]>) => {
             expect(originalArgs).to.be.an('array');
             expect(originalArgs[0]).to.equal(serverName);
           },

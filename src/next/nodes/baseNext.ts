@@ -4,7 +4,7 @@ import type { SurrogateUnwrapped } from '../../interfaces';
 import type { SurrogateProxy } from '../../proxy/handler';
 import { RunConditionProvider } from '../../provider';
 import type { ContextController } from '../context';
-import type { IContainer } from '../../containers';
+import type { HandlerContainer } from '../../containers';
 import { Which, HookType } from '../../which';
 import { asArray } from '@jfrazx/asarray';
 
@@ -12,7 +12,7 @@ export interface NextConstruct<T extends object> {
   new (
     controller: ContextController<T>,
     proxy: SurrogateProxy<T>,
-    container: IContainer<T>,
+    container: HandlerContainer<T>,
     hookFor: Which,
   ): NextNode<T>;
 }
@@ -25,7 +25,7 @@ export abstract class BaseNext<T extends object> implements INext {
   constructor(
     public controller: ContextController<T>,
     public proxy: SurrogateProxy<T>,
-    public container: IContainer<T>,
+    public container: HandlerContainer<T>,
     public hookFor: Which,
   ) {
     controller.addNext(this);

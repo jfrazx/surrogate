@@ -13,10 +13,7 @@ import type { INext } from '../next';
  * @extends {ProviderParameters<T>}
  * @template T
  */
-export interface NextHandler<T extends object> extends ProviderParameters<T> {
-  surrogate: Surrogate<T>;
-  next: INext;
-}
+export interface NextHandler<T extends object> extends NextParameters<T> {}
 
 /**
  *
@@ -25,7 +22,8 @@ export interface NextHandler<T extends object> extends ProviderParameters<T> {
  * @extends {ProviderParameters<T>}
  * @template T
  */
-export interface NextParameters<T extends object> extends ProviderParameters<T> {
+export interface NextParameters<T extends object, Arguments extends Array<any> = any[]>
+  extends ProviderParameters<T, Arguments> {
   surrogate: Surrogate<T>;
   next: INext;
 }

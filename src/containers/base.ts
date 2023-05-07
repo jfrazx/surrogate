@@ -1,13 +1,13 @@
 import type { SurrogateHandler, SurrogateHandlerTypes } from 'interfaces';
 import { HandlerRunner, SurrogateHandlerRunner } from '../handler';
-import type { IContainer } from './interfaces';
+import type { HandlerContainer } from './interfaces';
 import type { WhichMethod } from '../which';
 import { OptionsHandler } from '../options';
 import type { Context } from '../context';
 import type { NextNode } from '../next';
 import { isFunction } from '../helpers';
 
-export abstract class BaseContainer<T extends object> implements IContainer<T> {
+export abstract class BaseContainer<T extends object> implements HandlerContainer<T> {
   constructor(
     protected handler: SurrogateHandlerTypes<T> | Function,
     public type: WhichMethod,
@@ -16,17 +16,22 @@ export abstract class BaseContainer<T extends object> implements IContainer<T> {
 
   getHandler(context: Context<T>): Function | SurrogateHandler<T> {
     const { target, receiver } = context;
-    const handler = this.handler as string;
 
-    return this.shouldReflect
-      ? this.shouldReflectSurrogate(context)
-        ? Reflect.get(receiver, handler, receiver)
-        : Reflect.get(target, handler, receiver)
-      : this.handler;
+    return (
+      this.shouldReflect(this.handler)
+        ? this.shouldReflectSurrogate(context)
+          ? /**
+             * @note Removes ability to apply target only
+             * @todo fix ^^
+             */
+            Reflect.get(receiver, this.handler, receiver)
+          : Reflect.get(target, this.handler, receiver)
+        : this.handler
+    ) as Function | SurrogateHandler<T>;
   }
 
-  private get shouldReflect() {
-    return !isFunction(this.handler);
+  private shouldReflect(value: unknown): value is string {
+    return !isFunction(value);
   }
 
   private shouldReflectSurrogate(context: Context<T>) {

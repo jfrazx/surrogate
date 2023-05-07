@@ -1,5 +1,5 @@
 import type { ContextController } from '../context';
-import type { IContainer } from '../../containers';
+import type { HandlerContainer } from '../../containers';
 import type { SurrogateProxy } from '../../proxy';
 import type { INext } from '../interfaces';
 import { MethodNext } from './methodNext';
@@ -10,7 +10,7 @@ export class PreMethodNext<T extends object> extends FinalNext<T> implements INe
   constructor(
     controller: ContextController<T>,
     proxy: SurrogateProxy<T>,
-    container: IContainer<T>,
+    container: HandlerContainer<T>,
     hookType: Which,
   ) {
     super(controller, proxy, container, hookType);

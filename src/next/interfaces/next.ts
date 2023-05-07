@@ -1,7 +1,7 @@
 import type { SurrogateUnwrapped, Contexts } from '../../interfaces';
 import type { NextOptions, BailOptions } from './nextOptions';
 import type { ContextController } from '../context';
-import type { IContainer } from '../../containers';
+import type { HandlerContainer } from '../../containers';
 import type { SurrogateProxy } from '../../proxy';
 import type { Context } from '../../context';
 
@@ -18,7 +18,7 @@ export interface NextNode<T extends object> extends INext {
   addNext(next: NextNode<T>): void;
   controller: ContextController<T>;
   instance: SurrogateUnwrapped<T>;
-  container: IContainer<T>;
+  container: HandlerContainer<T>;
   proxy: SurrogateProxy<T>;
   nextNode: NextNode<T>;
   prevNode: NextNode<T>;
