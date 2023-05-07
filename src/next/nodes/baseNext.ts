@@ -1,18 +1,18 @@
+import type { INext, NextOptions, NextNode, BailOptions } from '../interfaces';
 import { ErrorRule, BailRule, NextRule, ProgressRule } from './rules';
-import { INext, NextOptions, NextNode } from '../interfaces';
+import type { SurrogateUnwrapped } from '../../interfaces';
+import type { SurrogateProxy } from '../../proxy/handler';
 import { RunConditionProvider } from '../../provider';
-import { SurrogateUnwrapped } from '../../interfaces';
-import { SurrogateProxy } from '../../proxy/handler';
-import { ContextController } from '../context';
+import type { ContextController } from '../context';
+import type { HandlerContainer } from '../../containers';
 import { Which, HookType } from '../../which';
-import { IContainer } from '../../containers';
 import { asArray } from '@jfrazx/asarray';
 
 export interface NextConstruct<T extends object> {
   new (
     controller: ContextController<T>,
     proxy: SurrogateProxy<T>,
-    container: IContainer<T>,
+    container: HandlerContainer<T>,
     hookFor: Which,
   ): NextNode<T>;
 }
@@ -25,7 +25,7 @@ export abstract class BaseNext<T extends object> implements INext {
   constructor(
     public controller: ContextController<T>,
     public proxy: SurrogateProxy<T>,
-    public container: IContainer<T>,
+    public container: HandlerContainer<T>,
     public hookFor: Which,
   ) {
     controller.addNext(this);
@@ -97,6 +97,10 @@ export abstract class BaseNext<T extends object> implements INext {
     if (this.shouldReplace(options)) {
       this.controller.updateLatestArgs(options.replace);
     }
+  }
+
+  bail(bailOptions: BailOptions = {}): void {
+    this.next({ ...bailOptions, bail: true });
   }
 
   abstract skipWith(times?: number, ...args: any[]): void;

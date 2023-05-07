@@ -1,4 +1,4 @@
-import { Surrogate, SurrogateOptions, SurrogateGlobalOptions } from '../../interfaces';
+import type { Surrogate, SurrogateOptions, SurrogateGlobalOptions } from '../../interfaces';
 import { FetchRuleRunner, InternalMethods } from '../rules';
 import { ExecutionContext } from '../../next';
 import { EventManager } from '../../manager';
@@ -36,11 +36,11 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   static hasTarget<T extends object>(target: T): target is Surrogate<T> {
     const methods = [InternalMethods.Dispose, InternalMethods.EventManager] as (keyof T)[];
 
-    return methods.every((key) => isFunction(target[key]));
+    return methods.every((key: keyof T) => isFunction(target[key]));
   }
 
   bindHandler(event: string, target: T, receiver: Surrogate<T>): Function {
-    const func = Reflect.get(target, event, receiver);
+    const func = Reflect.get(target, event, receiver) as Function;
 
     return {
       [event]: (...args: any[]) =>

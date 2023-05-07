@@ -1,6 +1,6 @@
 import { ExecutionContext } from './executionContext';
-import { NextNode } from '../../next/';
-import { MethodNext } from '../nodes';
+import type { NextNode } from '../../next/';
+import type { MethodNext } from '../nodes';
 
 export class NextContext<T extends object> extends ExecutionContext<T> {
   start() {

@@ -1,7 +1,10 @@
-export interface NextOptions {
+export interface NextOptions extends BailOptions {
+  bail?: boolean;
+}
+
+export interface BailOptions {
   error?: Error | false;
   bailWith?: any;
-  bail?: boolean;
   replace?: any;
   using?: any[];
 }

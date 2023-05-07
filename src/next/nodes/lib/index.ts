@@ -1,4 +1,4 @@
-import { NextOptions } from '../../interfaces';
+import type { NextOptions } from '../../interfaces';
 
 export const nextOptionDefaults: NextOptions = {
   error: null,

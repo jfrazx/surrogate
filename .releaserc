@@ -1,20 +1,22 @@
 {
   "branch": "master",
   "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
     [
-      "@semantic-release/commit-analyzer",
+      "@semantic-release/npm",
       {
-        "preset": "angular",
-        "releaseRules": [
-          { "type": "docs", "scope": "README", "release": "patch" },
-          { "type": "refactor", "release": "patch" },
-          { "type": "style", "release": "patch" }
-        ],
-        "parserOpts": {
-          "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
-        }
+        "tarballDir": "release"
       }
     ],
-    "@semantic-release/release-notes-generator"
-  ]
+    [
+      "@semantic-release/github",
+      {
+        "assets": "release/*.tgz"
+      }
+    ],
+    "@semantic-release/git"
+  ],
+  "preset": "angular"
 }

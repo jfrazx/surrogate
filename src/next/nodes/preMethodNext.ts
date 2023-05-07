@@ -1,16 +1,16 @@
-import { ContextController } from '../context';
-import { IContainer } from '../../containers';
-import { SurrogateProxy } from '../../proxy';
+import type { ContextController } from '../context';
+import type { HandlerContainer } from '../../containers';
+import type { SurrogateProxy } from '../../proxy';
+import type { INext } from '../interfaces';
 import { MethodNext } from './methodNext';
+import type { Which } from '../../which';
 import { FinalNext } from './finalNext';
-import { INext } from '../interfaces';
-import { Which } from '../../which';
 
 export class PreMethodNext<T extends object> extends FinalNext<T> implements INext {
   constructor(
     controller: ContextController<T>,
     proxy: SurrogateProxy<T>,
-    container: IContainer<T>,
+    container: HandlerContainer<T>,
     hookType: Which,
   ) {
     super(controller, proxy, container, hookType);

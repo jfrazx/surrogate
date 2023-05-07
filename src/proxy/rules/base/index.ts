@@ -1,7 +1,7 @@
-import { Surrogate } from '../../../interfaces';
-import { SurrogateProxy } from '../../handler';
+import type { Surrogate } from '../../../interfaces';
+import type { SurrogateProxy } from '../../handler';
+import type { FetchRule } from '../interfaces';
 import { isUndefined } from '../../../helpers';
-import { FetchRule } from '../interfaces';
 
 export abstract class ProxyRule<T extends object> implements FetchRule {
   constructor(

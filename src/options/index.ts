@@ -1,4 +1,4 @@
-import { CombinedOptions, GlobalHandlerOptions } from './interfaces';
+import type { CombinedOptions, GlobalHandlerOptions } from './interfaces';
 import { defaultGlobalOptions, defaultMethodOptions } from './lib';
 
 export interface OptionsHandler<T extends object> extends CombinedOptions<T> {}

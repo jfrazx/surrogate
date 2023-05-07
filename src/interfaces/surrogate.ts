@@ -1,5 +1,5 @@
-import { SurrogateEventManager } from './surrogateEventManager';
-import { NextParameters } from './handlerOptions';
+import type { SurrogateEventManager } from './surrogateEventManager';
+import type { NextParameters } from './handlerOptions';
 
 export interface SurrogateMethods<T extends object> {
   disposeSurrogate(): T;

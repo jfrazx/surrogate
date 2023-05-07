@@ -214,8 +214,8 @@ describe('RunParameters', () => {
     const runner = new RunConditionProviderTest();
     const result = runner.runs();
 
-    const [provider]: RunConditionProvider<RunConditionProviderTest>[] =
-      runCondition.getCall(0).args;
+    const [provider]: RunConditionProvider<RunConditionProviderTest, any[]>[] =
+      runCondition.firstCall.args;
 
     expect(result).to.equal(someValue);
     expect(provider.didError).to.be.false;
@@ -263,7 +263,7 @@ describe('RunParameters', () => {
     const runner = new RunConditionProviderTest();
     const result = runner.runs();
 
-    const [provider]: RunConditionProvider<RunConditionProviderTest>[] =
+    const [provider]: RunConditionProvider<RunConditionProviderTest, any[]>[] =
       runCondition.getCall(0).args;
 
     expect(result).to.equal(someValue);

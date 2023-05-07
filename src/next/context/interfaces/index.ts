@@ -1,8 +1,8 @@
-import { WhichContainers } from '../../../interfaces';
-import { TimeTracking } from '../../../timeTracker';
-import { SurrogateProxy } from '../../../proxy';
-import { NextNode } from '../../interfaces';
-import { Context } from '../../../context';
+import type { WhichContainers } from '../../../interfaces';
+import type { TimeTracking } from '../../../timeTracker';
+import type { SurrogateProxy } from '../../../proxy';
+import type { NextNode } from '../../interfaces';
+import type { Context } from '../../../context';
 
 export interface ContextController<T extends object> {
   start(): any;

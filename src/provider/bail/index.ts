@@ -1,9 +1,9 @@
-import { RunOnBailParameters } from 'interfaces';
-import { NextNode } from '../../next';
+import type { RunOnBailParameters } from 'interfaces';
+import type { NextNode } from '../../next';
 import { Provider } from '../base';
 
-export class BailProvider<T extends object>
-  extends Provider<T>
+export class BailProvider<T extends object, Arguments extends Array<any> = any[]>
+  extends Provider<T, Arguments>
   implements RunOnBailParameters<T>
 {
   private recover = false;
@@ -21,7 +21,7 @@ export class BailProvider<T extends object>
   }
 
   recoverFromBail(recover: boolean): void {
-    this.recover = this.recover || recover;
+    this.recover ||= recover;
   }
 
   get shouldRecover() {

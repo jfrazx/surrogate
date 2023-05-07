@@ -1,5 +1,5 @@
-import { Contexts, ShouldSilence } from './contexts';
-import { RunOnError, RunOnBail } from './runOn';
+import type { Contexts, ShouldSilence } from './contexts';
+import type { RunOnError, RunOnBail } from './runOn';
 
 /**
  * Surrogate Options

@@ -1,9 +1,9 @@
-import { SurrogateGlobalOptions } from './surrogateOptions';
-import { ProviderParameters } from './provider';
-import { RunCondition } from './runCondition';
-import { MethodWrappers } from './contexts';
-import { Surrogate } from './surrogate';
-import { INext } from '../next';
+import type { SurrogateGlobalOptions } from './surrogateOptions';
+import type { ProviderParameters } from './provider';
+import type { RunCondition } from './runCondition';
+import type { MethodWrappers } from './contexts';
+import type { Surrogate } from './surrogate';
+import type { INext } from '../next';
 
 /**
  *
@@ -13,10 +13,7 @@ import { INext } from '../next';
  * @extends {ProviderParameters<T>}
  * @template T
  */
-export interface NextHandler<T extends object> extends ProviderParameters<T> {
-  surrogate: Surrogate<T>;
-  next: INext;
-}
+export interface NextHandler<T extends object> extends NextParameters<T> {}
 
 /**
  *
@@ -25,7 +22,8 @@ export interface NextHandler<T extends object> extends ProviderParameters<T> {
  * @extends {ProviderParameters<T>}
  * @template T
  */
-export interface NextParameters<T extends object> extends ProviderParameters<T> {
+export interface NextParameters<T extends object, Arguments extends Array<any> = any[]>
+  extends ProviderParameters<T, Arguments> {
   surrogate: Surrogate<T>;
   next: INext;
 }

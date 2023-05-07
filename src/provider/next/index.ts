@@ -1,7 +1,10 @@
-import { NextParameters } from 'interfaces';
+import type { NextParameters } from '../../interfaces';
 import { Provider } from '../base';
 
-export class NextProvider<T extends object> extends Provider<T> implements NextParameters<T> {
+export class NextProvider<T extends object, Arguments extends Array<any> = any[]>
+  extends Provider<T, Arguments>
+  implements NextParameters<T, Arguments>
+{
   get surrogate() {
     return this.context.receiver;
   }

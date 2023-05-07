@@ -1,5 +1,5 @@
-import { Whichever } from '../../which';
-import {
+import type { Whichever } from '../../which';
+import type {
   SurrogateOptions,
   SurrogateHandlers,
   SurrogateUnwrapped,
@@ -13,8 +13,8 @@ export interface SurrogateDecorateOptions<T extends object> extends SurrogateOpt
 }
 
 export interface SurrogateDecoratorOptions<T extends object> {
-  handler: SurrogateHandlers<T>;
   options?: SurrogateHandlerOptions<T>;
+  handler: SurrogateHandlers<T>;
 }
 
 export type SurrogateDelegateOptions<T extends object> =
@@ -23,13 +23,19 @@ export type SurrogateDelegateOptions<T extends object> =
   | SurrogateDecoratorOptions<T>[];
 
 export interface SurrogateForOptions<T extends object> {
-  type: Whichever;
   options: SurrogateDelegateOptions<T>;
+  type: Whichever;
 }
 
+export type Action<T extends object> =
+  | keyof SurrogateUnwrapped<T>
+  | (keyof SurrogateUnwrapped<T>)[]
+  | string
+  | string[];
+
 export interface NextDecoratorOptions<T extends object> {
-  action: keyof SurrogateUnwrapped<T> | (keyof SurrogateUnwrapped<T>)[] | string | string[];
   options?: SurrogateHandlerOptions<T>;
+  action: Action<T>;
 }
 
 export interface NextForOptions<T extends object> extends NextDecoratorOptions<T> {

@@ -1,4 +1,4 @@
-import { TimeTracking } from '../interfaces';
+import type { TimeTracking } from '../interfaces';
 import { rules } from './rules';
 
 export abstract class TimeTrackable {

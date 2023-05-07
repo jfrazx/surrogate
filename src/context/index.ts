@@ -1,4 +1,5 @@
-import { Surrogate, SurrogateContext, SurrogateHandlerOptions, Contexts } from '../interfaces';
+import type { Surrogate, SurrogateHandlerOptions, Contexts } from '../interfaces';
+import { SurrogateContext } from '../constants';
 
 export class Context<T extends object> {
   constructor(

@@ -1,8 +1,8 @@
-import { SurrogateHandlerOptions } from './handlerOptions';
-import { SurrogateHandlerContainer } from '../containers';
-import { WhichContainers } from './whichContainers';
-import { SurrogateHandlers } from './surrogate';
-import { Which } from '../which';
+import type { SurrogateHandlerOptions } from './handlerOptions';
+import type { SurrogateHandlerContainer } from '../containers';
+import type { WhichContainers } from './whichContainers';
+import type { SurrogateHandlers } from './surrogate';
+import type { Which } from '../which';
 
 export interface EventMap<T extends object> {
   [event: string]: WhichContainers<T>;

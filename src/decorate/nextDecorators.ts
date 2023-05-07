@@ -1,6 +1,6 @@
-import { NextForOptions, NextDecoratorOptions } from './interfaces';
+import type { NextForOptions, NextDecoratorOptions, Action } from './interfaces';
 import { manageDecorator, determineWhich } from './manageDecorator';
-import { MethodWrapper } from '../interfaces';
+import { MethodWrapper } from '../constants';
 import { POST, PRE, Which } from '../which';
 import { asArray } from '@jfrazx/asarray';
 
@@ -11,7 +11,7 @@ type PropertyDecorator<T extends object> = (
 ) => void;
 
 /**
- * Designate decorated methods as next handler. Handler type must be assigned
+ * @description Designate decorated methods as next handler. Handler type must be assigned
  *
  * @export
  * @decorator
@@ -24,13 +24,13 @@ export const NextFor =
     nextOptions: NextForOptions<T> | NextForOptions<T>[],
   ): PropertyDecorator<T> =>
   (target: T, event: string): void =>
-    asArray(nextOptions).forEach((nextOption) => {
+    asArray(nextOptions).forEach((nextOption: NextForOptions<T>) => {
       const { type, action, options } = nextOption;
       const which: Which[] = determineWhich(type);
-      const actions = asArray(action);
+      const actions: Action<T>[] = asArray(action);
 
-      which.forEach((type) =>
-        actions.forEach((action) =>
+      which.forEach((type: Which) =>
+        actions.forEach((action: Action<T>) =>
           manageDecorator<T>(type, {
             handler: event,
             options,
@@ -84,7 +84,9 @@ export const NextAsyncPreAndPost = <T extends object>(
   const which: Which[] = [PRE, POST];
 
   return (target: T, event: string, descriptor: PropertyDescriptor): void => {
-    which.forEach((type) => nextAsyncHelper(nextOptions, type)(target, event, descriptor));
+    which.forEach((type: Which) =>
+      nextAsyncHelper(nextOptions, type)(target, event, descriptor),
+    );
   };
 };
 
@@ -93,7 +95,7 @@ const nextAsyncHelper = <T extends object>(
   type: Which,
 ): PropertyDecorator<T> => {
   return (target: T, event: string, descriptor: PropertyDescriptor): void =>
-    asArray(nextOptions).forEach(({ action, options }) =>
+    asArray(nextOptions).forEach(({ action, options }: NextDecoratorOptions<T>) =>
       nextHelper<T>(
         {
           action,
@@ -158,7 +160,7 @@ const nextHelper = <T extends object>(
   type: Which,
 ): PropertyDecorator<T> => {
   return (target: T, event: string, descriptor: PropertyDescriptor): void =>
-    asArray(hookOptions).forEach(({ action, options }) =>
+    asArray(hookOptions).forEach(({ action, options }: NextDecoratorOptions<T>) =>
       NextFor<T>({
         action,
         type,

@@ -1,9 +1,9 @@
-import { RunConditionParameters } from 'interfaces';
+import type { RunConditionParameters } from '../../interfaces';
 import { isUndefined } from '../../helpers';
 import { Provider } from '../base';
 
-export class RunConditionProvider<T extends object>
-  extends Provider<T>
+export class RunConditionProvider<T extends object, Arguments extends Array<any>>
+  extends Provider<T, Arguments>
   implements RunConditionParameters<T>
 {
   private valuesFromConditions: any[] = [];

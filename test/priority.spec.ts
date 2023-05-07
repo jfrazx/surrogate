@@ -1,4 +1,5 @@
-import { wrapSurrogate, Surrogate, SurrogateHandlerContainer } from '../src';
+import type { SurrogateHandlerContainer } from '../src/containers';
+import { wrapSurrogate, Surrogate } from '../src';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';

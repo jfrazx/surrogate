@@ -1,5 +1,5 @@
-import { ErrorProvider, BailProvider } from '../src/provider';
 import { Surrogate, wrapSurrogate, RunOnErrorParameters, RunOnBailParameters } from '../src';
+import { ErrorProvider, BailProvider } from '../src/provider';
 import { Network } from './lib/network';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
@@ -44,7 +44,7 @@ describe(`RunOn`, () => {
 
       expect(runner.called).to.be.true;
 
-      const [provider]: ErrorProvider<Network>[] = runner.firstCall.args;
+      const [provider]: ErrorProvider<Network, any[]>[] = runner.firstCall.args;
 
       expect(provider).to.be.instanceOf(ErrorProvider);
     });

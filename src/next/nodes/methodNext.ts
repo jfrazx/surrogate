@@ -1,8 +1,8 @@
+import type { ContextController } from '../context';
 import { MethodContainer } from '../../containers';
-import { ContextController } from '../context';
-import { SurrogateProxy } from '../../proxy';
+import type { SurrogateProxy } from '../../proxy';
+import type { Which } from '../../which';
 import { FinalNext } from './finalNext';
-import { Which } from '../../which';
 
 export class MethodNext<T extends object> extends FinalNext<T> {
   constructor(controller: ContextController<T>, proxy: SurrogateProxy<T>, hookType: Which) {

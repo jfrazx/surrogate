@@ -1,5 +1,5 @@
 import { NextRule, SkipRule, HandlerRule } from './rules';
-import { INext, NextOptions } from '../interfaces';
+import type { INext, NextOptions } from '../interfaces';
 import { nextOptionDefaults } from './lib';
 import { BaseNext } from './baseNext';
 
