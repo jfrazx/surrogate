@@ -14,11 +14,11 @@
 #         with:
 #           fetch-depth: 0
 #           ref: master
-#       - run: yarn install
+#       - run: yarn install --frozen-lockfile
 #       - run: yarn build
 
 #       - name: Build Docs
-#         uses: andstor/jsdoc-action@v1
+#         uses: andstor/jsdoc-action@v1.2.1
 #         with:
 #           source_dir: ./build
 #           output_dir: ./docs
