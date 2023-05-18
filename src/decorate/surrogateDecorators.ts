@@ -140,8 +140,14 @@ export const SurrogateAsyncPreAndPost = <T extends object>(
  * @param {(SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[])} decoratorOptions
  * @returns {PropertyDecorator<T>}
  */
-export const SurrogateAsyncPost = <T extends object>(
-  decoratorOptions: SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[],
+export const SurrogateAsyncPost = <
+  T extends object,
+  Arguments extends Array<any> = any,
+  Result = any,
+>(
+  decoratorOptions:
+    | SurrogateDelegateOptions<T, Arguments, Result>
+    | SurrogateDelegateOptions<T, Arguments, Result>[],
 ): PropertyDecorator<T> => {
   return surrogateAsyncHelper(POST, decoratorOptions);
 };

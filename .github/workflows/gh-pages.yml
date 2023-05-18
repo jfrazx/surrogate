@@ -14,8 +14,8 @@
 #         with:
 #           fetch-depth: 0
 #           ref: master
-#       - run: yarn install --frozen-lockfile
-#       - run: yarn build
+#       - run: npm ci
+#       - run: npm run build
 
 #       - name: Build Docs
 #         uses: andstor/jsdoc-action@v1.2.1
