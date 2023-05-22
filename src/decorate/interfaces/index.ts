@@ -12,18 +12,30 @@ export interface SurrogateDecorateOptions<T extends object> extends SurrogateOpt
   locateWith?: Constructor<T>;
 }
 
-export interface SurrogateDecoratorOptions<T extends object> {
-  options?: SurrogateHandlerOptions<T>;
-  handler: SurrogateHandlers<T>;
+export interface SurrogateDecoratorOptions<
+  T extends object,
+  Arguments extends Array<any> = any,
+  Result = any,
+> {
+  options?: SurrogateHandlerOptions<T, Arguments, Result>;
+  handler: SurrogateHandlers<T, Arguments, Result>;
 }
 
-export type SurrogateDelegateOptions<T extends object> =
-  | SurrogateHandlers<T>
-  | SurrogateDecoratorOptions<T>
-  | SurrogateDecoratorOptions<T>[];
+export type SurrogateDelegateOptions<
+  T extends object,
+  Arguments extends Array<any> = any,
+  Result = any,
+> =
+  | SurrogateHandlers<T, Arguments, Result>
+  | SurrogateDecoratorOptions<T, Arguments, Result>
+  | SurrogateDecoratorOptions<T, Arguments, Result>[];
 
-export interface SurrogateForOptions<T extends object> {
-  options: SurrogateDelegateOptions<T>;
+export interface SurrogateForOptions<
+  T extends object,
+  Arguments extends Array<any> = any,
+  Result = any,
+> {
+  options: SurrogateDelegateOptions<T, Arguments, Result>;
   type: Whichever;
 }
 

@@ -2,8 +2,8 @@ import type { RunConditionParameters } from '../../interfaces';
 import { isUndefined } from '../../helpers';
 import { Provider } from '../base';
 
-export class RunConditionProvider<T extends object, Arguments extends Array<any>>
-  extends Provider<T, Arguments>
+export class RunConditionProvider<T extends object, Arguments extends Array<any>, Result>
+  extends Provider<T, Arguments, Result>
   implements RunConditionParameters<T>
 {
   private valuesFromConditions: any[] = [];

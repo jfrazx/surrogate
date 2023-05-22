@@ -11,9 +11,11 @@ tslint.json
 .prettierrc
 .releaserc
 .nycrc.json
+.yarnrc.yml
 cspell.json
 *.lcov
 yarn.lock
+package-lock.json
 
 .env.*
 
@@ -27,6 +29,8 @@ spec/
 test/
 docs/
 scripts/
+.yarn/
+.husky/
 .nyc_output/
 .vscode/
 .github/

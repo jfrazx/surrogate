@@ -16,12 +16,20 @@ export type SurrogateUnwrapped<T extends object> = Omit<
 /**
  * @description Surrogate handler types
  */
-export type SurrogateHandler<T extends object> = (
-  nextParameters?: NextParameters<T>,
-) => unknown;
+export type SurrogateHandler<
+  T extends object,
+  Arguments extends Array<any> = any,
+  Result = any,
+> = (nextParameters?: NextParameters<T, Arguments, Result>) => unknown;
 
-export type SurrogateHandlerTypes<T extends object> = SurrogateHandler<T> | keyof T | string;
+export type SurrogateHandlerTypes<
+  T extends object,
+  Arguments extends Array<any> = any,
+  Result = any,
+> = SurrogateHandler<T, Arguments, Result> | keyof T | string;
 
-export type SurrogateHandlers<T extends object> =
-  | SurrogateHandlerTypes<T>
-  | SurrogateHandlerTypes<T>[];
+export type SurrogateHandlers<
+  T extends object,
+  Arguments extends Array<any> = any,
+  Result = any,
+> = SurrogateHandlerTypes<T, Arguments, Result> | SurrogateHandlerTypes<T>[];

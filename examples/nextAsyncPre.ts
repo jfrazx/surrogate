@@ -4,6 +4,7 @@ import {
   NextPreAndPost,
   SurrogateMethods,
   SurrogateDelegate,
+  RunConditionParameters,
 } from '../build';
 
 interface ServiceBase extends SurrogateMethods<ServiceBase> {}
@@ -22,8 +23,9 @@ class ServiceBase {
     {
       action: ['find', 'findOne', 'aggregate', 'superDuperFind'] as any,
       options: {
-        runConditions: function (this: ServiceBase, params) {
+        runConditions(this: ServiceBase, params: RunConditionParameters<ServiceBase>) {
           console.log(`checking run conditions`, this, params);
+
           return !this.isInitialized;
         },
         useNext: false,
