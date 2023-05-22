@@ -22,13 +22,20 @@ export interface NextHandler<T extends object> extends NextParameters<T> {}
  * @extends {ProviderParameters<T>}
  * @template T
  */
-export interface NextParameters<T extends object, Arguments extends Array<any> = any[]>
-  extends ProviderParameters<T, Arguments> {
+export interface NextParameters<
+  T extends object,
+  Arguments extends Array<any> = any,
+  Result = any,
+> extends ProviderParameters<T, Arguments, Result> {
   surrogate: Surrogate<T>;
   next: INext;
 }
 
-export interface SurrogateHandlerOptions<T extends object> extends SurrogateGlobalOptions {
+export interface SurrogateHandlerOptions<
+  T extends object,
+  Arguments extends Array<any> = any,
+  Result = any,
+> extends SurrogateGlobalOptions {
   /**
    * @description Specifies the method context wrapper to utilize
    *
@@ -43,7 +50,7 @@ export interface SurrogateHandlerOptions<T extends object> extends SurrogateGlob
   /**
    * @description Conditions to determine if a handler should be executed
    */
-  runConditions?: RunCondition<T> | RunCondition<T>[];
+  runConditions?: RunCondition<T, Arguments, Result> | RunCondition<T, Arguments, Result>[];
 
   /**
    * @description - Specify the priority of the handler. Higher priority handlers are run first.

@@ -146,7 +146,7 @@ A RunCondition is a function that receives `RunConditionParameters`, which inclu
 
 #### RunOnError
 
-`RunOnError` is a function that receives `RunOnErrorParameters`, which includes [CommonParameters](#-CommonParameters) and the ability to recover from an error.
+`RunOnError` is a function that receives `RunOnErrorParameters`, which includes [CommonParameters](#CommonParameters) and the ability to recover from an error.
 
 | Property           | Member Of            | Type    | Description                                       |
 | ------------------ | -------------------- | ------- | ------------------------------------------------- |

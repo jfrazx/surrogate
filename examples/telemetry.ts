@@ -22,7 +22,7 @@ const configuration = {
 const NANOSECONDS_IN_SECONDS = 1000000000;
 const NANOSECONDS_IN_MILLISECONDS = 1000000;
 
-@SurrogateDelegate<Telemetry>({ useContext: SurrogateContext.Surrogate })
+@SurrogateDelegate<Telemetry>({ useContext: SurrogateContext.Surrogate, ignoreErrors: true })
 export class Telemetry {
   readonly dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
   readonly instance = appInsights;
@@ -40,13 +40,16 @@ export class Telemetry {
   }
 
   @SurrogatePre<Telemetry>({
-    handler({ originalArgs, currentArgs, next }) {
+    handler({
+      originalArgs,
+      currentArgs,
+      next,
+    }: NextParameters<Telemetry, appInsights.Contracts.ExceptionTelemetry[]>) {
       const [{ exception }] = originalArgs;
       const [telemetry] = currentArgs;
 
       next.next({ replace: { ...telemetry, exception } });
     },
-    options: { ignoreErrors: true },
   })
   trackException(telemetry: appInsights.Contracts.ExceptionTelemetry) {
     this.getClient().trackException(telemetry);
@@ -87,6 +90,7 @@ export class Telemetry {
     options: {
       noArgs: true,
       useNext: false,
+      ignoreErrors: false,
       useContext: SurrogateContext.Instance,
       runConditions: ({ instance: telemetry }) => !telemetry.telemetryStarted(),
     },
@@ -167,10 +171,7 @@ export class Telemetry {
 
   @NextPre<Telemetry>({
     action: ['track*'],
-    options: {
-      ignoreErrors: true,
-      useContext: SurrogateContext.Surrogate,
-    },
+    options: { useContext: SurrogateContext.Surrogate },
   })
   protected redact({ originalArgs, next }: NextParameters<Telemetry>) {
     const [telemetry] = originalArgs;

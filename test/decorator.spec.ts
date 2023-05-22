@@ -171,6 +171,20 @@ describe('SurrogateDecorators', () => {
         async method() {
           return results;
         }
+
+        @SurrogateAsyncPost<Test>({
+          handler: ({
+            result,
+            originalArgs,
+          }: NextParameters<Test, [string, number], boolean>) => {
+            const [_item1, _item2] = originalArgs;
+
+            return result;
+          },
+        })
+        async method2(_item1: string, _item2: number): Promise<boolean> {
+          return true;
+        }
       }
 
       const test = new Test();

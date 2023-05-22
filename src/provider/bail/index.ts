@@ -2,8 +2,8 @@ import type { RunOnBailParameters } from 'interfaces';
 import type { NextNode } from '../../next';
 import { Provider } from '../base';
 
-export class BailProvider<T extends object, Arguments extends Array<any> = any[]>
-  extends Provider<T, Arguments>
+export class BailProvider<T extends object, Arguments extends Array<any> = any[], Result = any>
+  extends Provider<T, Arguments, Result>
   implements RunOnBailParameters<T>
 {
   private recover = false;

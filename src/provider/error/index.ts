@@ -2,8 +2,8 @@ import type { RunOnErrorParameters } from 'interfaces';
 import type { NextNode } from '../../next';
 import { Provider } from '../base';
 
-export class ErrorProvider<T extends object, Arguments extends Array<any> = any[]>
-  extends Provider<T, Arguments>
+export class ErrorProvider<T extends object, Arguments extends Array<any> = any, Result = any>
+  extends Provider<T, Arguments, Result>
   implements RunOnErrorParameters<T>
 {
   public timeOfError = new Date();

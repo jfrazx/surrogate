@@ -1,7 +1,7 @@
 import type { SurrogateUnwrapped } from './surrogate';
 import type { TimeTracker } from '../timeTracker';
 
-export interface ProviderParameters<T extends object, Arguments> {
+export interface ProviderParameters<T extends object, Arguments, Result> {
   /**
    * @description The current, unwrapped instance
    *
@@ -41,10 +41,10 @@ export interface ProviderParameters<T extends object, Arguments> {
   /**
    * @description The method name of the current hook pipeline
    *
-   * @type {(string | keyof T)}
+   * @type {string}
    * @memberof ProviderParameters
    */
-  action: string | keyof T;
+  action: string;
   receivedArgs: any[];
   currentArgs: any[];
 
@@ -78,5 +78,5 @@ export interface ProviderParameters<T extends object, Arguments> {
    * @type {T[keyof T]}
    * @memberof ProviderParameters
    */
-  result: T[keyof T];
+  result: Result;
 }
