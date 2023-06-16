@@ -1,7 +1,7 @@
-import type { SurrogateOptions, SurrogateEventManager } from 'interfaces';
+import type { SurrogateOptions, SurrogateEventManager } from '../interfaces';
 import { MethodIdentifier } from '../identifier';
 import { wrapDefaults } from '@status/defaults';
-import { Which, POST, PRE } from '../which';
+import { Which, HookType } from '../which';
 import { SurrogateProxy } from '../proxy';
 import {
   Constructor,
@@ -14,8 +14,8 @@ interface DecoratedEventMap {
 }
 
 interface DecoratorContainer {
-  [PRE]: SurrogateDecoratorOptions<any>[];
-  [POST]: SurrogateDecoratorOptions<any>[];
+  [HookType.PRE]: SurrogateDecoratorOptions<any>[];
+  [HookType.POST]: SurrogateDecoratorOptions<any>[];
 }
 
 export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T> {
@@ -64,7 +64,7 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
     event: string | keyof T,
   ): void {
     handlerOptions.forEach(({ handler, options }) => {
-      eventManager.registerHook(event, hook, handler, options);
+      eventManager.registerHook(event, hook, handler, options!);
     });
   }
 
@@ -85,13 +85,13 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
     return this.decoratorMap.set(klass, decoratorMap);
   }
 
-  private static retrieveTargetDecoratorMap<T extends Function>(klass: T) {
+  private static retrieveTargetDecoratorMap<T extends Function>(klass: T): DecoratedEventMap {
     return (
       this.decoratorMap.get(klass) ??
       wrapDefaults({
         defaultValue: {
-          [PRE]: [],
-          [POST]: [],
+          [HookType.PRE]: [],
+          [HookType.POST]: [],
         },
         setUndefined: true,
         shallowCopy: false,

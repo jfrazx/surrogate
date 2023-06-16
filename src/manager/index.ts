@@ -1,7 +1,7 @@
 import { SurrogateHandlerContainer } from '../containers';
 import { wrapDefaults } from '@status/defaults';
-import { PRE, POST, Which } from '../which';
 import { OptionsHandler } from '../options';
+import { Which, HookType } from '../which';
 import { asArray } from '@jfrazx/asarray';
 import type {
   EventMap,
@@ -16,8 +16,8 @@ import type {
 export class EventManager<T extends object = any> implements SurrogateEventManager<T> {
   private readonly events: EventMap<T> = wrapDefaults<EventMap<T>, WhichContainers<T>>({
     defaultValue: {
-      [POST]: [],
-      [PRE]: [],
+      [HookType.POST]: [],
+      [HookType.PRE]: [],
     },
     setUndefined: true,
     shallowCopy: false,
@@ -34,11 +34,11 @@ export class EventManager<T extends object = any> implements SurrogateEventManag
   }
 
   getPreEventHandlers(event: string): SurrogateHandlerContainer<T>[] {
-    return this.getEventHandlersFor(event, PRE);
+    return this.getEventHandlersFor(event, HookType.PRE);
   }
 
   getPostEventHandlers(event: string): SurrogateHandlerContainer<T>[] {
-    return this.getEventHandlersFor(event, POST);
+    return this.getEventHandlersFor(event, HookType.POST);
   }
 
   eventIsHandled(event: string): boolean {
@@ -61,7 +61,7 @@ export class EventManager<T extends object = any> implements SurrogateEventManag
     handler: SurrogateHandlers<T>,
     options?: SurrogateHandlerOptions<T>,
   ): EventManager<T> {
-    return this.setEventHandlers(event, PRE, asArray(handler), options);
+    return this.setEventHandlers(event, HookType.PRE, asArray(handler), options);
   }
 
   registerPostHook(
@@ -69,7 +69,7 @@ export class EventManager<T extends object = any> implements SurrogateEventManag
     handler: SurrogateHandlers<T>,
     options?: SurrogateHandlerOptions<T>,
   ): EventManager<T> {
-    return this.setEventHandlers(event, POST, asArray(handler), options);
+    return this.setEventHandlers(event, HookType.POST, asArray(handler), options);
   }
 
   private setEventHandlers(
@@ -124,11 +124,11 @@ export class EventManager<T extends object = any> implements SurrogateEventManag
   }
 
   deregisterPreHook(event: string, handler: SurrogateHandlers<T>): EventManager<T> {
-    return this.deregisterHookType(event, PRE, handler);
+    return this.deregisterHookType(event, HookType.PRE, handler);
   }
 
   deregisterPostHook(event: string, handler: SurrogateHandlers<T>): EventManager<T> {
-    return this.deregisterHookType(event, POST, handler);
+    return this.deregisterHookType(event, HookType.POST, handler);
   }
 
   private deregisterHookType(
@@ -146,10 +146,10 @@ export class EventManager<T extends object = any> implements SurrogateEventManag
   }
 
   deregisterPostHooks(event: string): EventManager<T> {
-    return this.setEventHandlersFor(event, POST);
+    return this.setEventHandlersFor(event, HookType.POST);
   }
 
   deregisterPreHooks(event: string): EventManager<T> {
-    return this.setEventHandlersFor(event, PRE);
+    return this.setEventHandlersFor(event, HookType.PRE);
   }
 }

@@ -2,9 +2,9 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "experimentalDecorators": true,
-    "baseUrl": "./",
     "outDir": "../build-examples",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": "./"
   },
   "include": ["**/*.ts"]
 }

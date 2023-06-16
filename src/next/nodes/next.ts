@@ -18,9 +18,9 @@ export class Next<T extends object> extends BaseNext<T> implements INext {
     const useNextOptions = { ...nextOptionDefaults, ...nextOptions };
     const { using } = useNextOptions;
 
-    const rules: NextRule<T>[] = [new HandlerRule(this, using), new SkipRule()];
+    const rules: NextRule<T>[] = [new HandlerRule(this, using!), new SkipRule()];
 
-    const rule = rules.find((runner) => runner.shouldRun());
+    const rule: NextRule<T> = rules.find((runner: NextRule<T>) => runner.shouldRun())!;
 
     rule.run(this);
   }

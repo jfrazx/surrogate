@@ -25,7 +25,7 @@ export const NextFor =
   ): PropertyDecorator<T> =>
   (target: T, event: string): void =>
     asArray(nextOptions).forEach((nextOption: NextForOptions<T>) => {
-      const { type, action, options } = nextOption;
+      const { type, action, options = {} } = nextOption;
       const which: Which[] = determineWhich(type);
       const actions: Action<T>[] = asArray(action);
 
@@ -160,7 +160,7 @@ const nextHelper = <T extends object>(
   type: Which,
 ): PropertyDecorator<T> => {
   return (target: T, event: string, descriptor: PropertyDescriptor): void =>
-    asArray(hookOptions).forEach(({ action, options }: NextDecoratorOptions<T>) =>
+    asArray(hookOptions).forEach(({ action, options = {} }: NextDecoratorOptions<T>) =>
       NextFor<T>({
         action,
         type,

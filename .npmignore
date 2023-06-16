@@ -15,6 +15,7 @@ tslint.json
 cspell.json
 *.lcov
 yarn.lock
+package-lock.json
 
 .env.*
 

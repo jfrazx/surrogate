@@ -36,8 +36,8 @@ export abstract class HandlerRunner<T extends object> implements SurrogateHandle
 
   protected findRule() {
     return this.argsHandlers
-      .map((Rule) => new Rule(this.node))
-      .find((rule) => rule.shouldHandle());
+      .map((Rule: HandlerConstructor<T>) => new Rule(this.node))
+      .find((rule) => rule.shouldHandle())!;
   }
 
   protected abstract runWithoutNext(nextProvider: NextProvider<T>): void;

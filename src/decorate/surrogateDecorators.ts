@@ -1,12 +1,12 @@
 import { manageDecorator, determineWhich, manageAsyncDecorator } from './manageDecorator';
 import { SurrogateClassWrapper } from './surrogateClassWrapper';
-import { POST, PRE, Which, BOTH } from '../which';
+import { Which, HookType } from '../which';
 import { asArray } from '@jfrazx/asarray';
 import type {
+  Action,
   SurrogateForOptions,
   SurrogateDelegateOptions,
   SurrogateDecorateOptions,
-  Action,
 } from './interfaces';
 
 type PropertyDecorator<T extends object> = (target: T, property: Action<T>) => void;
@@ -62,7 +62,7 @@ export const SurrogatePreAndPost = <T extends object>(
     asArray(decoratorOptions).forEach((options) =>
       SurrogateFor({
         options,
-        type: BOTH,
+        type: HookType.BOTH,
       })(target, event),
     );
   };
@@ -84,7 +84,7 @@ export const SurrogatePre = <T extends object>(
     SurrogateForOptions<T>
   >((options: SurrogateDelegateOptions<T>) => ({
     options,
-    type: PRE,
+    type: HookType.PRE,
   }));
 
   return SurrogateFor(forOptions);
@@ -106,7 +106,7 @@ export const SurrogatePost = <T extends object>(
     SurrogateForOptions<T>
   >((options: SurrogateDelegateOptions<T>) => ({
     options,
-    type: POST,
+    type: HookType.POST,
   }));
 
   return SurrogateFor(forOptions);
@@ -124,7 +124,7 @@ export const SurrogatePost = <T extends object>(
 export const SurrogateAsyncPreAndPost = <T extends object>(
   decoratorOptions: SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[],
 ): PropertyDecorator<T> => {
-  const which: Which[] = [PRE, POST];
+  const which: Which[] = [HookType.PRE, HookType.POST];
 
   return (target: T, event: Action<T>) => {
     which.forEach((type) => surrogateAsyncHelper(type, decoratorOptions)(target, event));
@@ -149,7 +149,7 @@ export const SurrogateAsyncPost = <
     | SurrogateDelegateOptions<T, Arguments, Result>
     | SurrogateDelegateOptions<T, Arguments, Result>[],
 ): PropertyDecorator<T> => {
-  return surrogateAsyncHelper(POST, decoratorOptions);
+  return surrogateAsyncHelper(HookType.POST, decoratorOptions);
 };
 
 /**
@@ -164,7 +164,7 @@ export const SurrogateAsyncPost = <
 export const SurrogateAsyncPre = <T extends object>(
   decoratorOptions: SurrogateDelegateOptions<T> | SurrogateDelegateOptions<T>[],
 ): PropertyDecorator<T> => {
-  return surrogateAsyncHelper(PRE, decoratorOptions);
+  return surrogateAsyncHelper(HookType.PRE, decoratorOptions);
 };
 
 const surrogateAsyncHelper = <T extends object>(

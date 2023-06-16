@@ -1,4 +1,4 @@
-import type { SurrogateHandler, SurrogateHandlerTypes } from 'interfaces';
+import type { SurrogateHandler, SurrogateHandlerTypes } from '../interfaces';
 import { HandlerRunner, SurrogateHandlerRunner } from '../handler';
 import type { HandlerContainer } from './interfaces';
 import type { WhichMethod } from '../which';

@@ -27,7 +27,7 @@ export class NextContext<T extends object> extends ExecutionContext<T> {
     this.setReturnValue(bailWith);
   }
 
-  handleError(node: NextNode<T>, error?: Error): never {
+  handleError(node: NextNode<T>, error: Error): never {
     this.logError(node, error);
 
     throw error;

@@ -15,7 +15,8 @@ export const manageDecorator = <T extends object>(
   type: Which,
   options: SurrogateDelegateOptions<T>,
 ) => {
-  const decoratorOptions = organizeOptions<T>(options);
+  const decoratorOptions: SurrogateDecoratorOptions<T, any, any>[] =
+    organizeOptions<T>(options);
 
   return (target: T, event: Action<T>) => {
     SurrogateClassWrapper.addDecorators(

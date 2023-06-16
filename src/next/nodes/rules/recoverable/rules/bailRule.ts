@@ -11,7 +11,7 @@ export class BailRule<T extends object> extends RecoverableRule<T> implements Ne
   run(node: NextNode<T>): void {
     const { options } = node.container;
     const { using, bailWith } = this.nextOptions;
-    const provider = new BailProvider(node, using, bailWith);
+    const provider = new BailProvider(node, using!, bailWith);
 
     const shouldRecover = this.attemptRecovery(
       provider,
@@ -20,7 +20,7 @@ export class BailRule<T extends object> extends RecoverableRule<T> implements Ne
     );
 
     shouldRecover
-      ? this.recover(node, { bail: null })
+      ? this.recover(node, { bail: false })
       : node.controller.bail(provider.bailUsing);
   }
 }
