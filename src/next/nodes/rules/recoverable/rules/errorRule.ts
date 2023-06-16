@@ -12,7 +12,7 @@ export class ErrorRule<T extends object> extends RecoverableRule<T> implements N
     const { options } = node.container;
     const { error, using } = this.nextOptions;
 
-    const provider = new ErrorProvider(node, using, error as Error);
+    const provider = new ErrorProvider(node, using!, error as Error);
 
     const shouldRecover = this.attemptRecovery(
       provider,

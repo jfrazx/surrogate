@@ -31,6 +31,12 @@ export interface NextParameters<
   next: INext;
 }
 
+export type RequiredHandlerOptions<
+  T extends object,
+  Arguments extends Array<any> = any,
+  Result = any,
+> = Required<SurrogateHandlerOptions<T, Arguments, Result>>;
+
 export interface SurrogateHandlerOptions<
   T extends object,
   Arguments extends Array<any> = any,

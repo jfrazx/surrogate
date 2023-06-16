@@ -1,6 +1,6 @@
 import type { ProviderParameters, SurrogateUnwrapped } from '../../interfaces';
 import type { HandlerContainer } from '../../containers';
-import type { TimeTracking } from 'timeTracker';
+import type { TimeTracking } from '../../timeTracker';
 import type { Context } from '../../context';
 import type { NextNode } from '../../next';
 

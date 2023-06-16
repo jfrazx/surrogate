@@ -11,7 +11,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   private readonly targets: Target<T> = new WeakMap();
   private static instance: SurrogateProxy<any>;
 
-  constructor(target: T, { useSingleton = true, ...globalOptions }: SurrogateOptions) {
+  constructor(target: T, { useSingleton = true, ...globalOptions }: SurrogateOptions = {}) {
     return this.useInstance(useSingleton).setTarget(target, globalOptions);
   }
 
@@ -23,8 +23,8 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return FetchRuleRunner.fetchRule(this, target, event, receiver).returnableValue();
   }
 
-  getEventManager(target: T) {
-    return this.targets.get(target);
+  getEventManager(target: T): EventManager<T> {
+    return this.targets.get(target) as EventManager<T>;
   }
 
   static wrap<T extends object>(object: T, options?: SurrogateOptions): Surrogate<T> {

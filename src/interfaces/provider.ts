@@ -62,7 +62,7 @@ export interface ProviderParameters<T extends object, Arguments, Result> {
    * @type {Error}
    * @memberof ProviderParameters
    */
-  error?: Error;
+  error?: Error | undefined;
 
   /**
    * @description Any additional provided values to the hook pipeline

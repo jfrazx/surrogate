@@ -23,12 +23,12 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
   private utilizeLatest = false;
   private hasThrown = false;
 
-  protected nextNode: NextNode<T>;
+  protected nextNode!: NextNode<T>;
 
   readonly timeTracker = TimeTrackable.fetch();
   readonly correlationId = uuid();
 
-  latestArgs: any[];
+  latestArgs!: any[];
   returnValue: any;
 
   constructor(public readonly context: Context<T>) {}
@@ -45,7 +45,7 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
     const which = [HookType.PRE, HookType.POST] as const;
 
     which.forEach((type: Which) => {
-      const containers = [...typeContainers[type]];
+      const containers: SurrogateHandlerContainer<T>[] = [...typeContainers[type]];
 
       containers
         .sort(containerSorter)
@@ -99,7 +99,7 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
     return node.handleNext();
   }
 
-  protected logError(node: NextNode<T>, error?: Error): void {
+  protected logError(node: NextNode<T>, error: Error): void {
     const { silenceErrors } = node.container.options;
 
     const silence = isFunction(silenceErrors) ? silenceErrors(error) : silenceErrors;
@@ -132,4 +132,4 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
 
 import { NextAsyncContext } from './nextAsyncContext';
 import { NextContext } from './nextContext';
-import { Which } from 'which';
+import { Which } from '../../which';

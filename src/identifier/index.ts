@@ -27,8 +27,8 @@ export class MethodIdentifier<T extends object> {
   }
 
   instanceMethodNames(): string[] {
-    const prototype = Reflect.getPrototypeOf(this.instance);
-    const properties = this.getPropertyNames();
+    const prototype: object = Reflect.getPrototypeOf(this.instance) || {};
+    const properties: string[] = this.getPropertyNames();
 
     return properties
       .filter((prop: string) => prop !== 'constructor')
@@ -51,7 +51,7 @@ export class MethodIdentifier<T extends object> {
   private getPropertyNames(): string[] {
     const props: string[][] = [];
 
-    let current = this.instance as object;
+    let current: object | null = this.instance as object;
 
     do {
       props.push(Object.getOwnPropertyNames(current));

@@ -3,7 +3,7 @@ export interface NextOptions extends BailOptions {
 }
 
 export interface BailOptions {
-  error?: Error | false;
+  error?: Error | false | null | undefined;
   bailWith?: any;
   replace?: any;
   using?: any[];

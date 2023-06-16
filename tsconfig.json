@@ -1,26 +1,26 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "ES6",
     "sourceMap": true,
-    "baseUrl": "./src",
+    "target": "es2017",
     "outDir": "./build",
     "declaration": true,
     "module": "commonjs",
     "alwaysStrict": true,
+    "skipLibCheck": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
-    "removeComments": false,
     "esModuleInterop": true,
     "lib": ["esnext", "DOM"],
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "noUnusedParameters": true,
     "strictFunctionTypes": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "exactOptionalPropertyTypes": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["./src"]
+  "include": ["src"]
 }

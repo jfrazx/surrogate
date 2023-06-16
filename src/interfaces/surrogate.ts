@@ -20,7 +20,7 @@ export type SurrogateHandler<
   T extends object,
   Arguments extends Array<any> = any,
   Result = any,
-> = (nextParameters?: NextParameters<T, Arguments, Result>) => unknown;
+> = (nextParameters: NextParameters<T, Arguments, Result>) => unknown;
 
 export type SurrogateHandlerTypes<
   T extends object,

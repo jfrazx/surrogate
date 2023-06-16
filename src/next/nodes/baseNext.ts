@@ -2,9 +2,9 @@ import type { INext, NextOptions, NextNode, BailOptions } from '../interfaces';
 import { ErrorRule, BailRule, NextRule, ProgressRule } from './rules';
 import type { SurrogateUnwrapped } from '../../interfaces';
 import type { SurrogateProxy } from '../../proxy/handler';
+import type { HandlerContainer } from '../../containers';
 import { RunConditionProvider } from '../../provider';
 import type { ContextController } from '../context';
-import type { HandlerContainer } from '../../containers';
 import { Which, HookType } from '../../which';
 import { asArray } from '@jfrazx/asarray';
 
@@ -18,9 +18,9 @@ export interface NextConstruct<T extends object> {
 }
 
 export abstract class BaseNext<T extends object> implements INext {
-  public nextNode: NextNode<T> = null;
-  public prevNode: NextNode<T> = null;
-  public didError: Error = null;
+  public nextNode!: NextNode<T>;
+  public prevNode!: NextNode<T>;
+  public didError!: Error;
 
   constructor(
     public controller: ContextController<T>,
@@ -45,7 +45,7 @@ export abstract class BaseNext<T extends object> implements INext {
       new ProgressRule({ ...options, using }),
     ];
 
-    const rule = rules.find((rule) => rule.shouldRun());
+    const rule: NextRule<T> = rules.find((rule) => rule.shouldRun()) as NextRule<T>;
 
     rule.run(this);
   }

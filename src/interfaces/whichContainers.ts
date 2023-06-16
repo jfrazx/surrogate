@@ -1,5 +1,5 @@
 import type { SurrogateHandlerContainer } from '../containers';
-import type { PRE, POST } from '../which';
+import type { HookType } from '../which';
 
 /**
  * @description Object containing PRE and POST handlers for a method
@@ -9,6 +9,6 @@ import type { PRE, POST } from '../which';
  * @template T
  */
 export interface WhichContainers<T extends object> {
-  [PRE]: SurrogateHandlerContainer<T>[];
-  [POST]: SurrogateHandlerContainer<T>[];
+  [HookType.PRE]: SurrogateHandlerContainer<T>[];
+  [HookType.POST]: SurrogateHandlerContainer<T>[];
 }
