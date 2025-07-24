@@ -15,12 +15,15 @@
     "*.log",
     "Makefile",
     ".webpack",
+    "coverage",
+    "docs",
     "txt",
     "tmp"
   ],
   "words": [
     "codecov",
     "deregisters",
+    "Emper",
     "esnext",
     "klass",
     "lcov",
