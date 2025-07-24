@@ -5,7 +5,8 @@ import {
   SurrogateMethods,
   SurrogateDelegate,
   RunConditionParameters,
-} from '../build';
+  SurrogateAsyncPre,
+} from '../src';
 
 interface ServiceBase extends SurrogateMethods<ServiceBase> {}
 
@@ -21,10 +22,10 @@ class ServiceBase {
 
   @NextAsyncPre<ServiceBase>([
     {
-      action: ['find', 'findOne', 'aggregate', 'superDuperFind'] as any,
+      action: ['find', 'findOne', 'aggregate', 'superDuperFind'],
       options: {
         runConditions(this: ServiceBase, params: RunConditionParameters<ServiceBase>) {
-          console.log(`checking run conditions`, this, params);
+          console.log(`checking run conditions`, this.isInitialized, params);
 
           return !this.isInitialized;
         },
@@ -34,6 +35,9 @@ class ServiceBase {
   ])
   protected async init() {
     console.log(`initializing client`);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     this.isInitialized = true;
   }
 
@@ -85,6 +89,17 @@ class ExtendedService extends ServiceBase {
     console.log(`extended finding many :: isInitialized: ${this.isInitialized}`);
   }
 
+  @SurrogateAsyncPre<ExtendedService>({
+    handler: 'init',
+    options: {
+      runConditions(this: ExtendedService, params: RunConditionParameters<ServiceBase>) {
+        console.log(`checking run conditions`, this.isInitialized, params);
+
+        return !this.isInitialized;
+      },
+      useNext: false,
+    },
+  })
   superDuperFind() {
     console.log('super duper finding');
   }

@@ -1,4 +1,4 @@
-import { wrapSurrogate, NextParameters } from '../build';
+import { wrapSurrogate, NextParameters } from '../src';
 
 class Network {
   private enabled: boolean = Boolean(Math.random() > 0.5);

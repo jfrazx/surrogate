@@ -1,4 +1,4 @@
-import { NextParameters, SurrogateMethods, SurrogateDelegate } from '../build';
+import { NextParameters, SurrogateMethods, SurrogateDelegate } from '../src';
 
 interface INetwork {
   isEnabled: boolean;

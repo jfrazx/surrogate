@@ -9,6 +9,10 @@ tslint.json
 .editorconfig
 .travis.yml
 .prettierrc
+.prettierignore
+.npmrc
+.parcelrc
+renovate.json
 .releaserc
 .nycrc.json
 .yarnrc.yml
@@ -21,6 +25,7 @@ package-lock.json
 
 !*.d.ts
 
+.parcel-cache/
 typings/
 node_modules/
 examples/
