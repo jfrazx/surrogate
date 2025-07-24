@@ -7,7 +7,7 @@ import {
   SurrogateContext,
   SurrogateMethods,
   SurrogateDelegate,
-} from '../build';
+} from '../src';
 
 const configuration = {
   instrumentationKey: '1aa11111-bbbb-1ccc-8ddd-eeeeffff3333',

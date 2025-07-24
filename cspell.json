@@ -1,15 +1,33 @@
 {
-  "version": "0.1",
-  "language": "en",
+  "version": "0.2",
+  "ignorePaths": [
+    "node_modules",
+    ".git",
+    ".vscode",
+    "package-lock.json",
+    "package.json",
+    "tsconfig.json",
+    "serverless.yml",
+    "config",
+    "*.js",
+    "dist",
+    "*.csv",
+    "*.log",
+    "Makefile",
+    ".webpack",
+    "txt",
+    "tmp"
+  ],
   "words": [
-    "lcov",
-    "sloc",
-    "klass",
-    "esnext",
     "codecov",
-    "proxied",
+    "deregisters",
+    "esnext",
+    "klass",
+    "lcov",
     "prettierrc",
-    "deregisters"
+    "proxied",
+    "redactable",
+    "sloc"
   ],
   "ignoreRegExpList": [
     "/\"(pre|post)[a-zA-Z]+\":/",

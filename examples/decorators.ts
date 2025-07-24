@@ -4,7 +4,7 @@ import {
   NextParameters,
   SurrogateMethods,
   SurrogateDelegate,
-} from '../build';
+} from '../src';
 
 export interface Animal extends SurrogateMethods<Animal> {}
 

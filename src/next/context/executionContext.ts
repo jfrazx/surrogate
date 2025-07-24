@@ -3,7 +3,9 @@ import type { WhichContainers } from '../../interfaces';
 import type { ContextController } from './interfaces';
 import type { SurrogateProxy } from '../../proxy';
 import { TimeTrackable } from '../../timeTracker';
+import { type MethodNext, Next } from '../nodes';
 import { MethodWrapper } from '../../constants';
+import { HookType, Which } from '../../which';
 import type { NextNode } from '../interfaces';
 import type { Context } from '../../context';
 import { isFunction } from '../../helpers';
@@ -11,9 +13,7 @@ import { containerSorter } from './utils';
 import { asArray } from '@jfrazx/asarray';
 import { isAsync } from '../../helpers';
 import { Tail } from '../../containers';
-import { HookType } from '../../which';
 import { v4 as uuid } from 'uuid';
-import { Next } from '../nodes';
 
 interface ExecutionConstruct<T extends object> {
   new (context: Context<T>): ContextController<T>;
@@ -130,6 +130,79 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
   abstract start(): any;
 }
 
-import { NextAsyncContext } from './nextAsyncContext';
-import { NextContext } from './nextContext';
-import { Which } from '../../which';
+export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
+  private rejecter!: (reason: any) => void;
+  private resolver!: (value: any) => void;
+
+  async start() {
+    return new Promise((resolve, reject) => {
+      this.resolver = resolve;
+      this.rejecter = reject;
+
+      try {
+        this.runNext(this.nextNode);
+      } catch (error: any) {
+        this.handleError(this.nextNode, error);
+      }
+    });
+  }
+
+  complete(): void {
+    this.resolver(this.returnValue);
+  }
+
+  async runOriginal(node: MethodNext<T>) {
+    const { container, context } = node;
+    const handler = container.getHandler(context) as Function;
+
+    try {
+      const result = await handler.apply(context.receiver, this.currentArgs);
+
+      this.setReturnValue(result);
+      this.runNext(node.nextNode);
+    } catch (error: any) {
+      this.handleError(this.nextNode, error);
+    }
+  }
+
+  handleError(node: NextNode<T>, error: Error) {
+    this.logError(node, error);
+    this.rejecter(error);
+  }
+
+  bail(bailWith?: any) {
+    this.resolver(bailWith ?? this.returnValue);
+  }
+}
+
+export class NextContext<T extends object> extends ExecutionContext<T> {
+  start() {
+    this.runNext();
+
+    return this.complete();
+  }
+
+  complete() {
+    return this.returnValue;
+  }
+
+  runOriginal(node: MethodNext<T>) {
+    const { container, context } = node;
+    const handler = container.getHandler(context) as Function;
+
+    const result = handler.apply(context.receiver, this.currentArgs);
+
+    this.setReturnValue(result);
+    this.runNext(node.nextNode);
+  }
+
+  bail(bailWith?: any) {
+    this.setReturnValue(bailWith);
+  }
+
+  handleError(node: NextNode<T>, error: Error): never {
+    this.logError(node, error);
+
+    throw error;
+  }
+}

@@ -1,4 +1,4 @@
-import { wrapSurrogate, NextParameters, SurrogateMethods } from '../build';
+import { wrapSurrogate, NextParameters, SurrogateMethods } from '../src';
 
 interface INetwork {
   isEnabled: boolean;
