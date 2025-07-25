@@ -93,7 +93,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "fast-redact": "^3.5.0",
     "husky": "^9.1.7",
-    "mocha": "^10.2.0",
+    "mocha": "^11.0.0",
     "npm-check": "^6.0.1",
     "nyc": "^15.1.0",
     "parcel": "^2.15.4",
