@@ -1,6 +1,6 @@
 import type { ContextController } from '../context';
 import { MethodContainer } from '../../containers';
-import type { SurrogateProxy } from '../../proxy';
+import type { SurrogateProxy } from '../../proxy/handler';
 import type { Which } from '../../which';
 import { FinalNext } from './finalNext';
 

@@ -30,7 +30,8 @@
     "prettierrc",
     "proxied",
     "redactable",
-    "sloc"
+    "sloc",
+    "unittests"
   ],
   "ignoreRegExpList": [
     "/\"(pre|post)[a-zA-Z]+\":/",

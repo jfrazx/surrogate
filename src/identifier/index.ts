@@ -1,7 +1,7 @@
 import { isUndefined } from '../helpers';
 
 export class MethodIdentifier<T extends object> {
-  constructor(private instance: T) {}
+  constructor(private readonly instance: T) {}
 
   doesNotIncludeEvent(event: string, methods: string[]): boolean {
     return !this.doesIncludeEvent(event) || !this.matchEvent(event, methods);

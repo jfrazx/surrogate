@@ -1,8 +1,8 @@
 import type { SurrogateOptions, SurrogateEventManager } from '../interfaces';
-import { MethodIdentifier } from '../identifier';
+import { SurrogateProxy } from '../proxy/handler';
 import { wrapDefaults } from '@status/defaults';
+import { MethodIdentifier } from '../identifier';
 import { Which, HookType } from '../which';
-import { SurrogateProxy } from '../proxy';
 import {
   Constructor,
   SurrogateDecorateOptions,
@@ -19,9 +19,19 @@ interface DecoratorContainer {
 }
 
 export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T> {
-  static decoratorMap = new Map<Function, DecoratedEventMap>();
+  static readonly decoratorMap = new Map<Function, DecoratedEventMap>();
 
-  constructor(private options: SurrogateDecorateOptions<T>) {}
+  constructor(private readonly options: SurrogateDecorateOptions<T>) {}
+
+  getPrototypeOf(target: T): object | null {
+    // Inserting the target into its own proxy's prototype chain lets
+    // reflect-metadata (and similar libraries) find class-level metadata
+    // that other decorators stored on the original class. The Proxy
+    // invariant requires this to match Reflect.getPrototypeOf(target) when
+    // the target is non-extensible, so fall back in that case — metadata
+    // interop is lost, but the lookup will not throw.
+    return Object.isExtensible(target) ? target : Reflect.getPrototypeOf(target);
+  }
 
   construct(Klass: T, args: any[], Target: any) {
     const { locateWith = Klass } = this.options;

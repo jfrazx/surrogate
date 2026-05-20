@@ -10,9 +10,9 @@ export interface SurrogateHandlerRunner {
 }
 
 export abstract class HandlerRunner<T extends object> implements SurrogateHandlerRunner {
-  protected argsHandlers: HandlerConstructor<T>[] = [WithArgsRule, WithoutArgsRule];
+  protected readonly argsHandlers: HandlerConstructor<T>[] = [WithArgsRule, WithoutArgsRule];
 
-  constructor(protected node: NextNode<T>) {}
+  constructor(protected readonly node: NextNode<T>) {}
 
   static for<T extends object>(
     node: NextNode<T>,
