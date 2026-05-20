@@ -9,9 +9,9 @@ import { isFunction } from '../helpers';
 
 export abstract class BaseContainer<T extends object> implements HandlerContainer<T> {
   constructor(
-    protected handler: SurrogateHandlerTypes<T> | Function,
-    public type: WhichMethod,
-    public options: OptionsHandler<T> = new OptionsHandler(),
+    protected readonly handler: SurrogateHandlerTypes<T> | Function,
+    public readonly type: WhichMethod,
+    public readonly options: OptionsHandler<T> = new OptionsHandler(),
   ) {}
 
   getHandler(context: Context<T>): Function | SurrogateHandler<T> {

@@ -6,7 +6,7 @@ export class RunConditionProvider<T extends object, Arguments extends Array<any>
   extends Provider<T, Arguments, Result>
   implements RunConditionParameters<T>
 {
-  private valuesFromConditions: any[] = [];
+  private  readonly valuesFromConditions: any[] = [];
   private valueFromLastCondition: any;
 
   passToNextCondition(value: any): void {

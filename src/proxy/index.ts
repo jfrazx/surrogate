@@ -14,5 +14,3 @@ export const wrapSurrogate = <T extends object>(
   object: T,
   options: SurrogateOptions = {},
 ): Surrogate<T> => SurrogateProxy.wrap(object, options);
-
-export * from './handler';

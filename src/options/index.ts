@@ -4,7 +4,7 @@ import { defaultGlobalOptions, defaultMethodOptions } from './lib';
 export interface OptionsHandler<T extends object> extends CombinedOptions<T> {}
 
 export class OptionsHandler<T extends object> {
-  constructor(protected combinedOptions: GlobalHandlerOptions<T> = {}) {
+  constructor(protected readonly combinedOptions: GlobalHandlerOptions<T> = {}) {
     const options = this.mergeOptions(combinedOptions);
 
     Object.entries(options).forEach(([key, value]) => {

@@ -1,8 +1,8 @@
 import type { SurrogateOptions, SurrogateEventManager } from '../interfaces';
-import { MethodIdentifier } from '../identifier';
+import { SurrogateProxy } from '../proxy/handler';
 import { wrapDefaults } from '@status/defaults';
+import { MethodIdentifier } from '../identifier';
 import { Which, HookType } from '../which';
-import { SurrogateProxy } from '../proxy';
 import {
   Constructor,
   SurrogateDecorateOptions,
@@ -19,9 +19,13 @@ interface DecoratorContainer {
 }
 
 export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T> {
-  static decoratorMap = new Map<Function, DecoratedEventMap>();
+  static readonly decoratorMap = new Map<Function, DecoratedEventMap>();
 
-  constructor(private options: SurrogateDecorateOptions<T>) {}
+  constructor(private readonly options: SurrogateDecorateOptions<T>) {}
+
+  getPrototypeOf(target: T): object | null {
+    return target;
+  }
 
   construct(Klass: T, args: any[], Target: any) {
     const { locateWith = Klass } = this.options;

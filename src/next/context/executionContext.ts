@@ -1,7 +1,7 @@
 import type { SurrogateHandlerContainer } from '../../containers';
 import type { WhichContainers } from '../../interfaces';
 import type { ContextController } from './interfaces';
-import type { SurrogateProxy } from '../../proxy';
+import type { SurrogateProxy } from '../../proxy/handler';
 import { TimeTrackable } from '../../timeTracker';
 import { type MethodNext, Next } from '../nodes';
 import { MethodWrapper } from '../../constants';

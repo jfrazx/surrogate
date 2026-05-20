@@ -23,10 +23,10 @@ export abstract class BaseNext<T extends object> implements INext {
   public didError!: Error;
 
   constructor(
-    public controller: ContextController<T>,
-    public proxy: SurrogateProxy<T>,
-    public container: HandlerContainer<T>,
-    public hookFor: Which,
+    public readonly controller: ContextController<T>,
+    public readonly proxy: SurrogateProxy<T>,
+    public readonly container: HandlerContainer<T>,
+    public readonly hookFor: Which,
   ) {
     controller.addNext(this);
   }

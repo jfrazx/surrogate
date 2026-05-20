@@ -2,7 +2,7 @@ import type { SurrogateUnwrapped, Contexts } from '../../interfaces';
 import type { NextOptions, BailOptions } from './nextOptions';
 import type { ContextController } from '../context';
 import type { HandlerContainer } from '../../containers';
-import type { SurrogateProxy } from '../../proxy';
+import type { SurrogateProxy } from '../../proxy/handler';
 import type { Context } from '../../context';
 
 export interface INext {

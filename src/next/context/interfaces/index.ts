@@ -1,6 +1,6 @@
 import type { WhichContainers } from '../../../interfaces';
 import type { TimeTracking } from '../../../timeTracker';
-import type { SurrogateProxy } from '../../../proxy';
+import type { SurrogateProxy } from '../../../proxy/handler';
 import type { NextNode } from '../../interfaces';
 import type { Context } from '../../../context';
 

@@ -23,7 +23,7 @@ export class EventManager<T extends object = any> implements SurrogateEventManag
     shallowCopy: false,
   });
 
-  constructor(public globalOptions: SurrogateOptions = {}) {}
+  constructor(public readonly globalOptions: SurrogateOptions = {}) {}
 
   getEventMap() {
     return this.events;

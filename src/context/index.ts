@@ -3,11 +3,11 @@ import { SurrogateContext } from '../constants';
 
 export class Context<T extends object> {
   constructor(
-    public target: T,
-    public receiver: Surrogate<T>,
-    public event: string,
-    public original: Function,
-    public originalArguments: any[],
+    public readonly target: T,
+    public readonly receiver: Surrogate<T>,
+    public readonly event: string,
+    public readonly original: Function,
+    public readonly originalArguments: any[],
   ) {}
 
   determineContext(options: RequiredHandlerOptions<T>): Contexts {
