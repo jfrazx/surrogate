@@ -24,6 +24,20 @@ describe('Class-level decorator metadata interop', () => {
       expect(chain).to.include(Original);
       expect(chain).to.include(Function.prototype);
     });
+
+    it('should not violate the Proxy invariant when the target is non-extensible', () => {
+      // Per ECMAScript §10.5.1, a Proxy's getPrototypeOf result must equal
+      // Reflect.getPrototypeOf(target) when target is non-extensible, or the
+      // engine throws TypeError on prototype reads. The trap must fall back
+      // safely rather than crash.
+      class Original {}
+      Object.preventExtensions(Original);
+
+      const Wrapped = SurrogateDelegate()(Original);
+
+      expect(() => Object.getPrototypeOf(Wrapped)).to.not.throw();
+      expect(Object.getPrototypeOf(Wrapped)).to.equal(Reflect.getPrototypeOf(Original));
+    });
   });
 
   describe('reflect-metadata style lookups', () => {
