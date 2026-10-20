@@ -2,6 +2,7 @@ import { DisposeSurrogateRule } from '../disposeSurrogateRule';
 import { FetchRuleConstruct, FetchRule } from '../interfaces';
 import { BypassSurrogateRule } from '../bypassSurrogateRule';
 import { UnprocessableRule } from '../unprocessableRule';
+import { ConstructorRule } from '../constructorRule';
 import { EventMangerRule } from '../eventMangerRule';
 import { Surrogate } from '../../../interfaces';
 import { SurrogateProxy } from '../../handler';
@@ -18,6 +19,7 @@ export abstract class FetchRuleRunner {
       DisposeSurrogateRule,
       BypassSurrogateRule,
       EventMangerRule,
+      ConstructorRule,
       UnprocessableRule,
       BindingRule,
     ];

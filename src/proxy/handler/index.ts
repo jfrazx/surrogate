@@ -9,6 +9,7 @@ type Target<T extends object> = WeakMap<T, EventManager<T>>;
 
 export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   private readonly targets: Target<T> = new WeakMap();
+  private static readonly reportedConstructors = new WeakMap<object, Function>();
   private static instance: SurrogateProxy<any>;
 
   constructor(target: T, { useSingleton = true, ...globalOptions }: SurrogateOptions = {}) {
@@ -25,6 +26,16 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
 
   getEventManager(target: T): EventManager<T> {
     return this.targets.get(target) as EventManager<T>;
+  }
+
+  getReportedConstructor(target: T): Function | undefined {
+    return SurrogateProxy.reportedConstructors.get(target);
+  }
+
+  // Static, because SurrogateDelegate cannot tell which handler (the singleton
+  // or one of its own) wraps the target.
+  static reportConstructor(target: object, constructor: Function): void {
+    this.reportedConstructors.set(target, constructor);
   }
 
   static wrap<T extends object>(object: T, options?: SurrogateOptions): Surrogate<T> {

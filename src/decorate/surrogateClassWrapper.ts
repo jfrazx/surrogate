@@ -34,12 +34,16 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
   }
 
   construct(Klass: T, args: any[], Target: any) {
-    const { locateWith = Klass } = this.options;
+    const { locateWith = Klass, reportWrapperAsConstructor = false } = this.options;
     const decoratorMap = SurrogateClassWrapper.retrieveTargetDecoratorMap(locateWith);
     const wrappedInstance = SurrogateProxy.wrap<T>(
       Reflect.construct(Klass, args, Target),
       this.options,
     );
+
+    if (reportWrapperAsConstructor) {
+      this.reportWrapper(wrappedInstance.bypassSurrogate(), Klass, Target);
+    }
 
     const eventManager = wrappedInstance.getSurrogate();
     const identifier = new MethodIdentifier(wrappedInstance);
@@ -47,6 +51,15 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
     this.applyDecorators(eventManager, decoratorMap, identifier);
 
     return wrappedInstance;
+  }
+
+  // Reported per instance, so the class and its prototype are left alone. Only
+  // an instance built directly from Klass (or from the class Klass wraps)
+  // reports new.target; an instance of a subclass keeps its own constructor.
+  private reportWrapper(instance: object, Klass: T, Target: Function): void {
+    if (Reflect.getPrototypeOf(instance) === Klass.prototype) {
+      SurrogateProxy.reportConstructor(instance, Target);
+    }
   }
 
   private applyDecorators(
