@@ -1,0 +1,6 @@
+{
+  "name": "esm-consumer",
+  "private": true,
+  "description": "Consumes the packed surrogate tarball as an ESM package; see .github/workflows/build.yml",
+  "type": "module"
+}
