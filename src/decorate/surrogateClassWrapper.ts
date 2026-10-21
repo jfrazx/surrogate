@@ -34,11 +34,13 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
   }
 
   construct(Klass: T, args: any[], Target: any) {
-    const { locateWith = Klass, reportWrapperAsConstructor = false } = this.options;
+    // Decorator-only options stay out of the instance's global options, which
+    // every hook handler receives.
+    const { locateWith = Klass, reportWrapperAsConstructor, ...options } = this.options;
     const decoratorMap = SurrogateClassWrapper.retrieveTargetDecoratorMap(locateWith);
     const wrappedInstance = SurrogateProxy.wrap<T>(
       Reflect.construct(Klass, args, Target),
-      this.options,
+      options,
     );
 
     if (reportWrapperAsConstructor) {

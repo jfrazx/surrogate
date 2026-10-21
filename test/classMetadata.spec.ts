@@ -1,4 +1,4 @@
-import { SurrogateDelegate, SurrogatePre } from '../src';
+import { SurrogateDelegate, SurrogateMethods, SurrogatePre } from '../src';
 import { expect } from 'chai';
 
 describe('Class-level decorator metadata interop', () => {
@@ -186,6 +186,63 @@ describe('Class-level decorator metadata interop', () => {
       const Wrapped = SurrogateDelegate(reportWrapper)(Original);
 
       expect(new Wrapped().constructor).to.equal(Wrapped);
+    });
+
+    it('should keep a read-only constructor defined on the instance', () => {
+      // The Proxy get invariant requires the actual value of a non-writable,
+      // non-configurable own property.
+      class Original {
+        constructor() {
+          Object.defineProperty(this, 'constructor', { value: Original });
+        }
+      }
+      const Wrapped = SurrogateDelegate(reportWrapper)(Original);
+
+      expect(new Wrapped().constructor).to.equal(Original);
+    });
+
+    it('should keep a constructor accessor without a getter defined on the instance', () => {
+      class Original {
+        constructor() {
+          Object.defineProperty(this, 'constructor', { set() {} });
+        }
+      }
+      const Wrapped = SurrogateDelegate(reportWrapper)(Original);
+
+      expect(new Wrapped().constructor).to.equal(undefined);
+    });
+
+    it('should read back a constructor assigned to the instance', () => {
+      class Other {}
+      class Original {}
+      const Wrapped = SurrogateDelegate(reportWrapper)(Original);
+      const instance = new Wrapped();
+
+      instance.constructor = Other;
+
+      expect(instance.constructor).to.equal(Other);
+    });
+
+    it('should keep reporting the wrapper after disposeSurrogate', () => {
+      // Disposing removes hooks; the class the instance was built as is unchanged.
+      class Original {}
+      const Wrapped = SurrogateDelegate(reportWrapper)(Original);
+      const instance = new Wrapped() as Original & SurrogateMethods<Original>;
+
+      instance.disposeSurrogate();
+
+      expect(instance.constructor).to.equal(Wrapped);
+    });
+
+    it('should keep decorator-only options out of the global options', () => {
+      class Original {}
+      const Wrapped = SurrogateDelegate({ ...reportWrapper, locateWith: Original })(Original);
+      const instance = new Wrapped() as Original & SurrogateMethods<Original>;
+
+      expect(instance.getSurrogate().globalOptions).to.not.have.any.keys(
+        'reportWrapperAsConstructor',
+        'locateWith',
+      );
     });
 
     it('should leave instances of the original class unchanged', () => {

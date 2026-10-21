@@ -21,11 +21,17 @@ export abstract class FetchRuleRunner {
       EventMangerRule,
       ConstructorRule,
       UnprocessableRule,
-      BindingRule,
     ];
 
-    return rules
-      .map((Rule: FetchRuleConstruct<T>) => new Rule(proxy, target, event, receiver))
-      .find((rule: FetchRule) => rule.shouldHandle())!;
+    // Rules run on every property read, so build each only until one applies.
+    for (const Rule of rules) {
+      const rule = new Rule(proxy, target, event, receiver);
+
+      if (rule.shouldHandle()) {
+        return rule;
+      }
+    }
+
+    return new BindingRule(proxy, target, event, receiver);
   }
 }
