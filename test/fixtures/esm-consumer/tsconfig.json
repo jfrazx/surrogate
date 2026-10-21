@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "node16",
+    "moduleResolution": "node16",
+    "target": "es2022",
+    "strict": true,
+    "noEmit": true,
+    "types": [],
+    // The bundled declarations fail their own check (TS2395 on the merged
+    // OptionsHandler interface and class that Parcel emits; see #430). Imports
+    // are still resolved and checked; only the library's internals are skipped.
+    "skipLibCheck": true
+  },
+  "files": ["index.ts"]
+}
