@@ -10,6 +10,13 @@ export type Constructor<T> = { new (...args: any[]): T };
 
 export interface SurrogateDecorateOptions<T extends object> extends SurrogateOptions {
   locateWith?: Constructor<T>;
+
+  /**
+   * @description Instances report the decorated class as their constructor, instead of the class it wraps
+   *
+   * @default false
+   */
+  reportWrapperAsConstructor?: boolean;
 }
 
 export interface SurrogateDecoratorOptions<

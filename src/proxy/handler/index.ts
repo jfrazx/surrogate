@@ -9,7 +9,10 @@ type Target<T extends object> = WeakMap<T, EventManager<T>>;
 
 export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   private readonly targets: Target<T> = new WeakMap();
+  private static readonly reportedConstructors = new WeakMap<object, Function>();
   private static instance: SurrogateProxy<any>;
+  // Set only on the per-proxy handler that wrap() derives from the shared one.
+  private surrogate?: Surrogate<T>;
 
   constructor(target: T, { useSingleton = true, ...globalOptions }: SurrogateOptions = {}) {
     return this.useInstance(useSingleton).setTarget(target, globalOptions);
@@ -27,10 +30,34 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return this.targets.get(target) as EventManager<T>;
   }
 
+  // Resolved from the proxy whose trap is running, not the receiver: a read
+  // through an outer proxy or a derived object has that object as receiver.
+  getReportedConstructor(): Function | undefined {
+    return this.surrogate && SurrogateProxy.reportedConstructors.get(this.surrogate);
+  }
+
+  // Static, because SurrogateDelegate cannot tell which handler (the singleton
+  // or one of its own) wraps the target. Keyed by the instance proxy, not its
+  // target: a constructor that returns a cached raw object hands the same
+  // target to every wrapper that builds it. One that returns a cached proxy
+  // hands every wrapper the same proxy, so the last wrapper built is reported.
+  static reportConstructor(instance: object, constructor: Function): void {
+    this.reportedConstructors.set(instance, constructor);
+  }
+
   static wrap<T extends object>(object: T, options?: SurrogateOptions): Surrogate<T> {
-    return this.hasTarget(object)
-      ? (object as Surrogate<T>)
-      : (new Proxy(object, new SurrogateProxy(object, options)) as Surrogate<T>);
+    if (this.hasTarget(object)) {
+      return object as Surrogate<T>;
+    }
+
+    // Each proxy gets its own handler inheriting the shared one, so its traps
+    // know which proxy they run for even when several proxies share a target.
+    const handler: SurrogateProxy<T> = Object.create(new SurrogateProxy(object, options));
+    const surrogate = new Proxy(object, handler) as Surrogate<T>;
+
+    handler.surrogate = surrogate;
+
+    return surrogate;
   }
 
   static hasTarget<T extends object>(target: T): target is Surrogate<T> {

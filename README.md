@@ -189,6 +189,21 @@ import { SurrogateDelegate } from 'surrogate';
 class Guitar {}
 ```
 
+Instances report the original class as their `constructor`. Option `reportWrapperAsConstructor` makes them report the decorated class instead, so that metadata from class decorators applied above `SurrogateDelegate` can be resolved from `instance.constructor`. NestJS resolves `context.getClass()` this way, which is what `@SkipThrottle()` relies on. NestJS 11 and earlier find class-level `@UseGuards()` and `@UseInterceptors()` through the instance's prototype instead, which this option does not change, so place those below `SurrogateDelegate`.
+
+```typescript
+@SkipThrottle()
+@SurrogateDelegate({
+  reportWrapperAsConstructor: true,
+})
+@Controller('health')
+class HealthController {}
+```
+
+Leave it off for classes used with libraries that look up metadata from `instance.constructor` by class identity, such as class-validator and class-transformer: they will no longer find metadata from property decorators like `@IsString()` or `@Exclude()`. Placing the other class decorators below `SurrogateDelegate` works without the option.
+
+The wrapper is reported through the instance's proxy only. Code holding the unwrapped instance still sees the original class: `bypassSurrogate()`, the `instance` passed to handlers, `this` inside handlers under the default `useContext`, and `this` inside getters, which run against the unwrapped instance. A handler that resolves metadata from `this.constructor` needs `useContext: 'surrogate'`.
+
 If you wish to use `Surrogate` [methods](#-SurrogateMethods) inside this instance of your class you must extend `SurrogateMethods` interface.
 
 ```typescript
