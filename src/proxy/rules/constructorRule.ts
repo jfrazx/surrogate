@@ -17,6 +17,6 @@ export class ConstructorRule<T extends object> extends ProxyRule<T> {
   }
 
   private get reportedConstructor() {
-    return this.proxy.getReportedConstructor(this.target);
+    return this.proxy.getReportedConstructor();
   }
 }

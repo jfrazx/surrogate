@@ -44,7 +44,7 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
     );
 
     if (reportWrapperAsConstructor) {
-      this.reportWrapper(wrappedInstance.bypassSurrogate(), Klass, Target);
+      this.reportWrapper(wrappedInstance, Klass, Target);
     }
 
     const eventManager = wrappedInstance.getSurrogate();

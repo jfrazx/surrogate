@@ -1,4 +1,4 @@
-import { SurrogateDelegate, SurrogateMethods, SurrogatePre } from '../src';
+import { SurrogateDelegate, SurrogateMethods, SurrogatePre, wrapSurrogate } from '../src';
 import { expect } from 'chai';
 
 describe('Class-level decorator metadata interop', () => {
@@ -259,6 +259,89 @@ describe('Class-level decorator metadata interop', () => {
 
       expect(new First().constructor).to.equal(First);
       expect(new Second().constructor).to.equal(Second);
+    });
+
+    it('should report each wrapper when the original class returns a cached instance', () => {
+      class Original {
+        static cached?: Original;
+
+        constructor() {
+          return (Original.cached ??= this);
+        }
+      }
+      const First = SurrogateDelegate(reportWrapper)(Original);
+      const Second = SurrogateDelegate(reportWrapper)(Original);
+      const Unreported = SurrogateDelegate()(Original);
+
+      const first = new First();
+      const second = new Second();
+      const unreported = new Unreported();
+
+      expect(first.constructor).to.equal(First);
+      expect(second.constructor).to.equal(Second);
+      expect(unreported.constructor).to.equal(Original);
+    });
+
+    it('should construct an instance that defines its own surrogate methods', () => {
+      class Original {
+        getSurrogate() {}
+        disposeSurrogate() {}
+      }
+      const Wrapped = SurrogateDelegate(reportWrapper)(Original);
+
+      expect(() => new Wrapped()).not.to.throw();
+    });
+
+    describe('when read through another object', () => {
+      // Reads that reach the instance from an outer proxy or a derived object
+      // arrive with that object, not the instance, as the receiver.
+      class Original {}
+      const Wrapped = SurrogateDelegate(reportWrapper)(Original);
+
+      it('should report the wrapper to an object inheriting from the instance', () => {
+        expect(Object.create(new Wrapped()).constructor).to.equal(Wrapped);
+      });
+
+      it('should report the wrapper to a read with another receiver', () => {
+        expect(Reflect.get(new Wrapped(), 'constructor', {})).to.equal(Wrapped);
+      });
+
+      it('should report the wrapper through an outer proxy without a get trap', () => {
+        expect(new Proxy(new Wrapped(), {}).constructor).to.equal(Wrapped);
+      });
+
+      it('should report the wrapper through an outer proxy forwarding its receiver', () => {
+        const outer = new Proxy(new Wrapped(), {
+          get: (target, key, receiver) => Reflect.get(target, key, receiver),
+        });
+
+        expect(outer.constructor).to.equal(Wrapped);
+      });
+
+      it('should report each wrapper when wrappers share a cached instance', () => {
+        class Cached {
+          static cached?: Cached;
+
+          constructor() {
+            return (Cached.cached ??= this);
+          }
+        }
+        const First = SurrogateDelegate(reportWrapper)(Cached);
+        const Second = SurrogateDelegate()(Cached);
+        const first = new First();
+        const second = new Second();
+
+        expect(Object.create(first).constructor).to.equal(First);
+        expect(Object.create(second).constructor).to.equal(Cached);
+      });
+
+      it('should report the wrapper after its target is wrapped again', () => {
+        const instance = new Wrapped() as Original & SurrogateMethods<Original>;
+
+        wrapSurrogate(instance.bypassSurrogate());
+
+        expect(new Proxy(instance, {}).constructor).to.equal(Wrapped);
+      });
     });
 
     it('should report the outer wrapper when only it opts in', () => {

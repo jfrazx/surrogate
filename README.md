@@ -202,7 +202,7 @@ class HealthController {}
 
 Leave it off for classes used with libraries that look up metadata from `instance.constructor` by class identity, such as class-validator and class-transformer: they will no longer find metadata from property decorators like `@IsString()` or `@Exclude()`. Placing the other class decorators below `SurrogateDelegate` works without the option.
 
-The wrapper is reported through the instance's proxy only. Code holding the unwrapped instance still sees the original class: `bypassSurrogate()`, the `instance` passed to handlers, and `this` inside handlers under the default `useContext`. A handler that resolves metadata from `this.constructor` needs `useContext: 'surrogate'`.
+The wrapper is reported through the instance's proxy only. Code holding the unwrapped instance still sees the original class: `bypassSurrogate()`, the `instance` passed to handlers, `this` inside handlers under the default `useContext`, and `this` inside getters, which run against the unwrapped instance. A handler that resolves metadata from `this.constructor` needs `useContext: 'surrogate'`.
 
 If you wish to use `Surrogate` [methods](#-SurrogateMethods) inside this instance of your class you must extend `SurrogateMethods` interface.
 
