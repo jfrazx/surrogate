@@ -21,6 +21,7 @@ type PropertyDecorator<T extends object> = (target: T, property: Action<T>) => v
  */
 export const SurrogateDelegate =
   <T extends object>(delegateOptions: SurrogateDecorateOptions<T> = {}) =>
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- decorated classes are constructors, which have no call signature
   <K extends Function>(klass: K) =>
     SurrogateClassWrapper.wrap(klass, delegateOptions);
 

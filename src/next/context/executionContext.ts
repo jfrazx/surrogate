@@ -76,7 +76,11 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
   }
 
   addNext(next: NextNode<T>): this {
-    this.nextNode ? this.nextNode.addNext(next) : this.setNext(next);
+    if (this.nextNode) {
+      this.nextNode.addNext(next);
+    } else {
+      this.setNext(next);
+    }
 
     return this;
   }
@@ -152,6 +156,7 @@ export class NextAsyncContext<T extends object> extends ExecutionContext<T> {
 
   async runOriginal(node: MethodNext<T>) {
     const { container, context } = node;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- handlers and wrapped methods are arbitrary user functions
     const handler = container.getHandler(context) as Function;
 
     try {
@@ -187,6 +192,7 @@ export class NextContext<T extends object> extends ExecutionContext<T> {
 
   runOriginal(node: MethodNext<T>) {
     const { container, context } = node;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- handlers and wrapped methods are arbitrary user functions
     const handler = container.getHandler(context) as Function;
 
     const result = handler.apply(context.receiver, this.currentArgs);
