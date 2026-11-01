@@ -15,7 +15,7 @@ eslint.config.mjs
 .parcelrc
 renovate.json
 .releaserc
-.nycrc.json
+.c8rc.json
 .yarnrc.yml
 cspell.json
 *.lcov

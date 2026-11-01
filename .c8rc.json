@@ -1,0 +1,12 @@
+{
+  "include": ["src/**"],
+  "exclude": ["src/index.ts", "**/*.d.ts"],
+  "reporter": ["lcov", "text-summary", "html"],
+  "report-dir": "./coverage",
+  "experimental-monocart": true,
+  "check-coverage": true,
+  "statements": 90,
+  "functions": 90,
+  "branches": 90,
+  "lines": 90
+}
