@@ -11,6 +11,7 @@ tslint.json
 .prettierrc
 .prettierignore
 .npmrc
+.nvmrc
 .parcelrc
 renovate.json
 .releaserc
