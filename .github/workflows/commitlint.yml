@@ -7,6 +7,7 @@ on:
       - opened
       - reopened
       - synchronize
+      - edited
 
 jobs:
   commitlint:
@@ -30,3 +31,7 @@ jobs:
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
           HEAD: ${{ github.event.pull_request.head.sha }}
+      - name: Lint pull request title
+        run: printf '%s\n' "$TITLE" | npx commitlint --verbose
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
