@@ -31,6 +31,6 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Release
-        run: npx semantic-release -b master -p @semantic-release/commit-analyzer -p @semantic-release/github -p @semantic-release/release-notes-generator -p @semantic-release/npm
+        run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
