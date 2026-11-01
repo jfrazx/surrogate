@@ -5,7 +5,7 @@ Thumbs.db
 *.log
 tsconfig.json
 tslint.json
-.eslintrc
+eslint.config.mjs
 .editorconfig
 .travis.yml
 .prettierrc
