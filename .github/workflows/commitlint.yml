@@ -1,0 +1,32 @@
+name: Lint commit messages
+
+on:
+  pull_request:
+    branches: [master, develop]
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  commitlint:
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - name: Github checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Setup nodejs
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Run commitlint
+        run: npx commitlint --from "$BASE" --to "$HEAD" --verbose
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
