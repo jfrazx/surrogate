@@ -33,14 +33,14 @@
   ],
   "scripts": {
     "cspell": "cspell lint --no-progress --fail-fast \"**\"",
-    "test": "cross-env TS_NODE_PROJECT='./test/tsconfig.json' mocha",
+    "test": "mocha",
     "test:watch": "mocha --watch",
     "compile": "tsc --noEmit --noErrorTruncation",
     "tsc": "tsc",
     "predocs": "rimraf docs",
     "docs": "typedoc src/index.ts",
-    "del:merged": "node -r ts-node/register/transpile-only scripts/merged",
-    "leak:test": "node -r ts-node/register/transpile-only scripts/leak",
+    "del:merged": "tsx scripts/merged.ts",
+    "leak:test": "tsx --tsconfig test/tsconfig.json scripts/leak.ts",
     "prebuild": "rimraf dist",
     "build": "parcel build",
     "postbuild": "node -e \"require('fs').copyFileSync('dist/types.d.ts', 'dist/types.d.mts')\"",
@@ -83,7 +83,6 @@
     "@types/sinon": "^22.0.0",
     "chai": "^4.3.7",
     "commitizen": "^4.3.1",
-    "cross-env": "^10.0.0",
     "cspell": "^10.4.0",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^10.0.0",
@@ -97,8 +96,7 @@
     "rimraf": "^6.0.1",
     "semantic-release": "^25.0.0",
     "sinon": "^22.0.0",
-    "source-map-support": "^0.5.21",
-    "ts-node": "^10.9.1",
+    "tsx": "^4.23.15",
     "typedoc": "^0.28.7",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.72.1"
@@ -113,8 +111,7 @@
     "spec": "test/*.spec.ts",
     "reporter": "spec",
     "require": [
-      "ts-node/register/transpile-only",
-      "source-map-support/register"
+      "./test/register.cjs"
     ]
   },
   "repository": {
