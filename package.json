@@ -65,8 +65,7 @@
   "license": "MIT",
   "dependencies": {
     "@jfrazx/asarray": "^1.0.1",
-    "@status/defaults": "^1.6.1",
-    "uuid": "^11.1.0"
+    "@status/defaults": "^1.6.1"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
@@ -85,7 +84,6 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.12.4",
     "@types/sinon": "^22.0.0",
-    "@types/uuid": "^11.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "applicationinsights": "^3.0.0",
