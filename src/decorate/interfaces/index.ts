@@ -47,10 +47,7 @@ export interface SurrogateForOptions<
 }
 
 export type Action<T extends object> =
-  | keyof SurrogateUnwrapped<T>
-  | (keyof SurrogateUnwrapped<T>)[]
-  | string
-  | string[];
+  keyof SurrogateUnwrapped<T> | (keyof SurrogateUnwrapped<T>)[] | string | string[];
 
 export interface NextDecoratorOptions<T extends object> {
   options?: SurrogateHandlerOptions<T>;

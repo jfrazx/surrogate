@@ -9,7 +9,11 @@ export class ErrorProvider<T extends object, Arguments extends Array<any> = any,
   public timeOfError = new Date();
   private recover!: boolean;
 
-  constructor(node: NextNode<T>, receivedArgs: any[], public readonly error: Error) {
+  constructor(
+    node: NextNode<T>,
+    receivedArgs: any[],
+    public readonly error: Error,
+  ) {
     super(node, receivedArgs, error);
   }
 

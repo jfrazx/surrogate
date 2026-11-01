@@ -17,8 +17,8 @@ export class Context<T extends object> {
     return this.useInstance(useContext)
       ? this.target
       : this.useSurrogate(useContext)
-      ? this.receiver
-      : useContext;
+        ? this.receiver
+        : useContext;
   }
 
   useInstance(context: Contexts): boolean {
