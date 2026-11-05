@@ -18,7 +18,9 @@ interface DecoratorContainer {
   [HookType.POST]: SurrogateDecoratorOptions<any>[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- decorated classes are constructors, which have no call signature
 export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- decorated classes are constructors, which have no call signature
   static readonly decoratorMap = new Map<Function, DecoratedEventMap>();
 
   constructor(private readonly options: SurrogateDecorateOptions<T>) {}
@@ -58,6 +60,7 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
   // Reported per instance, so the class and its prototype are left alone. Only
   // an instance built directly from Klass (or from the class Klass wraps)
   // reports new.target; an instance of a subclass keeps its own constructor.
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- decorated classes are constructors, which have no call signature
   private reportWrapper(instance: object, Klass: T, Target: Function): void {
     if (Reflect.getPrototypeOf(instance) === Klass.prototype) {
       SurrogateProxy.reportConstructor(instance, Target);
@@ -93,6 +96,7 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- decorated classes are constructors, which have no call signature
   static wrap<T extends Function>(klass: T, options: SurrogateOptions): T {
     return new Proxy(klass, new SurrogateClassWrapper(options));
   }
@@ -110,6 +114,7 @@ export class SurrogateClassWrapper<T extends Function> implements ProxyHandler<T
     return this.decoratorMap.set(klass, decoratorMap);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- decorated classes are constructors, which have no call signature
   private static retrieveTargetDecoratorMap<T extends Function>(klass: T): DecoratedEventMap {
     return (
       this.decoratorMap.get(klass) ??

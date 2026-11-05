@@ -13,6 +13,7 @@ import type { INext } from '../next';
  * @extends {ProviderParameters<T>}
  * @template T
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- deprecated alias, kept as an interface so declaration merges still work
 export interface NextHandler<T extends object> extends NextParameters<T> {}
 
 /**

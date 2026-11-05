@@ -14,5 +14,5 @@ export const containerSorter = <T extends object>(
   a.options.priority === b.options.priority
     ? 0
     : a.options.priority > b.options.priority
-    ? -1
-    : 1;
+      ? -1
+      : 1;

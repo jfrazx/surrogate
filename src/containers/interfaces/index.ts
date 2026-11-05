@@ -9,5 +9,6 @@ export interface HandlerContainer<T extends object> {
   type: WhichMethod;
   options: OptionsHandler<T>;
   getHandlerRunner(node: NextNode<T>): SurrogateHandlerRunner;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- handlers and wrapped methods are arbitrary user functions
   getHandler(context: Context<T>): SurrogateHandler<T> | Function;
 }

@@ -9,11 +9,13 @@ import { isFunction } from '../helpers';
 
 export abstract class BaseContainer<T extends object> implements HandlerContainer<T> {
   constructor(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- handlers and wrapped methods are arbitrary user functions
     protected readonly handler: SurrogateHandlerTypes<T> | Function,
     public readonly type: WhichMethod,
     public readonly options: OptionsHandler<T> = new OptionsHandler(),
   ) {}
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- handlers and wrapped methods are arbitrary user functions
   getHandler(context: Context<T>): Function | SurrogateHandler<T> {
     const { target, receiver } = context;
 
@@ -27,7 +29,7 @@ export abstract class BaseContainer<T extends object> implements HandlerContaine
             Reflect.get(receiver, this.handler, receiver)
           : Reflect.get(target, this.handler, receiver)
         : this.handler
-    ) as Function | SurrogateHandler<T>;
+    ) as Function | SurrogateHandler<T>; // eslint-disable-line @typescript-eslint/no-unsafe-function-type -- handlers and wrapped methods are arbitrary user functions
   }
 
   private shouldReflect(value: unknown): value is string {

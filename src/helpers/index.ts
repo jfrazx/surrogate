@@ -1,5 +1,6 @@
 export const isNull = (value: unknown): value is null => value === null;
 export const isBool = (value: unknown): value is boolean => isType(value, 'boolean');
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- handlers and wrapped methods are arbitrary user functions
 export const isFunction = (value: unknown): value is Function => isType(value, 'function');
 export const isUndefined = (value: unknown): value is undefined => isType(value, 'undefined');
 export const isObject = (value: unknown): value is object =>

@@ -19,8 +19,10 @@ export class BailRule<T extends object> extends RecoverableRule<T> implements Ne
       node.useContext,
     );
 
-    shouldRecover
-      ? this.recover(node, { bail: false })
-      : node.controller.bail(provider.bailUsing);
+    if (shouldRecover) {
+      this.recover(node, { bail: false });
+    } else {
+      node.controller.bail(provider.bailUsing);
+    }
   }
 }
