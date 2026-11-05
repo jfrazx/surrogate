@@ -31,6 +31,32 @@ describe('TimeTracking', () => {
     network.disposeSurrogate();
   });
 
+  [NodeTimeTracker, FallbackTimeTracker].forEach((Tracker) => {
+    it(`should report a fixed start time from ${Tracker.name}`, () => {
+      const tracker = new Tracker();
+      const startTime = tracker.getStartTime();
+
+      clock.tick(50);
+      clock.setSystemTime(Date.now() + 5000);
+
+      expect(tracker.getStartTime()).to.equal(startTime);
+    });
+  });
+
+  it('should report a fixed hook start time from NodeTimeTracker', () => {
+    const tracker = new NodeTimeTracker();
+
+    clock.tick(25);
+    tracker.setHookStart();
+
+    const hookStartTime = tracker.getHookStartTime();
+
+    clock.tick(50);
+    clock.setSystemTime(Date.now() + 5000);
+
+    expect(tracker.getHookStartTime()).to.equal(hookStartTime);
+  });
+
   it('should pass NodeTimeTracker', async () => {
     const serverName = 'server name node time tracker';
     let elapsedTime: number;
