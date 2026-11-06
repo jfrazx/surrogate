@@ -223,7 +223,10 @@ describe('RunParameters', () => {
     expect(provider.result).to.be.undefined;
     expect(provider.action).to.equal('runs');
     expect(provider.hookType).to.equal('pre');
-    expect(provider.correlationId).to.be.a.string;
+    expect(provider.correlationId).to.be.a('string');
+    expect(provider.correlationId).to.match(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+    );
     expect(provider.currentArgs).to.be.an('array');
     expect(provider.currentArgs).to.have.lengthOf(0);
     expect(provider.valueFromCondition).to.be.undefined;
@@ -231,6 +234,34 @@ describe('RunParameters', () => {
     expect(provider.timeTracker).to.be.instanceOf(Trackable);
     expect(provider.instance).to.equal(runner.bypassSurrogate());
     expect(provider.currentArgs).to.equal(provider.originalArgs);
+  });
+
+  it('should give each execution its own correlationId', () => {
+    const handler = sandbox.spy();
+    const runCondition = sandbox.stub().returns(true);
+
+    @SurrogateDelegate()
+    class CorrelationIdTest {
+      @SurrogatePre<CorrelationIdTest>({
+        handler,
+        options: {
+          runConditions: [runCondition],
+          useNext: false,
+        },
+      })
+      runs() {}
+    }
+
+    const runner = new CorrelationIdTest();
+    runner.runs();
+    runner.runs();
+
+    const [first]: RunConditionProvider<CorrelationIdTest, any[]>[] =
+      runCondition.firstCall.args;
+    const [second]: RunConditionProvider<CorrelationIdTest, any[]>[] =
+      runCondition.secondCall.args;
+
+    expect(first.correlationId).to.not.equal(second.correlationId);
   });
 
   it('should pass values between run conditions', () => {

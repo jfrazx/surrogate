@@ -8,12 +8,11 @@ import { MethodWrapper } from '../../constants';
 import { HookType, Which } from '../../which';
 import type { NextNode } from '../interfaces';
 import type { Context } from '../../context';
-import { isFunction } from '../../helpers';
+import { createCorrelationId, isFunction } from '../../helpers';
 import { containerSorter } from './utils';
 import { asArray } from '@jfrazx/asarray';
 import { isAsync } from '../../helpers';
 import { Tail } from '../../containers';
-import { v4 as uuid } from 'uuid';
 
 interface ExecutionConstruct<T extends object> {
   new (context: Context<T>): ContextController<T>;
@@ -26,7 +25,7 @@ export abstract class ExecutionContext<T extends object> implements ContextContr
   protected nextNode!: NextNode<T>;
 
   readonly timeTracker = TimeTrackable.fetch();
-  readonly correlationId = uuid();
+  readonly correlationId = createCorrelationId();
 
   latestArgs!: any[];
   returnValue: any;
