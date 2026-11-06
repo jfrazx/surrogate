@@ -58,6 +58,9 @@
   },
   "author": "jfrazx",
   "license": "MIT",
+  "engines": {
+    "node": ">=22.12"
+  },
   "dependencies": {
     "@jfrazx/asarray": "^1.0.1",
     "@status/defaults": "^1.6.1"
@@ -75,7 +78,7 @@
     "@types/chai": "^5.0.0",
     "@types/fast-redact": "^3.0.4",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^24.12.4",
+    "@types/node": "^22.20.5",
     "@types/sinon": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
