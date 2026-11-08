@@ -10,6 +10,16 @@
       "matchDepTypes": ["devDependencies"],
       "matchCurrentVersion": "!/^0/",
       "automerge": true
+    },
+    {
+      "description": "@types/node tracks the minimum supported Node (engines.node), not the latest",
+      "matchPackageNames": ["@types/node"],
+      "allowedVersions": "22.x"
+    },
+    {
+      "description": "v10 needs conventional-changelog-writer 9, but release-notes-generator 14 loads writer 8 and throws at release time",
+      "matchPackageNames": ["conventional-changelog-conventionalcommits"],
+      "allowedVersions": "<10"
     }
   ],
   "platformAutomerge": true

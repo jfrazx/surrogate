@@ -4,13 +4,14 @@ export abstract class Trackable implements TimeTracking {
   protected readonly hookTimes: [number, number][] = [];
   protected nanosecondsInMilliseconds = 1000000;
   protected nanosecondsInSeconds = 1000000000;
+  protected readonly createdAt = Date.now();
   protected hookStartTime!: number;
 
   protected abstract readonly startTime: number;
   protected abstract getNow(): number;
 
   getStartTime(): number {
-    return Date.now() - this.getTotalDuration();
+    return this.createdAt;
   }
 
   getHookStartTime() {

@@ -18,6 +18,7 @@ renovate.json
 .c8rc.json
 .yarnrc.yml
 cspell.json
+commitlint.config.mjs
 *.lcov
 yarn.lock
 package-lock.json
