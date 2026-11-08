@@ -4,9 +4,11 @@ import type { TimeTracking } from '../../timeTracker';
 import type { Context } from '../../context';
 import type { NextNode } from '../../next';
 
-export abstract class Provider<T extends object, Arguments extends Array<any>, Result>
-  implements ProviderParameters<T, Arguments, Result>
-{
+export abstract class Provider<
+  T extends object,
+  Arguments extends Array<any>,
+  Result,
+> implements ProviderParameters<T, Arguments, Result> {
   protected readonly returnValue: any;
 
   constructor(

@@ -9,6 +9,7 @@ type Target<T extends object> = WeakMap<T, EventManager<T>>;
 
 export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   private readonly targets: Target<T> = new WeakMap();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- decorated classes are constructors, which have no call signature
   private static readonly reportedConstructors = new WeakMap<object, Function>();
   private static instance: SurrogateProxy<any>;
   // Set only on the per-proxy handler that wrap() derives from the shared one.
@@ -32,6 +33,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
 
   // Resolved from the proxy whose trap is running, not the receiver: a read
   // through an outer proxy or a derived object has that object as receiver.
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- decorated classes are constructors, which have no call signature
   getReportedConstructor(): Function | undefined {
     return this.surrogate && SurrogateProxy.reportedConstructors.get(this.surrogate);
   }
@@ -41,6 +43,7 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
   // target: a constructor that returns a cached raw object hands the same
   // target to every wrapper that builds it. One that returns a cached proxy
   // hands every wrapper the same proxy, so the last wrapper built is reported.
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- decorated classes are constructors, which have no call signature
   static reportConstructor(instance: object, constructor: Function): void {
     this.reportedConstructors.set(instance, constructor);
   }
@@ -66,7 +69,9 @@ export class SurrogateProxy<T extends object> implements ProxyHandler<T> {
     return methods.every((key: keyof T) => isFunction(target[key]));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- handlers and wrapped methods are arbitrary user functions
   bindHandler(event: string, target: T, receiver: Surrogate<T>): Function {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- handlers and wrapped methods are arbitrary user functions
     const func = Reflect.get(target, event, receiver) as Function;
 
     return {

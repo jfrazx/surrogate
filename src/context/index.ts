@@ -6,6 +6,7 @@ export class Context<T extends object> {
     public readonly target: T,
     public readonly receiver: Surrogate<T>,
     public readonly event: string,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- handlers and wrapped methods are arbitrary user functions
     public readonly original: Function,
     public readonly originalArguments: any[],
   ) {}
@@ -16,8 +17,8 @@ export class Context<T extends object> {
     return this.useInstance(useContext)
       ? this.target
       : this.useSurrogate(useContext)
-      ? this.receiver
-      : useContext;
+        ? this.receiver
+        : useContext;
   }
 
   useInstance(context: Contexts): boolean {

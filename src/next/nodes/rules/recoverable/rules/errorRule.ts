@@ -20,8 +20,10 @@ export class ErrorRule<T extends object> extends RecoverableRule<T> implements N
       node.useContext,
     );
 
-    shouldRecover
-      ? this.recover(node, { error: null })
-      : node.controller.handleError(node, error as Error);
+    if (shouldRecover) {
+      this.recover(node, { error: null });
+    } else {
+      node.controller.handleError(node, error as Error);
+    }
   }
 }
